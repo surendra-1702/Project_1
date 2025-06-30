@@ -268,6 +268,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // ============= EXERCISE GIF PROXY =============
+  
+  app.get("/api/exercise-gif/:exerciseId", async (req, res) => {
+    try {
+      const { exerciseId } = req.params;
+      const gifUrl = `https://cdn-exercisedb.vercel.app/api/v1/images/${exerciseId}.gif`;
+      
+      const response = await fetch(gifUrl);
+      if (!response.ok) {
+        return res.status(404).json({ error: 'GIF not found' });
+      }
+      
+      // Set appropriate headers for GIF content
+      res.set({
+        'Content-Type': 'image/gif',
+        'Cache-Control': 'public, max-age=86400', // Cache for 24 hours
+        'Access-Control-Allow-Origin': '*'
+      });
+      
+      // Pipe the GIF data directly to the response
+      const buffer = await response.arrayBuffer();
+      res.send(Buffer.from(buffer));
+    } catch (error: any) {
+      console.error('GIF proxy error:', error.message);
+      res.status(500).json({ error: 'Failed to fetch GIF' });
+    }
+  });
+
   // ============= BMI & CALORIE ROUTES =============
   
   app.post("/api/bmi/calculate", async (req, res) => {
