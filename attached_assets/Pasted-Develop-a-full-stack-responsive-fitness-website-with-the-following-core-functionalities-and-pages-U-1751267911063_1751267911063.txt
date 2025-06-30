@@ -1,0 +1,211 @@
+Develop a full-stack responsive fitness website with the following core functionalities and pages. Use modern web development technologies (preferably MERN stack ). The app must integrate APIs for exercise data, AI-based recommendations, user authentication, and content management.
+
+ 1. Homepage
+A visually appealing landing page introducing the fitness platform.
+
+Feature sections for:
+
+Exercise Demonstrations (GIFs)
+
+BMI + Calorie Recommendations
+
+AI-powered Workout Planner
+
+Calorie Counter
+
+Fitness Blogs
+
+Add a hero banner with a motivational message and CTA button (“Get Fit Now”).
+
+Include a persistent navigation bar and user login state (logged in/out).
+
+ 2. Exercises Page
+A search bar for users to enter exercise names (e.g., "push-ups").
+ bodyparts card so that users can view the exercises that train a particular bodypart by clicking on it
+
+
+Fetch and display exercise GIFs using the ExerciseDB API or a similar public exercise database.
+using this api Create a clean and organized exercise page  using Express that integrates with the ExerciseDB API from RapidAPI.
+
+Requirements:
+1. Use Axios for HTTP requests.
+2. Set up routes to fetch exercise data from different endpoints of the API:
+   - GET /exercises → Fetch all exercises (with optional query params: limit, offset)
+   - GET /exercise/:id → Fetch a single exercise by ID
+   - GET /bodyparts → Fetch all body parts
+   - GET /bodypart/:name → Fetch exercises for a given body part
+   - GET /equipment/:name → Fetch exercises for a given equipment
+   - GET /target/:name → Fetch exercises by target muscle
+3. Keep API keys secure via environment variables using dotenv
+4. Return JSON responses for all routes
+5. Add basic error handling for failed requests
+6. Install all necessary dependencies (`express`, `axios`, `dotenv`, `cors`)
+ 
+api =
+ const axios = require('axios');
+
+const options = {
+  method: 'GET',
+  url: 'https://exercisedb.p.rapidapi.com/exercises',
+  params: {
+    limit: '10',
+    offset: '0'
+  }
+};
+
+headers: {
+    'x-rapidapi-key': '0e3a05e4c0msh3a58fa2b2bacbaep162600jsn4228aeea665f',
+    'x-rapidapi-host': 'exercisedb.p.rapidapi.com'
+  }
+};
+
+async function fetchData() {
+	try {
+		const response = await axios.request(options);
+		console.log(response.data);
+	} catch (error) {
+		console.error(error);
+	}
+}
+
+fetchData();
+
+rapid__api__key = 0e3a05e4c0msh3a58fa2b2bacbaep162600jsn4228aeea665f
+
+
+Display a list of recommended YouTube videos (using YouTube Data API) related to the searched exercise.
+
+### Requirements:
+
+1. Use Axios to make HTTP requests to:
+   GET https://youtube-search-and-download.p.rapidapi.com/channel/about
+
+2. Pass the following required query parameter:
+   - `id`: the channel ID (e.g., UCE_M8A5yxnLfW0KghEeajjw)
+
+3. Set the required headers:
+   - `x-rapidapi-key`: read from environment variable `RAPIDAPI_KEY`
+   - `x-rapidapi-host`: `youtube-search-and-download.p.rapidapi.com`
+
+4. Implement an Express route:
+   - GET `/channel/:id` — fetch the channel's about data using the given channel ID.
+
+5. Return the response from the API in JSON format.
+
+6. Use the `dotenv` package to securely load the API key.
+
+7. Install and use the following dependencies:
+   - `axios`
+   - `express`
+   - `dotenv`
+   - `cors`
+
+### Optional Bonus:
+- Create a `README.md` explaining how to set up and run the app.
+- Use `/services/youtubeApi.js` for the Axios logic and keep `/routes/channel.js` for route handling.
+- Use proper error handling and log if the request fails.
+
+### Folder Structure:
+- /routes
+  - channel.js
+- /services
+  - youtubeApi.js
+- index.js
+- .env
+- README.md
+
+rapid__api__key == 0e3a05e4c0msh3a58fa2b2bacbaep162600jsn4228aeea665f
+
+ 3. BMI Calculator Page
+Take user input: height, weight, age, and gender.
+
+Calculate and display BMI.
+
+Classify as Underweight, Healthy, or Obese.
+
+Based on the result, provide:
+
+Recommended daily calorie intake to:
+
+Gain weight
+
+Lose fat
+
+Maintain weight
+
+Simple explanation and tips for better health.
+
+ 4. Workout Planner and Tracker (AI-Powered)
+After BMI calculation, use the ChatGPT API to generate personalized workout plans.
+
+Example prompt to GPT: “Generate a weekly workout plan for a 22-year-old male with a BMI of 29 aiming to lose weight.”
+
+Show daily and weekly workout suggestions.
+
+Allow users to:
+
+Mark workouts as completed.
+
+Track progress over time (with a simple chart or checklist).
+
+🔐 5. Authentication Page (Sign Up / Login)
+Implement secure user authentication using:
+
+Email/password
+
+Optional: OAuth (Google/Facebook login)
+
+Password encryption (e.g., using bcrypt).
+
+Use JWT tokens or session-based login for maintaining sessions.
+
+Protect workout planner, tracker, and calorie counter behind login.
+
+🥗 6. Calorie Counter Page
+Let users:
+
+Set daily calorie goals.
+
+Log daily food intake with calorie value.
+
+Show:
+
+Progress bar of daily calorie consumption.
+
+History of weekly/monthly calorie logs.
+
+Tips for staying within calorie limits.
+
+ 7. Blogs Page
+Allow users to:
+
+Write and publish personal fitness blogs or tips.
+
+Read blogs from other users.
+
+Features:
+
+Blog title, content, and optional image.
+
+Like and comment functionality.
+
+Search and filter by category (e.g., “Weight Loss”, “Muscle Gain”).
+
+Tech Stack Suggestions:
+Frontend: React.js + Tailwind CSS / Bootstrap
+
+Backend: Node.js + Express.js
+
+Database: MongoDB
+
+APIs:
+
+ExerciseDB API for GIFs
+
+YouTube Data API for video suggestions
+
+OpenAI ChatGPT API for workout plans
+
+Authentication: JWT + bcrypt
+
+Optional: Chart.js or Recharts for progress visualization
