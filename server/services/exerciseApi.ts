@@ -13,91 +13,76 @@ interface ExerciseApiResponse {
 
 export class ExerciseApiService {
   private apiKey: string;
-  private baseUrl = 'https://exercisedb.p.rapidapi.com';
+  private rapidApiUrl = 'https://exercisedb.p.rapidapi.com';
+  private freeApiUrl = 'https://exercisedb-api.vercel.app/api/v1';
 
   constructor() {
     this.apiKey = process.env.RAPIDAPI_KEY || process.env.RAPID_API_KEY || '0e3a05e4c0msh3a58fa2b2bacbaep162600jsn4228aeea665f';
   }
 
-  private getHeaders() {
+  private getRapidApiHeaders() {
     return {
-      'x-rapidapi-key': this.apiKey,
-      'x-rapidapi-host': 'exercisedb.p.rapidapi.com'
+      'X-RapidAPI-Key': this.apiKey,
+      'X-RapidAPI-Host': 'exercisedb.p.rapidapi.com'
     };
   }
 
-  async fetchExercises(limit = 10, offset = 0): Promise<ExerciseApiResponse[]> {
+  private async makeRequest(rapidApiEndpoint: string, freeApiEndpoint: string, params?: any): Promise<any> {
+    // Use free API directly since RapidAPI endpoints are not working
     try {
-      const response = await axios.get(`${this.baseUrl}/exercises`, {
-        headers: this.getHeaders(),
-        params: { limit: limit.toString(), offset: offset.toString() }
-      });
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching exercises:', error);
-      throw new Error('Failed to fetch exercises from ExerciseDB API');
+      const response = await axios.get(`${this.freeApiUrl}${freeApiEndpoint}`, { params });
+      
+      // Handle response structure from free API
+      const data = response.data;
+      if (data.success && data.data) {
+        // Free API returns exercises in data.exercises array
+        if (data.data.exercises) {
+          return data.data.exercises.map((exercise: any) => ({
+            id: exercise.exerciseId,
+            name: exercise.name,
+            bodyPart: exercise.bodyParts?.[0] || 'unknown',
+            target: exercise.targetMuscles?.[0] || 'unknown',
+            equipment: exercise.equipments?.[0] || 'unknown',
+            gifUrl: exercise.gifUrl,
+            instructions: exercise.instructions,
+            secondaryMuscles: exercise.secondaryMuscles || []
+          }));
+        }
+        // For other endpoints that return different structures
+        if (Array.isArray(data.data)) {
+          return data.data;
+        }
+        return data.data;
+      }
+      return data;
+    } catch (freeApiError: any) {
+      console.error('Free ExerciseDB API failed:', freeApiError.response?.status);
+      throw new Error('Failed to fetch from ExerciseDB API');
     }
+  }
+
+  async fetchExercises(limit = 10, offset = 0): Promise<ExerciseApiResponse[]> {
+    return this.makeRequest('/exercises', '/exercises', { limit, offset });
   }
 
   async fetchExerciseById(id: string): Promise<ExerciseApiResponse> {
-    try {
-      const response = await axios.get(`${this.baseUrl}/exercises/exercise/${id}`, {
-        headers: this.getHeaders()
-      });
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching exercise by ID:', error);
-      throw new Error(`Failed to fetch exercise with ID: ${id}`);
-    }
+    return this.makeRequest(`/exercises/${id}`, `/exercises/${id}`);
   }
 
   async fetchBodyParts(): Promise<string[]> {
-    try {
-      const response = await axios.get(`${this.baseUrl}/exercises/bodyPartList`, {
-        headers: this.getHeaders()
-      });
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching body parts:', error);
-      throw new Error('Failed to fetch body parts from ExerciseDB API');
-    }
+    return this.makeRequest('/bodyPartList', '/bodyparts');
   }
 
   async fetchExercisesByBodyPart(bodyPart: string, limit = 10, offset = 0): Promise<ExerciseApiResponse[]> {
-    try {
-      const response = await axios.get(`${this.baseUrl}/exercises/bodyPart/${bodyPart}`, {
-        headers: this.getHeaders(),
-        params: { limit: limit.toString(), offset: offset.toString() }
-      });
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching exercises by body part:', error);
-      throw new Error(`Failed to fetch exercises for body part: ${bodyPart}`);
-    }
+    return this.makeRequest(`/exercises/bodyPart/${bodyPart}`, `/exercises/bodypart/${bodyPart}`, { limit, offset });
   }
 
   async fetchExercisesByEquipment(equipment: string): Promise<ExerciseApiResponse[]> {
-    try {
-      const response = await axios.get(`${this.baseUrl}/exercises/equipment/${equipment}`, {
-        headers: this.getHeaders()
-      });
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching exercises by equipment:', error);
-      throw new Error(`Failed to fetch exercises for equipment: ${equipment}`);
-    }
+    return this.makeRequest(`/exercises/equipment/${equipment}`, `/exercises/equipment/${equipment}`);
   }
 
   async fetchExercisesByTarget(target: string): Promise<ExerciseApiResponse[]> {
-    try {
-      const response = await axios.get(`${this.baseUrl}/exercises/target/${target}`, {
-        headers: this.getHeaders()
-      });
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching exercises by target:', error);
-      throw new Error(`Failed to fetch exercises for target: ${target}`);
-    }
+    return this.makeRequest(`/exercises/target/${target}`, `/exercises/target/${target}`);
   }
 }
 
