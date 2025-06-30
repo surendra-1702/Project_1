@@ -75,15 +75,14 @@ export default function Exercises() {
   });
 
   const handleSearch = () => {
-    if (!searchQuery.trim()) {
-      toast({
-        title: "Search Required",
-        description: "Please enter an exercise name to search",
-        variant: "destructive",
-      });
-      return;
-    }
     setSelectedBodyPart('');
+    // Search will automatically trigger via useQuery when searchQuery changes
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleSearch();
+    }
   };
 
   const handleBodyPartFilter = (bodyPart: string) => {
@@ -127,7 +126,7 @@ export default function Exercises() {
                   placeholder="Search exercises (e.g., push-ups, squats, deadlifts...)"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+                  onKeyDown={handleKeyPress}
                   className="pr-12 text-lg py-6 border-2 focus:border-primary"
                 />
                 <Button

@@ -158,10 +158,52 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const query = req.query.q as string;
       if (!query) {
-        return res.status(400).json({ message: "Search query is required" });
+        return res.json([]);
       }
       
-      const exercises = await storage.searchExercises(query);
+      // First search in local storage
+      let exercises = await storage.searchExercises(query);
+      
+      // If no results in local storage, fetch from API
+      if (exercises.length === 0) {
+        try {
+          // Since the API doesn't have a direct search, we'll fetch all exercises and filter
+          const apiExercises = await exerciseApiService.fetchExercises(50, 0);
+          const filteredExercises = apiExercises.filter(exercise => 
+            exercise.name.toLowerCase().includes(query.toLowerCase()) ||
+            exercise.bodyPart.toLowerCase().includes(query.toLowerCase()) ||
+            exercise.target.toLowerCase().includes(query.toLowerCase()) ||
+            exercise.equipment.toLowerCase().includes(query.toLowerCase())
+          );
+          
+          // Store filtered exercises in local storage
+          for (const apiExercise of filteredExercises) {
+            await storage.createExercise({
+              exerciseId: apiExercise.id,
+              name: apiExercise.name,
+              bodyPart: apiExercise.bodyPart,
+              target: apiExercise.target,
+              equipment: apiExercise.equipment,
+              gifUrl: apiExercise.gifUrl,
+              instructions: apiExercise.instructions
+            });
+          }
+          
+          exercises = filteredExercises.map((ex, index) => ({
+            id: index + 1,
+            exerciseId: ex.id,
+            name: ex.name,
+            bodyPart: ex.bodyPart,
+            target: ex.target,
+            equipment: ex.equipment,
+            gifUrl: ex.gifUrl,
+            instructions: ex.instructions
+          }));
+        } catch (apiError) {
+          console.error('API search failed:', apiError);
+        }
+      }
+      
       res.json(exercises);
     } catch (error: any) {
       res.status(500).json({ message: error.message });
