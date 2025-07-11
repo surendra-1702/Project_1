@@ -161,10 +161,30 @@ export default function ExerciseCard({ exercise, onAddToWorkout, onViewDetails }
     <Card className="overflow-hidden border border-gray-100 hover:shadow-xl transition-shadow">
       {/* Exercise Visualization */}
       <div className="aspect-video bg-gray-100 relative overflow-hidden">
-        {getExerciseVisualization()}
+        {exercise.gifUrl ? (
+          <div className="w-full h-full relative">
+            <img 
+              src={exercise.gifUrl} 
+              alt={exercise.name}
+              className="w-full h-full object-cover"
+              onError={(e) => {
+                // Fallback to custom visualization if GIF fails to load
+                const target = e.target as HTMLElement;
+                target.style.display = 'none';
+                const fallback = target.nextElementSibling as HTMLElement;
+                if (fallback) fallback.style.display = 'block';
+              }}
+            />
+            <div className="hidden w-full h-full">
+              {getExerciseVisualization()}
+            </div>
+          </div>
+        ) : (
+          getExerciseVisualization()
+        )}
         
         <div className="absolute top-2 right-2 bg-black bg-opacity-50 text-white px-2 py-1 rounded text-xs">
-          Exercise Demo
+          {exercise.gifUrl ? 'Exercise GIF' : 'Exercise Demo'}
         </div>
       </div>
       
