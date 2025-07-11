@@ -23,11 +23,11 @@ interface Exercise {
   id: number;
   exerciseId: string;
   name: string;
-  bodyPart: string;
-  target: string;
-  equipment: string;
-  gifUrl: string | null;
-  instructions: string[] | null;
+  bodyPart?: string;
+  target?: string;
+  equipment?: string;
+  gifUrl?: string | null;
+  instructions?: string[] | null;
 }
 
 interface YouTubeVideo {

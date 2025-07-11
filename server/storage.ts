@@ -75,6 +75,72 @@ export class MemStorage implements IStorage {
     this.blogComments = new Map();
     this.blogLikes = new Map();
     this.currentId = 1;
+    this.initializeSampleData();
+  }
+
+  private initializeSampleData() {
+    // Add some sample exercises for immediate app functionality
+    const sampleExercises = [
+      {
+        exerciseId: "push-up",
+        name: "Push-up",
+        bodyPart: "chest",
+        target: "pectorals",
+        equipment: "bodyweight",
+        gifUrl: null,
+        instructions: ["Start in a plank position with arms straight", "Lower your body until your chest nearly touches the floor", "Push yourself back up to the starting position"]
+      },
+      {
+        exerciseId: "squat",
+        name: "Squat",
+        bodyPart: "upper legs",
+        target: "quadriceps",
+        equipment: "bodyweight",
+        gifUrl: null,
+        instructions: ["Stand with feet shoulder-width apart", "Lower your body as if sitting back into a chair", "Keep your chest up and knees over your toes", "Return to starting position"]
+      },
+      {
+        exerciseId: "pull-up",
+        name: "Pull-up",
+        bodyPart: "back",
+        target: "latissimus dorsi",
+        equipment: "pull-up bar",
+        gifUrl: null,
+        instructions: ["Hang from a pull-up bar with palms facing away", "Pull your body up until your chin clears the bar", "Lower yourself back down with control"]
+      },
+      {
+        exerciseId: "plank",
+        name: "Plank",
+        bodyPart: "waist",
+        target: "abdominals",
+        equipment: "bodyweight",
+        gifUrl: null,
+        instructions: ["Start in a push-up position", "Lower onto your forearms", "Keep your body in a straight line", "Hold the position"]
+      },
+      {
+        exerciseId: "deadlift",
+        name: "Deadlift",
+        bodyPart: "back",
+        target: "spinal erectors",
+        equipment: "barbell",
+        gifUrl: null,
+        instructions: ["Stand with feet hip-width apart, barbell over mid-foot", "Bend at hips and knees to grab the bar", "Keep chest up and back straight", "Drive through heels to stand up"]
+      },
+      {
+        exerciseId: "shoulder-press",
+        name: "Shoulder Press",
+        bodyPart: "shoulders",
+        target: "deltoids",
+        equipment: "dumbbells",
+        gifUrl: null,
+        instructions: ["Stand with dumbbells at shoulder height", "Press weights overhead until arms are fully extended", "Lower weights back to shoulder height with control"]
+      }
+    ];
+
+    sampleExercises.forEach(exercise => {
+      const id = this.currentId++;
+      this.exercises.set(id, { ...exercise, id });
+    });
   }
 
   // User operations

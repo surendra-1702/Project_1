@@ -226,25 +226,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // If no exercises for this body part, fetch from API
       if (exercises.length === 0) {
-        const apiExercises = await exerciseApiService.fetchExercisesByBodyPart(bodyPart, 20, 0);
-        
-        for (const apiExercise of apiExercises) {
-          await storage.createExercise({
-            exerciseId: apiExercise.id,
-            name: apiExercise.name,
-            bodyPart: apiExercise.bodyPart,
-            target: apiExercise.target,
-            equipment: apiExercise.equipment,
-            gifUrl: apiExercise.gifUrl,
-            instructions: apiExercise.instructions
-          });
+        try {
+          const apiExercises = await exerciseApiService.fetchExercisesByBodyPart(bodyPart, 20, 0);
+          
+          for (const apiExercise of apiExercises) {
+            await storage.createExercise({
+              exerciseId: apiExercise.id,
+              name: apiExercise.name,
+              bodyPart: apiExercise.bodyPart,
+              target: apiExercise.target,
+              equipment: apiExercise.equipment,
+              gifUrl: apiExercise.gifUrl,
+              instructions: apiExercise.instructions
+            });
+          }
+          
+          exercises = await storage.getExercisesByBodyPart(bodyPart);
+        } catch (apiError) {
+          console.error(`API fetch failed for body part ${bodyPart}:`, apiError);
+          // Return empty array if API fails - user needs to provide API keys
+          res.json([]);
+          return;
         }
-        
-        exercises = await storage.getExercisesByBodyPart(bodyPart);
       }
       
       res.json(exercises);
     } catch (error: any) {
+      console.error(`Error fetching exercises for body part ${bodyPart}:`, error.message);
       res.status(500).json({ message: error.message });
     }
   });
@@ -293,8 +301,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Search query is required" });
       }
       
-      const videos = await youtubeApiService.searchVideos(query);
-      res.json(videos);
+      try {
+        const videos = await youtubeApiService.searchVideos(query);
+        res.json(videos);
+      } catch (apiError) {
+        console.error('YouTube API failed:', apiError);
+        // Return empty array if YouTube API fails - user needs to provide API keys
+        res.json([]);
+      }
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }

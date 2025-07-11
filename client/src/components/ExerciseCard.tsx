@@ -22,7 +22,7 @@ interface ExerciseCardProps {
 
 export default function ExerciseCard({ exercise, onAddToWorkout, onViewDetails }: ExerciseCardProps) {
   const getBodyPartColor = (bodyPart: string | undefined | null) => {
-    if (!bodyPart) return 'bg-gray-100 text-gray-800';
+    if (!bodyPart || typeof bodyPart !== 'string') return 'bg-gray-100 text-gray-800';
     
     const colors = {
       chest: 'bg-blue-100 text-blue-800',
@@ -35,6 +35,7 @@ export default function ExerciseCard({ exercise, onAddToWorkout, onViewDetails }
       'upper legs': 'bg-indigo-100 text-indigo-800',
       'lower legs': 'bg-indigo-100 text-indigo-800',
       cardio: 'bg-pink-100 text-pink-800',
+      waist: 'bg-yellow-100 text-yellow-800',
     };
     return colors[bodyPart.toLowerCase() as keyof typeof colors] || 'bg-gray-100 text-gray-800';
   };
@@ -46,8 +47,8 @@ export default function ExerciseCard({ exercise, onAddToWorkout, onViewDetails }
 
   // Create exercise visualization based on body part and exercise type
   const getExerciseVisualization = () => {
-    const bodyPart = exercise.bodyPart?.toLowerCase() || '';
-    const name = exercise.name?.toLowerCase() || '';
+    const bodyPart = (exercise.bodyPart && typeof exercise.bodyPart === 'string') ? exercise.bodyPart.toLowerCase() : '';
+    const name = (exercise.name && typeof exercise.name === 'string') ? exercise.name.toLowerCase() : '';
     
     // Determine exercise type and create appropriate visualization
     if (name.includes('pull-up') || name.includes('pull up')) {
