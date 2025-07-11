@@ -170,10 +170,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
           // Since the API doesn't have a direct search, we'll fetch all exercises and filter
           const apiExercises = await exerciseApiService.fetchExercises(50, 0);
           const filteredExercises = apiExercises.filter(exercise => 
-            exercise.name.toLowerCase().includes(query.toLowerCase()) ||
-            exercise.bodyPart.toLowerCase().includes(query.toLowerCase()) ||
-            exercise.target.toLowerCase().includes(query.toLowerCase()) ||
-            exercise.equipment.toLowerCase().includes(query.toLowerCase())
+            (exercise.name && exercise.name.toLowerCase().includes(query.toLowerCase())) ||
+            (exercise.bodyPart && exercise.bodyPart.toLowerCase().includes(query.toLowerCase())) ||
+            (exercise.target && exercise.target.toLowerCase().includes(query.toLowerCase())) ||
+            (exercise.equipment && exercise.equipment.toLowerCase().includes(query.toLowerCase()))
           );
           
           // Store filtered exercises in local storage

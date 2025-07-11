@@ -122,19 +122,19 @@ export class MemStorage implements IStorage {
 
   async getExercisesByBodyPart(bodyPart: string): Promise<Exercise[]> {
     return Array.from(this.exercises.values()).filter(ex => 
-      ex.bodyPart.toLowerCase() === bodyPart.toLowerCase()
+      ex.bodyPart && ex.bodyPart.toLowerCase() === bodyPart.toLowerCase()
     );
   }
 
   async getExercisesByEquipment(equipment: string): Promise<Exercise[]> {
     return Array.from(this.exercises.values()).filter(ex => 
-      ex.equipment.toLowerCase() === equipment.toLowerCase()
+      ex.equipment && ex.equipment.toLowerCase() === equipment.toLowerCase()
     );
   }
 
   async getExercisesByTarget(target: string): Promise<Exercise[]> {
     return Array.from(this.exercises.values()).filter(ex => 
-      ex.target.toLowerCase() === target.toLowerCase()
+      ex.target && ex.target.toLowerCase() === target.toLowerCase()
     );
   }
 
@@ -148,9 +148,10 @@ export class MemStorage implements IStorage {
   async searchExercises(query: string): Promise<Exercise[]> {
     const searchTerm = query.toLowerCase();
     return Array.from(this.exercises.values()).filter(ex =>
-      ex.name.toLowerCase().includes(searchTerm) ||
-      ex.bodyPart.toLowerCase().includes(searchTerm) ||
-      ex.target.toLowerCase().includes(searchTerm)
+      (ex.name && ex.name.toLowerCase().includes(searchTerm)) ||
+      (ex.bodyPart && ex.bodyPart.toLowerCase().includes(searchTerm)) ||
+      (ex.target && ex.target.toLowerCase().includes(searchTerm)) ||
+      (ex.equipment && ex.equipment.toLowerCase().includes(searchTerm))
     );
   }
 

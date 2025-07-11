@@ -7,11 +7,11 @@ interface Exercise {
   id: number;
   exerciseId: string;
   name: string;
-  bodyPart: string;
-  target: string;
-  equipment: string;
-  gifUrl: string | null;
-  instructions: string[] | null;
+  bodyPart?: string;
+  target?: string;
+  equipment?: string;
+  gifUrl?: string | null;
+  instructions?: string[] | null;
 }
 
 interface ExerciseCardProps {
@@ -21,7 +21,9 @@ interface ExerciseCardProps {
 }
 
 export default function ExerciseCard({ exercise, onAddToWorkout, onViewDetails }: ExerciseCardProps) {
-  const getBodyPartColor = (bodyPart: string) => {
+  const getBodyPartColor = (bodyPart: string | undefined | null) => {
+    if (!bodyPart) return 'bg-gray-100 text-gray-800';
+    
     const colors = {
       chest: 'bg-blue-100 text-blue-800',
       back: 'bg-green-100 text-green-800',
@@ -37,14 +39,15 @@ export default function ExerciseCard({ exercise, onAddToWorkout, onViewDetails }
     return colors[bodyPart.toLowerCase() as keyof typeof colors] || 'bg-gray-100 text-gray-800';
   };
 
-  const getTargetColor = (target: string) => {
+  const getTargetColor = (target: string | undefined | null) => {
+    if (!target) return 'bg-gray-100 text-gray-800';
     return 'bg-green-100 text-green-800';
   };
 
   // Create exercise visualization based on body part and exercise type
   const getExerciseVisualization = () => {
-    const bodyPart = exercise.bodyPart.toLowerCase();
-    const name = exercise.name.toLowerCase();
+    const bodyPart = exercise.bodyPart?.toLowerCase() || '';
+    const name = exercise.name?.toLowerCase() || '';
     
     // Determine exercise type and create appropriate visualization
     if (name.includes('pull-up') || name.includes('pull up')) {
@@ -166,16 +169,20 @@ export default function ExerciseCard({ exercise, onAddToWorkout, onViewDetails }
       
       <CardContent className="p-6">
         <h3 className="font-semibold text-lg mb-2 line-clamp-2">
-          {exercise.name}
+          {exercise.name || 'Unknown Exercise'}
         </h3>
         
         <div className="flex items-center gap-2 mb-3">
-          <Badge className={getBodyPartColor(exercise.bodyPart)}>
-            {exercise.bodyPart}
-          </Badge>
-          <Badge className={getTargetColor(exercise.target)}>
-            {exercise.target}
-          </Badge>
+          {exercise.bodyPart && (
+            <Badge className={getBodyPartColor(exercise.bodyPart)}>
+              {exercise.bodyPart}
+            </Badge>
+          )}
+          {exercise.target && (
+            <Badge className={getTargetColor(exercise.target)}>
+              {exercise.target}
+            </Badge>
+          )}
         </div>
         
         {exercise.instructions && exercise.instructions.length > 0 && (
