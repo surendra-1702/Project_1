@@ -10,6 +10,7 @@ import BMICalculator from "@/pages/BMICalculator";
 import WorkoutPlanner from "@/pages/WorkoutPlanner";
 import CalorieCounter from "@/pages/CalorieCounter";
 import Auth from "@/pages/Auth";
+import AdminDashboard from "@/pages/AdminDashboard";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -21,6 +22,7 @@ function Router() {
       <Route path="/planner" component={WorkoutPlanner} />
       <Route path="/calories" component={CalorieCounter} />
       <Route path="/auth" component={Auth} />
+      <Route path="/admin" component={AdminDashboard} />
       <Route component={NotFound} />
     </Switch>
   );

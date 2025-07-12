@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { Menu, User, LogOut } from 'lucide-react';
+import { Menu, User, LogOut, Shield } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import {
   DropdownMenu,
@@ -22,6 +23,10 @@ export default function Navigation() {
     { name: 'BMI Calculator', href: '/bmi' },
     { name: 'Workout Planner', href: '/planner' },
     { name: 'Calorie Counter', href: '/calories' },
+  ];
+
+  const adminNavigation = [
+    { name: 'Admin Dashboard', href: '/admin', icon: Shield },
   ];
 
   const isActive = (href: string) => {
@@ -55,6 +60,21 @@ export default function Navigation() {
                     }`}
                   >
                     {item.name}
+                  </span>
+                </Link>
+              ))}
+              {user?.role === 'admin' && adminNavigation.map((item) => (
+                <Link key={item.name} href={item.href}>
+                  <span
+                    className={`px-3 py-2 text-sm font-medium cursor-pointer transition-colors flex items-center gap-2 ${
+                      isActive(item.href)
+                        ? 'text-primary'
+                        : 'text-gray-700 hover:text-primary'
+                    }`}
+                  >
+                    <item.icon className="h-4 w-4" />
+                    {item.name}
+                    <Badge variant="secondary" className="text-xs">Admin</Badge>
                   </span>
                 </Link>
               ))}
@@ -118,11 +138,32 @@ export default function Navigation() {
                     </Link>
                   ))}
                   
+                  {user?.role === 'admin' && adminNavigation.map((item) => (
+                    <Link
+                      key={item.name}
+                      href={item.href}
+                      onClick={() => setMobileOpen(false)}
+                    >
+                      <span className={`block px-3 py-2 text-base font-medium cursor-pointer transition-colors flex items-center gap-2 ${
+                        isActive(item.href)
+                          ? 'text-primary'
+                          : 'text-gray-700 hover:text-primary'
+                      }`}>
+                        <item.icon className="h-4 w-4" />
+                        {item.name}
+                        <Badge variant="secondary" className="text-xs">Admin</Badge>
+                      </span>
+                    </Link>
+                  ))}
+                  
                   <div className="border-t pt-4">
                     {user ? (
                       <div className="space-y-2">
                         <div className="px-3 py-2 text-sm text-gray-600">
                           Welcome, {user.firstName || user.username}
+                          {user.role === 'admin' && (
+                            <Badge variant="default" className="ml-2 text-xs">Admin</Badge>
+                          )}
                         </div>
                         <Button
                           variant="ghost"

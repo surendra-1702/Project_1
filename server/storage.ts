@@ -40,6 +40,15 @@ export interface IStorage {
   updateFoodEntry(id: number, updates: Partial<InsertFoodEntry>): Promise<FoodEntry | undefined>;
   deleteFoodEntry(id: number): Promise<boolean>;
 
+  // Admin operations
+  getAllUsers(): Promise<User[]>;
+  getUserStats(): Promise<{
+    totalUsers: number;
+    activeUsers: number;
+    usersByGoal: Record<string, number>;
+    recentLogins: User[];
+  }>;
+
 
 }
 
@@ -68,6 +77,23 @@ export class MemStorage implements IStorage {
     // In production, these would be properly hashed
     const sampleUsers = [
       {
+        username: 'admin',
+        email: 'admin@fittrackpro.com',
+        password: '$2b$10$dhVWpqhP0mrBxOk8NhvGJuHl8ma3enI10vVGpBcXfm6DpKOO9.8UW', // "password123" hashed
+        firstName: 'Admin',
+        lastName: 'User',
+        age: null,
+        height: null,
+        weight: null,
+        gender: null,
+        activityLevel: null,
+        fitnessGoal: null,
+        dailyCalorieGoal: null,
+        role: 'admin',
+        lastLoginAt: new Date(),
+        createdAt: new Date()
+      },
+      {
         username: 'testuser',
         email: 'test@example.com',
         password: '$2b$10$dhVWpqhP0mrBxOk8NhvGJuHl8ma3enI10vVGpBcXfm6DpKOO9.8UW', // "password123" hashed
@@ -77,9 +103,11 @@ export class MemStorage implements IStorage {
         height: 175,
         weight: 70,
         gender: 'male',
-        activityLevel: 'moderately_active',
-        fitnessGoal: 'muscle_gain',
+        activityLevel: 'moderate',
+        fitnessGoal: 'muscle-gain',
         dailyCalorieGoal: 2500,
+        role: 'user',
+        lastLoginAt: new Date(),
         createdAt: new Date()
       },
       {
@@ -93,8 +121,44 @@ export class MemStorage implements IStorage {
         weight: 60,
         gender: 'female',
         activityLevel: 'active',
-        fitnessGoal: 'weight_loss',
+        fitnessGoal: 'weight-loss',
         dailyCalorieGoal: 2000,
+        role: 'user',
+        lastLoginAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), // 2 days ago
+        createdAt: new Date()
+      },
+      {
+        username: 'mike',
+        email: 'mike@example.com',
+        password: '$2b$10$dhVWpqhP0mrBxOk8NhvGJuHl8ma3enI10vVGpBcXfm6DpKOO9.8UW',
+        firstName: 'Mike',
+        lastName: 'Johnson',
+        age: 32,
+        height: 185,
+        weight: 85,
+        gender: 'male',
+        activityLevel: 'very-active',
+        fitnessGoal: 'strength',
+        dailyCalorieGoal: 3000,
+        role: 'user',
+        lastLoginAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), // 5 days ago
+        createdAt: new Date()
+      },
+      {
+        username: 'sarah',
+        email: 'sarah@example.com',
+        password: '$2b$10$dhVWpqhP0mrBxOk8NhvGJuHl8ma3enI10vVGpBcXfm6DpKOO9.8UW',
+        firstName: 'Sarah',
+        lastName: 'Davis',
+        age: 26,
+        height: 168,
+        weight: 62,
+        gender: 'female',
+        activityLevel: 'moderate',
+        fitnessGoal: 'endurance',
+        dailyCalorieGoal: 2200,
+        role: 'user',
+        lastLoginAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000), // 10 days ago (inactive)
         createdAt: new Date()
       }
     ];
@@ -343,6 +407,55 @@ export class MemStorage implements IStorage {
     return this.foodEntries.delete(id);
   }
 
+  // Admin operations
+  async getAllUsers(): Promise<User[]> {
+    return Array.from(this.users.values()).map(user => ({
+      ...user,
+      password: '[HIDDEN]' // Don't expose passwords to admin
+    }));
+  }
+
+  async getUserStats(): Promise<{
+    totalUsers: number;
+    activeUsers: number;
+    usersByGoal: Record<string, number>;
+    recentLogins: User[];
+  }> {
+    const allUsers = Array.from(this.users.values());
+    const totalUsers = allUsers.length;
+    
+    // Consider users who logged in within the last 7 days as active
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    const activeUsers = allUsers.filter(user => 
+      user.lastLoginAt && new Date(user.lastLoginAt) > sevenDaysAgo
+    ).length;
+
+    // Group users by fitness goal
+    const usersByGoal: Record<string, number> = {};
+    allUsers.forEach(user => {
+      if (user.fitnessGoal) {
+        usersByGoal[user.fitnessGoal] = (usersByGoal[user.fitnessGoal] || 0) + 1;
+      }
+    });
+
+    // Get recent logins (last 10 users who logged in)
+    const recentLogins = allUsers
+      .filter(user => user.lastLoginAt)
+      .sort((a, b) => new Date(b.lastLoginAt!).getTime() - new Date(a.lastLoginAt!).getTime())
+      .slice(0, 10)
+      .map(user => ({
+        ...user,
+        password: '[HIDDEN]' // Don't expose passwords
+      }));
+
+    return {
+      totalUsers,
+      activeUsers,
+      usersByGoal,
+      recentLogins
+    };
+  }
 
 }
 

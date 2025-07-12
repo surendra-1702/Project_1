@@ -29,6 +29,14 @@ const authenticateToken = (req: any, res: any, next: any) => {
   });
 };
 
+// Middleware to check admin role
+const requireAdmin = (req: any, res: any, next: any) => {
+  if (req.user.role !== 'admin') {
+    return res.status(403).json({ message: 'Admin access required' });
+  }
+  next();
+};
+
 export async function registerRoutes(app: Express): Promise<Server> {
   
   // ============= AUTH ROUTES =============
@@ -58,7 +66,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Generate JWT token
       const token = jwt.sign(
-        { userId: user.id, email: user.email },
+        { userId: user.id, email: user.email, role: user.role },
         JWT_SECRET,
         { expiresIn: '7d' }
       );
@@ -89,8 +97,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ message: "Invalid email or password" });
       }
 
+      // Update last login time
+      await storage.updateUser(user.id, { lastLoginAt: new Date() });
+
       const token = jwt.sign(
-        { userId: user.id, email: user.email },
+        { userId: user.id, email: user.email, role: user.role },
         JWT_SECRET,
         { expiresIn: '7d' }
       );
@@ -709,7 +720,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // ============= ADMIN ROUTES =============
+  
+  app.get("/api/admin/users", authenticateToken, requireAdmin, async (req, res) => {
+    try {
+      const users = await storage.getAllUsers();
+      res.json(users);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
 
+  app.get("/api/admin/stats", authenticateToken, requireAdmin, async (req, res) => {
+    try {
+      const stats = await storage.getUserStats();
+      res.json(stats);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
 
   const httpServer = createServer(app);
   return httpServer;

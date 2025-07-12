@@ -15,6 +15,8 @@ interface User {
   activityLevel?: string;
   fitnessGoal?: string;
   dailyCalorieGoal?: number;
+  role?: string;
+  lastLoginAt?: Date;
 }
 
 interface AuthContextType {

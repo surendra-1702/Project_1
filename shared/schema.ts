@@ -16,6 +16,8 @@ export const users = pgTable("users", {
   activityLevel: text("activity_level"), // 'sedentary' | 'light' | 'moderate' | 'active' | 'very-active'
   fitnessGoal: text("fitness_goal"), // 'weight-loss' | 'muscle-gain' | 'endurance' | 'strength' | 'general-fitness'
   dailyCalorieGoal: integer("daily_calorie_goal"),
+  role: text("role").default("user").notNull(), // 'admin' | 'user'
+  lastLoginAt: timestamp("last_login_at"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
