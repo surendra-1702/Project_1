@@ -119,6 +119,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.put("/api/users/:id", authenticateToken, async (req, res) => {
+    try {
+      const userId = parseInt(req.params.id);
+      
+      // Ensure user can only update their own profile
+      if (req.user.userId !== userId) {
+        return res.status(403).json({ message: "You can only update your own profile" });
+      }
+
+      const updates = req.body;
+      const updatedUser = await storage.updateUser(userId, updates);
+      
+      if (!updatedUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      const { password, ...userWithoutPassword } = updatedUser;
+      res.json(userWithoutPassword);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
   // ============= EXERCISE ROUTES =============
   
   app.get("/api/exercises", async (req, res) => {

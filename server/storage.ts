@@ -79,6 +79,46 @@ export class MemStorage implements IStorage {
   }
 
   private initializeSampleData() {
+    // Add sample users for testing (using a simple password for demo)
+    // In production, these would be properly hashed
+    const sampleUsers = [
+      {
+        username: 'testuser',
+        email: 'test@example.com',
+        password: '$2b$10$dhVWpqhP0mrBxOk8NhvGJuHl8ma3enI10vVGpBcXfm6DpKOO9.8UW', // "password123" hashed
+        firstName: 'Test',
+        lastName: 'User',
+        age: 25,
+        height: 175,
+        weight: 70,
+        gender: 'male',
+        activityLevel: 'moderately_active',
+        fitnessGoal: 'muscle_gain',
+        dailyCalorieGoal: 2500,
+        createdAt: new Date()
+      },
+      {
+        username: 'jane',
+        email: 'jane@example.com',
+        password: '$2b$10$dhVWpqhP0mrBxOk8NhvGJuHl8ma3enI10vVGpBcXfm6DpKOO9.8UW', // "password123" hashed
+        firstName: 'Jane',
+        lastName: 'Smith',
+        age: 28,
+        height: 165,
+        weight: 60,
+        gender: 'female',
+        activityLevel: 'active',
+        fitnessGoal: 'weight_loss',
+        dailyCalorieGoal: 2000,
+        createdAt: new Date()
+      }
+    ];
+
+    sampleUsers.forEach(user => {
+      const id = this.currentId++;
+      this.users.set(id, { ...user, id });
+    });
+
     // Add some sample exercises for immediate app functionality
     const sampleExercises = [
       {
