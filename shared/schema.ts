@@ -117,6 +117,8 @@ export const insertWorkoutSessionSchema = createInsertSchema(workoutSessions).om
 
 export const insertFoodEntrySchema = createInsertSchema(foodEntries).omit({
   id: true,
+}).extend({
+  date: z.coerce.date()
 });
 
 export const insertBlogSchema = createInsertSchema(blogs).omit({

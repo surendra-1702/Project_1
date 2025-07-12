@@ -663,6 +663,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const entry = await storage.createFoodEntry(entryData);
       res.status(201).json(entry);
     } catch (error: any) {
+      console.error('Food entry creation error:', error);
       res.status(400).json({ message: error.message });
     }
   });
