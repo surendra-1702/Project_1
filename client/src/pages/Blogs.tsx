@@ -422,27 +422,30 @@ export default function Blogs() {
           {selectedBlog && (
             <>
               <DialogHeader>
-                <DialogTitle className="text-2xl font-bold mb-2">{selectedBlog.title}</DialogTitle>
-                <DialogDescription>
-                  <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600 mb-4">
-                    <div className="flex items-center gap-1">
-                      <User className="w-4 h-4" />
-                      <span>{getAuthorInfo(selectedBlog).name}</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Calendar className="w-4 h-4" />
-                      <span>{new Date(selectedBlog.createdAt).toLocaleDateString()}</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Clock className="w-4 h-4" />
-                      <span>{Math.max(1, Math.ceil(selectedBlog.content.length / 200))} min read</span>
-                    </div>
-                    <div className={`px-2 py-1 rounded-full text-xs font-medium ${getCategoryColor(selectedBlog.category)}`}>
-                      {categories.find(cat => cat.value === selectedBlog.category)?.label || selectedBlog.category}
-                    </div>
-                  </div>
+                <DialogTitle className="text-2xl font-bold mb-4">{selectedBlog.title}</DialogTitle>
+                <DialogDescription className="text-sm text-gray-600">
+                  Read the full blog post below with detailed content and insights.
                 </DialogDescription>
               </DialogHeader>
+
+              {/* Blog Metadata */}
+              <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600 mb-6">
+                <div className="flex items-center gap-1">
+                  <User className="w-4 h-4" />
+                  <span>{getAuthorInfo(selectedBlog).name}</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Calendar className="w-4 h-4" />
+                  <span>{new Date(selectedBlog.createdAt).toLocaleDateString()}</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Clock className="w-4 h-4" />
+                  <span>{Math.max(1, Math.ceil(selectedBlog.content.length / 200))} min read</span>
+                </div>
+                <div className={`px-2 py-1 rounded-full text-xs font-medium ${getCategoryColor(selectedBlog.category)}`}>
+                  {categories.find(cat => cat.value === selectedBlog.category)?.label || selectedBlog.category}
+                </div>
+              </div>
 
               {/* Blog Image */}
               <div className={`aspect-video bg-gradient-to-br ${getCategoryGradient(selectedBlog.category)} relative overflow-hidden rounded-lg mb-6`}>
@@ -463,9 +466,12 @@ export default function Blogs() {
               </div>
 
               {/* Blog Content */}
-              <div className="prose prose-lg max-w-none">
-                <div className="whitespace-pre-wrap text-gray-800 leading-relaxed">
-                  {selectedBlog.content}
+              <div className="bg-white rounded-lg p-6 border border-gray-200">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Blog Content</h3>
+                <div className="prose prose-lg max-w-none">
+                  <div className="whitespace-pre-wrap text-gray-800 leading-relaxed text-base">
+                    {selectedBlog.content}
+                  </div>
                 </div>
               </div>
 
