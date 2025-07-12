@@ -73,100 +73,27 @@ export class MemStorage implements IStorage {
   }
 
   private initializeSampleData() {
-    // Add sample users for testing (using a simple password for demo)
-    // In production, these would be properly hashed
-    const sampleUsers = [
-      {
-        username: 'admin',
-        email: 'admin@fittrackpro.com',
-        password: '$2b$10$VH7RYhU41xfkINQ3ctKrFuu83obiSGHmm697O0C/BkRXt6UPl5Q46', // "admin123" hashed
-        firstName: 'Admin',
-        lastName: 'User',
-        age: null,
-        height: null,
-        weight: null,
-        gender: null,
-        activityLevel: null,
-        fitnessGoal: null,
-        dailyCalorieGoal: null,
-        role: 'admin',
-        lastLoginAt: new Date(),
-        createdAt: new Date()
-      },
-      {
-        username: 'testuser',
-        email: 'test@example.com',
-        password: '$2b$10$dhVWpqhP0mrBxOk8NhvGJuHl8ma3enI10vVGpBcXfm6DpKOO9.8UW', // "password123" hashed
-        firstName: 'Test',
-        lastName: 'User',
-        age: 25,
-        height: 175,
-        weight: 70,
-        gender: 'male',
-        activityLevel: 'moderate',
-        fitnessGoal: 'muscle-gain',
-        dailyCalorieGoal: 2500,
-        role: 'user',
-        lastLoginAt: new Date(),
-        createdAt: new Date()
-      },
-      {
-        username: 'jane',
-        email: 'jane@example.com',
-        password: '$2b$10$dhVWpqhP0mrBxOk8NhvGJuHl8ma3enI10vVGpBcXfm6DpKOO9.8UW', // "password123" hashed
-        firstName: 'Jane',
-        lastName: 'Smith',
-        age: 28,
-        height: 165,
-        weight: 60,
-        gender: 'female',
-        activityLevel: 'active',
-        fitnessGoal: 'weight-loss',
-        dailyCalorieGoal: 2000,
-        role: 'user',
-        lastLoginAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), // 2 days ago
-        createdAt: new Date()
-      },
-      {
-        username: 'mike',
-        email: 'mike@example.com',
-        password: '$2b$10$dhVWpqhP0mrBxOk8NhvGJuHl8ma3enI10vVGpBcXfm6DpKOO9.8UW',
-        firstName: 'Mike',
-        lastName: 'Johnson',
-        age: 32,
-        height: 185,
-        weight: 85,
-        gender: 'male',
-        activityLevel: 'very-active',
-        fitnessGoal: 'strength',
-        dailyCalorieGoal: 3000,
-        role: 'user',
-        lastLoginAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), // 5 days ago
-        createdAt: new Date()
-      },
-      {
-        username: 'sarah',
-        email: 'sarah@example.com',
-        password: '$2b$10$dhVWpqhP0mrBxOk8NhvGJuHl8ma3enI10vVGpBcXfm6DpKOO9.8UW',
-        firstName: 'Sarah',
-        lastName: 'Davis',
-        age: 26,
-        height: 168,
-        weight: 62,
-        gender: 'female',
-        activityLevel: 'moderate',
-        fitnessGoal: 'endurance',
-        dailyCalorieGoal: 2200,
-        role: 'user',
-        lastLoginAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000), // 10 days ago (inactive)
-        createdAt: new Date()
-      }
-    ];
+    // Add only the admin user - real users will register themselves
+    const adminUser = {
+      username: 'admin',
+      email: 'admin@fittrackpro.com',
+      password: '$2b$10$VH7RYhU41xfkINQ3ctKrFuu83obiSGHmm697O0C/BkRXt6UPl5Q46', // "admin123" hashed
+      firstName: 'Admin',
+      lastName: 'User',
+      age: null,
+      height: null,
+      weight: null,
+      gender: null,
+      activityLevel: null,
+      fitnessGoal: null,
+      dailyCalorieGoal: null,
+      role: 'admin',
+      lastLoginAt: new Date(),
+      createdAt: new Date()
+    };
 
-    sampleUsers.forEach(user => {
-      const id = this.currentId++;
-      this.users.set(id, { ...user, id });
-    });
+    const adminId = this.currentId++;
+    this.users.set(adminId, { ...adminUser, id: adminId });
 
     // Add some sample exercises for immediate app functionality
     const sampleExercises = [
