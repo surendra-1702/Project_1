@@ -6,8 +6,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Loader2, PenTool, Search, Heart, MessageCircle, Share2, Eye } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '@/components/ui/dialog';
+import { Loader2, PenTool, Search, Heart, MessageCircle, Share2, Eye, Clock, User, Calendar } from 'lucide-react';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import BlogCard from '@/components/BlogCard';
@@ -44,6 +44,8 @@ export default function Blogs() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [showReadDialog, setShowReadDialog] = useState(false);
+  const [selectedBlog, setSelectedBlog] = useState<Blog | null>(null);
   const [newBlog, setNewBlog] = useState({
     title: '',
     content: '',
@@ -187,10 +189,11 @@ export default function Blogs() {
   };
 
   const handleRead = (blogId: number) => {
-    toast({
-      title: "Reading View",
-      description: "Full blog reading view coming soon!",
-    });
+    const blog = blogs.find((b: Blog) => b.id === blogId);
+    if (blog) {
+      setSelectedBlog(blog);
+      setShowReadDialog(true);
+    }
   };
 
   const filteredBlogs = blogs.filter((blog: Blog) => {
@@ -413,7 +416,120 @@ export default function Blogs() {
         </div>
       </section>
 
+      {/* Blog Reading Dialog */}
+      <Dialog open={showReadDialog} onOpenChange={setShowReadDialog}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          {selectedBlog && (
+            <>
+              <DialogHeader>
+                <DialogTitle className="text-2xl font-bold mb-2">{selectedBlog.title}</DialogTitle>
+                <DialogDescription>
+                  <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600 mb-4">
+                    <div className="flex items-center gap-1">
+                      <User className="w-4 h-4" />
+                      <span>{getAuthorInfo(selectedBlog).name}</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Calendar className="w-4 h-4" />
+                      <span>{new Date(selectedBlog.createdAt).toLocaleDateString()}</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Clock className="w-4 h-4" />
+                      <span>{Math.max(1, Math.ceil(selectedBlog.content.length / 200))} min read</span>
+                    </div>
+                    <div className={`px-2 py-1 rounded-full text-xs font-medium ${getCategoryColor(selectedBlog.category)}`}>
+                      {categories.find(cat => cat.value === selectedBlog.category)?.label || selectedBlog.category}
+                    </div>
+                  </div>
+                </DialogDescription>
+              </DialogHeader>
+
+              {/* Blog Image */}
+              <div className={`aspect-video bg-gradient-to-br ${getCategoryGradient(selectedBlog.category)} relative overflow-hidden rounded-lg mb-6`}>
+                {selectedBlog.imageUrl ? (
+                  <img
+                    src={selectedBlog.imageUrl}
+                    alt={selectedBlog.title}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="flex items-center justify-center h-full">
+                    <div className="text-center text-white">
+                      <Eye className="w-12 h-12 mx-auto mb-2 opacity-60" />
+                      <p className="text-lg font-medium opacity-80">{selectedBlog.title}</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Blog Content */}
+              <div className="prose prose-lg max-w-none">
+                <div className="whitespace-pre-wrap text-gray-800 leading-relaxed">
+                  {selectedBlog.content}
+                </div>
+              </div>
+
+              {/* Blog Actions */}
+              <div className="flex items-center justify-between pt-6 mt-6 border-t">
+                <div className="flex items-center gap-4">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => handleLike(selectedBlog.id)}
+                    className="flex items-center gap-2"
+                  >
+                    <Heart className="w-4 h-4" />
+                    Like ({selectedBlog.likes || 0})
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => handleComment(selectedBlog.id)}
+                    className="flex items-center gap-2"
+                  >
+                    <MessageCircle className="w-4 h-4" />
+                    Comment
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => handleShare(selectedBlog.id)}
+                    className="flex items-center gap-2"
+                  >
+                    <Share2 className="w-4 h-4" />
+                    Share
+                  </Button>
+                </div>
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
+
       <Footer />
     </div>
   );
+
+  // Helper functions for category styling
+  function getCategoryColor(category: string) {
+    const colors = {
+      'weight-loss': 'bg-red-100 text-red-800',
+      'muscle-gain': 'bg-blue-100 text-blue-800',
+      'nutrition': 'bg-green-100 text-green-800',
+      'motivation': 'bg-orange-100 text-orange-800',
+      'beginner-tips': 'bg-purple-100 text-purple-800',
+    };
+    return colors[category as keyof typeof colors] || 'bg-gray-100 text-gray-800';
+  }
+
+  function getCategoryGradient(category: string) {
+    const gradients = {
+      'weight-loss': 'from-red-500 to-pink-600',
+      'muscle-gain': 'from-blue-500 to-purple-600',
+      'nutrition': 'from-green-500 to-teal-600',
+      'motivation': 'from-orange-500 to-red-600',
+      'beginner-tips': 'from-purple-500 to-indigo-600',
+    };
+    return gradients[category as keyof typeof gradients] || 'from-gray-500 to-gray-600';
+  }
 }
