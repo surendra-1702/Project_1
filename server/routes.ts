@@ -7,7 +7,7 @@ import { openaiService } from "./services/openaiService";
 import { foodApiService } from "./services/foodApi";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { insertUserSchema, insertWorkoutPlanSchema, insertWorkoutSessionSchema, insertFoodEntrySchema, insertBlogSchema, insertBlogCommentSchema } from "@shared/schema";
+import { insertUserSchema, insertWorkoutPlanSchema, insertWorkoutSessionSchema, insertFoodEntrySchema } from "@shared/schema";
 
 const JWT_SECRET = process.env.JWT_SECRET || "fitness-app-secret-key";
 
@@ -709,138 +709,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // ============= BLOG ROUTES =============
-  
-  app.get("/api/blogs", async (req, res) => {
-    try {
-      const limit = parseInt(req.query.limit as string) || 20;
-      const offset = parseInt(req.query.offset as string) || 0;
-      const category = req.query.category as string;
-      
-      const blogs = await storage.getBlogs(limit, offset, category);
-      res.json(blogs);
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
-    }
-  });
 
-  app.get("/api/blogs/:id", async (req, res) => {
-    try {
-      const blogId = parseInt(req.params.id);
-      const blog = await storage.getBlog(blogId);
-      
-      if (!blog) {
-        return res.status(404).json({ message: "Blog not found" });
-      }
-      
-      res.json(blog);
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
-    }
-  });
-
-  app.post("/api/blogs", authenticateToken, async (req, res) => {
-    try {
-      const blogData = insertBlogSchema.parse({
-        ...req.body,
-        userId: req.user.userId
-      });
-      
-      const blog = await storage.createBlog(blogData);
-      res.status(201).json(blog);
-    } catch (error: any) {
-      res.status(400).json({ message: error.message });
-    }
-  });
-
-  app.put("/api/blogs/:id", authenticateToken, async (req, res) => {
-    try {
-      const blogId = parseInt(req.params.id);
-      const updates = req.body;
-      
-      const blog = await storage.getBlog(blogId);
-      if (!blog || blog.userId !== req.user.userId) {
-        return res.status(404).json({ message: "Blog not found" });
-      }
-      
-      const updatedBlog = await storage.updateBlog(blogId, updates);
-      res.json(updatedBlog);
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
-    }
-  });
-
-  app.delete("/api/blogs/:id", authenticateToken, async (req, res) => {
-    try {
-      const blogId = parseInt(req.params.id);
-      
-      const blog = await storage.getBlog(blogId);
-      if (!blog || blog.userId !== req.user.userId) {
-        return res.status(404).json({ message: "Blog not found" });
-      }
-      
-      await storage.deleteBlog(blogId);
-      res.json({ message: "Blog deleted successfully" });
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
-    }
-  });
-
-  app.post("/api/blogs/:id/like", authenticateToken, async (req, res) => {
-    try {
-      const blogId = parseInt(req.params.id);
-      const liked = await storage.likeBlog(blogId, req.user.userId);
-      
-      if (!liked) {
-        return res.status(400).json({ message: "Blog already liked or not found" });
-      }
-      
-      res.json({ message: "Blog liked successfully" });
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
-    }
-  });
-
-  app.delete("/api/blogs/:id/like", authenticateToken, async (req, res) => {
-    try {
-      const blogId = parseInt(req.params.id);
-      const unliked = await storage.unlikeBlog(blogId, req.user.userId);
-      
-      if (!unliked) {
-        return res.status(400).json({ message: "Blog not liked or not found" });
-      }
-      
-      res.json({ message: "Blog unliked successfully" });
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
-    }
-  });
-
-  app.get("/api/blogs/:id/comments", async (req, res) => {
-    try {
-      const blogId = parseInt(req.params.id);
-      const comments = await storage.getBlogComments(blogId);
-      res.json(comments);
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
-    }
-  });
-
-  app.post("/api/blogs/:id/comments", authenticateToken, async (req, res) => {
-    try {
-      const blogId = parseInt(req.params.id);
-      const commentData = insertBlogCommentSchema.parse({
-        ...req.body,
-        blogId,
-        userId: req.user.userId
-      });
-      
-      const comment = await storage.createBlogComment(commentData);
-      res.status(201).json(comment);
-    } catch (error: any) {
-      res.status(400).json({ message: error.message });
-    }
-  });
 
   const httpServer = createServer(app);
   return httpServer;

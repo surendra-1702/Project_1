@@ -22,7 +22,6 @@ export default function Navigation() {
     { name: 'BMI Calculator', href: '/bmi' },
     { name: 'Workout Planner', href: '/planner' },
     { name: 'Calorie Counter', href: '/calories' },
-    { name: 'Blogs', href: '/blogs' },
   ];
 
   const isActive = (href: string) => {

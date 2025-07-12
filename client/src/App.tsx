@@ -9,7 +9,6 @@ import Exercises from "@/pages/Exercises";
 import BMICalculator from "@/pages/BMICalculator";
 import WorkoutPlanner from "@/pages/WorkoutPlanner";
 import CalorieCounter from "@/pages/CalorieCounter";
-import Blogs from "@/pages/Blogs";
 import Auth from "@/pages/Auth";
 import NotFound from "@/pages/not-found";
 
@@ -21,7 +20,6 @@ function Router() {
       <Route path="/bmi" component={BMICalculator} />
       <Route path="/planner" component={WorkoutPlanner} />
       <Route path="/calories" component={CalorieCounter} />
-      <Route path="/blogs" component={Blogs} />
       <Route path="/auth" component={Auth} />
       <Route component={NotFound} />
     </Switch>

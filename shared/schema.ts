@@ -68,33 +68,7 @@ export const foodEntries = pgTable("food_entries", {
   fat: real("fat"), // in grams
 });
 
-export const blogs = pgTable("blogs", {
-  id: serial("id").primaryKey(),
-  userId: integer("user_id").references(() => users.id).notNull(),
-  title: text("title").notNull(),
-  content: text("content").notNull(),
-  excerpt: text("excerpt"),
-  category: text("category").notNull(),
-  imageUrl: text("image_url"),
-  published: boolean("published").default(false),
-  likes: integer("likes").default(0),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
-});
 
-export const blogComments = pgTable("blog_comments", {
-  id: serial("id").primaryKey(),
-  blogId: integer("blog_id").references(() => blogs.id).notNull(),
-  userId: integer("user_id").references(() => users.id).notNull(),
-  content: text("content").notNull(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-});
-
-export const blogLikes = pgTable("blog_likes", {
-  id: serial("id").primaryKey(),
-  blogId: integer("blog_id").references(() => blogs.id).notNull(),
-  userId: integer("user_id").references(() => users.id).notNull(),
-});
 
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).omit({
@@ -121,17 +95,7 @@ export const insertFoodEntrySchema = createInsertSchema(foodEntries).omit({
   date: z.coerce.date()
 });
 
-export const insertBlogSchema = createInsertSchema(blogs).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
-  likes: true,
-});
 
-export const insertBlogCommentSchema = createInsertSchema(blogComments).omit({
-  id: true,
-  createdAt: true,
-});
 
 // Types
 export type User = typeof users.$inferSelect;
@@ -144,7 +108,3 @@ export type WorkoutSession = typeof workoutSessions.$inferSelect;
 export type InsertWorkoutSession = z.infer<typeof insertWorkoutSessionSchema>;
 export type FoodEntry = typeof foodEntries.$inferSelect;
 export type InsertFoodEntry = z.infer<typeof insertFoodEntrySchema>;
-export type Blog = typeof blogs.$inferSelect;
-export type InsertBlog = z.infer<typeof insertBlogSchema>;
-export type BlogComment = typeof blogComments.$inferSelect;
-export type InsertBlogComment = z.infer<typeof insertBlogCommentSchema>;

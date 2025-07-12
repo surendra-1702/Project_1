@@ -1,9 +1,8 @@
 import { 
-  users, exercises, workoutPlans, workoutSessions, foodEntries, blogs, blogComments, blogLikes,
+  users, exercises, workoutPlans, workoutSessions, foodEntries,
   type User, type InsertUser, type Exercise, type InsertExercise, 
   type WorkoutPlan, type InsertWorkoutPlan, type WorkoutSession, type InsertWorkoutSession,
-  type FoodEntry, type InsertFoodEntry, type Blog, type InsertBlog,
-  type BlogComment, type InsertBlogComment
+  type FoodEntry, type InsertFoodEntry
 } from "@shared/schema";
 
 export interface IStorage {
@@ -41,17 +40,7 @@ export interface IStorage {
   updateFoodEntry(id: number, updates: Partial<InsertFoodEntry>): Promise<FoodEntry | undefined>;
   deleteFoodEntry(id: number): Promise<boolean>;
 
-  // Blog operations
-  getBlogs(limit?: number, offset?: number, category?: string): Promise<Blog[]>;
-  getBlog(id: number): Promise<Blog | undefined>;
-  getBlogsByUser(userId: number): Promise<Blog[]>;
-  createBlog(blog: InsertBlog): Promise<Blog>;
-  updateBlog(id: number, updates: Partial<InsertBlog>): Promise<Blog | undefined>;
-  deleteBlog(id: number): Promise<boolean>;
-  likeBlog(blogId: number, userId: number): Promise<boolean>;
-  unlikeBlog(blogId: number, userId: number): Promise<boolean>;
-  getBlogComments(blogId: number): Promise<BlogComment[]>;
-  createBlogComment(comment: InsertBlogComment): Promise<BlogComment>;
+
 }
 
 export class MemStorage implements IStorage {
@@ -60,9 +49,7 @@ export class MemStorage implements IStorage {
   private workoutPlans: Map<number, WorkoutPlan>;
   private workoutSessions: Map<number, WorkoutSession>;
   private foodEntries: Map<number, FoodEntry>;
-  private blogs: Map<number, Blog>;
-  private blogComments: Map<number, BlogComment>;
-  private blogLikes: Map<string, boolean>; // "blogId:userId" -> true
+
   private currentId: number;
 
   constructor() {
@@ -71,9 +58,7 @@ export class MemStorage implements IStorage {
     this.workoutPlans = new Map();
     this.workoutSessions = new Map();
     this.foodEntries = new Map();
-    this.blogs = new Map();
-    this.blogComments = new Map();
-    this.blogLikes = new Map();
+
     this.currentId = 1;
     this.initializeSampleData();
   }
@@ -358,96 +343,7 @@ export class MemStorage implements IStorage {
     return this.foodEntries.delete(id);
   }
 
-  // Blog operations
-  async getBlogs(limit = 20, offset = 0, category?: string): Promise<Blog[]> {
-    let allBlogs = Array.from(this.blogs.values()).filter(blog => blog.published);
-    
-    if (category) {
-      allBlogs = allBlogs.filter(blog => blog.category === category);
-    }
-    
-    allBlogs.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-    return allBlogs.slice(offset, offset + limit);
-  }
 
-  async getBlog(id: number): Promise<Blog | undefined> {
-    return this.blogs.get(id);
-  }
-
-  async getBlogsByUser(userId: number): Promise<Blog[]> {
-    return Array.from(this.blogs.values())
-      .filter(blog => blog.userId === userId)
-      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-  }
-
-  async createBlog(insertBlog: InsertBlog): Promise<Blog> {
-    const id = this.currentId++;
-    const blog: Blog = { 
-      ...insertBlog, 
-      id, 
-      likes: 0,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    };
-    this.blogs.set(id, blog);
-    return blog;
-  }
-
-  async updateBlog(id: number, updates: Partial<InsertBlog>): Promise<Blog | undefined> {
-    const blog = this.blogs.get(id);
-    if (!blog) return undefined;
-    
-    const updatedBlog = { ...blog, ...updates, updatedAt: new Date() };
-    this.blogs.set(id, updatedBlog);
-    return updatedBlog;
-  }
-
-  async deleteBlog(id: number): Promise<boolean> {
-    return this.blogs.delete(id);
-  }
-
-  async likeBlog(blogId: number, userId: number): Promise<boolean> {
-    const key = `${blogId}:${userId}`;
-    if (this.blogLikes.has(key)) return false;
-    
-    this.blogLikes.set(key, true);
-    const blog = this.blogs.get(blogId);
-    if (blog) {
-      blog.likes = (blog.likes || 0) + 1;
-      this.blogs.set(blogId, blog);
-    }
-    return true;
-  }
-
-  async unlikeBlog(blogId: number, userId: number): Promise<boolean> {
-    const key = `${blogId}:${userId}`;
-    if (!this.blogLikes.has(key)) return false;
-    
-    this.blogLikes.delete(key);
-    const blog = this.blogs.get(blogId);
-    if (blog) {
-      blog.likes = Math.max(0, (blog.likes || 0) - 1);
-      this.blogs.set(blogId, blog);
-    }
-    return true;
-  }
-
-  async getBlogComments(blogId: number): Promise<BlogComment[]> {
-    return Array.from(this.blogComments.values())
-      .filter(comment => comment.blogId === blogId)
-      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-  }
-
-  async createBlogComment(insertComment: InsertBlogComment): Promise<BlogComment> {
-    const id = this.currentId++;
-    const comment: BlogComment = { 
-      ...insertComment, 
-      id, 
-      createdAt: new Date() 
-    };
-    this.blogComments.set(id, comment);
-    return comment;
-  }
 }
 
 export const storage = new MemStorage();

@@ -2,7 +2,7 @@
 
 ## Overview
 
-FitTrack Pro is a comprehensive full-stack fitness platform built with React, Express.js, and PostgreSQL. The application provides users with exercise demonstrations, BMI calculations, AI-powered workout planning, calorie tracking, and fitness blogging capabilities. The system integrates with external APIs for exercise data and uses AI services for personalized workout recommendations.
+FitTrack Pro is a comprehensive full-stack fitness platform built with React, Express.js, and PostgreSQL. The application provides users with exercise demonstrations, BMI calculations, AI-powered workout planning, and calorie tracking capabilities. The system integrates with external APIs for exercise data and uses AI services for personalized workout recommendations.
 
 ## System Architecture
 
@@ -53,11 +53,7 @@ FitTrack Pro is a comprehensive full-stack fitness platform built with React, Ex
 - Progress visualization with charts and progress bars
 - Meal categorization (breakfast, lunch, dinner, snacks)
 
-### Blog System
-- User-generated fitness content with categories
-- Blog creation, editing, and commenting system
-- Like functionality and engagement metrics
-- Category-based filtering and search capabilities
+
 
 ### BMI Calculator
 - Comprehensive BMI calculation with health category classification
@@ -119,6 +115,7 @@ FitTrack Pro is a comprehensive full-stack fitness platform built with React, Ex
 - Environment variable support for configuration
 
 ## Changelog
+- July 12, 2025. Completely removed blog feature from the application (routes, components, database schema, and storage)
 - June 30, 2025. Initial setup
 
 ## User Preferences
