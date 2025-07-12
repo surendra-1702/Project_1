@@ -9,7 +9,7 @@ import { Progress } from '@/components/ui/progress';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { Loader2, Plus, Minus, Search, Target, RotateCcw, Calendar, Utensils, TrendingUp } from 'lucide-react';
+import { Loader2, Plus, Minus, Search, Target, RotateCcw, Calendar, Utensils, TrendingUp, CheckCircle } from 'lucide-react';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import { useToast } from '@/hooks/use-toast';
@@ -66,6 +66,7 @@ export default function CalorieCounter() {
   const [selectedMeal, setSelectedMeal] = useState<'breakfast' | 'lunch' | 'dinner' | 'snack'>('breakfast');
   const [quantity, setQuantity] = useState('100');
   const [selectedMeasure, setSelectedMeasure] = useState<string>('');
+  const [isLoggingDay, setIsLoggingDay] = useState(false);
 
   const dateString = format(selectedDate, 'yyyy-MM-dd');
 
@@ -259,6 +260,38 @@ export default function CalorieCounter() {
     foodEntries.forEach((entry: FoodEntry) => {
       deleteFoodMutation.mutate(entry.id);
     });
+  };
+
+  // Log daily calories with achievement feedback
+  const logDayCalories = () => {
+    setIsLoggingDay(true);
+    
+    setTimeout(() => {
+      const totalCalories = dailyTotals.calories;
+      const percentageConsumed = (totalCalories / currentGoal) * 100;
+      
+      let message = "";
+      let title = "";
+      
+      if (percentageConsumed >= 90 && percentageConsumed <= 110) {
+        title = "🎉 Congratulations!";
+        message = "You achieved your calorie goal for the day! Great job maintaining your nutrition targets.";
+      } else if (percentageConsumed > 110) {
+        title = "⚠️ You Went Overboard";
+        message = `You consumed ${Math.round(totalCalories - currentGoal)} calories more than your goal. Consider lighter meals tomorrow.`;
+      } else {
+        title = "💪 Try Doing Better";
+        message = `You're ${Math.round(currentGoal - totalCalories)} calories short of your goal. Make sure you're eating enough to fuel your body.`;
+      }
+      
+      toast({
+        title,
+        description: message,
+        duration: 5000,
+      });
+      
+      setIsLoggingDay(false);
+    }, 1000);
   };
 
   // Calculate daily totals
@@ -582,10 +615,24 @@ export default function CalorieCounter() {
                       </DialogContent>
                     </Dialog>
 
-                    <Button variant="outline" onClick={resetDayData} className="w-full">
-                      <RotateCcw className="w-4 h-4 mr-2" />
-                      Reset Day
-                    </Button>
+                    <div className="flex gap-2">
+                      <Button variant="outline" onClick={resetDayData} className="flex-1">
+                        <RotateCcw className="w-4 h-4 mr-2" />
+                        Reset Day
+                      </Button>
+                      <Button 
+                        onClick={logDayCalories} 
+                        disabled={isLoggingDay || dailyTotals.calories === 0} 
+                        className="flex-1"
+                      >
+                        {isLoggingDay ? (
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        ) : (
+                          <CheckCircle className="w-4 h-4 mr-2" />
+                        )}
+                        Log Day
+                      </Button>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
