@@ -469,9 +469,16 @@ export default function Blogs() {
               <div className="bg-white rounded-lg p-6 border border-gray-200">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">Blog Content</h3>
                 <div className="prose prose-lg max-w-none">
-                  <div className="whitespace-pre-wrap text-gray-800 leading-relaxed text-base">
-                    {selectedBlog.content}
+                  <div className="whitespace-pre-wrap text-gray-800 leading-relaxed text-base min-h-[100px]">
+                    {selectedBlog.content || "No content available"}
                   </div>
+                  {selectedBlog.content && selectedBlog.content.length < 50 && (
+                    <div className="mt-4 p-3 bg-yellow-50 border-l-4 border-yellow-400 text-sm text-yellow-700">
+                      <p><strong>Note:</strong> This blog post appears to have minimal content. 
+                      The author may have only entered a brief title or summary. 
+                      Current content length: {selectedBlog.content.length} characters.</p>
+                    </div>
+                  )}
                 </div>
               </div>
 
