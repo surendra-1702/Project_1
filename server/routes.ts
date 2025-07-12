@@ -4,6 +4,7 @@ import { storage } from "./storage";
 import { exerciseApiService } from "./services/exerciseApi";
 import { youtubeApiService } from "./services/youtubeApi";
 import { openaiService } from "./services/openaiService";
+import { foodApiService } from "./services/foodApi";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { insertUserSchema, insertWorkoutPlanSchema, insertWorkoutSessionSchema, insertFoodEntrySchema, insertBlogSchema, insertBlogCommentSchema } from "@shared/schema";
@@ -565,6 +566,86 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       res.json(updatedSession);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // ============= FOOD API ROUTES =============
+  
+  app.get("/api/food/search", async (req, res) => {
+    try {
+      const query = req.query.q as string;
+      
+      if (!query) {
+        return res.status(400).json({ message: "Search query is required" });
+      }
+
+      try {
+        // Try to use Edamam API first
+        const results = await foodApiService.searchFood(query);
+        res.json(results);
+      } catch (apiError) {
+        // If API fails, provide fallback nutrition data
+        console.log('Food API not available, using fallback data');
+        const fallbackNutrition = foodApiService.getFallbackNutrition(query, "100g");
+        
+        res.json([{
+          food: {
+            foodId: `fallback-${query.toLowerCase().replace(/\s+/g, '-')}`,
+            label: query,
+            nutrients: {
+              ENERC_KCAL: fallbackNutrition.calories,
+              PROCNT: fallbackNutrition.protein,
+              CHOCDF: fallbackNutrition.carbs,
+              FAT: fallbackNutrition.fat
+            },
+            category: 'Generic'
+          },
+          measures: [{
+            uri: 'http://www.edamam.com/ontologies/edamam.owl#Measure_gram',
+            label: 'Gram',
+            weight: 1
+          }, {
+            uri: 'http://www.edamam.com/ontologies/edamam.owl#Measure_serving',
+            label: 'Serving',
+            weight: 100
+          }]
+        }]);
+      }
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.post("/api/food/nutrition", async (req, res) => {
+    try {
+      const { foodId, measureUri, quantity, foodName } = req.body;
+      
+      if (!foodId) {
+        return res.status(400).json({ message: "Food ID is required" });
+      }
+
+      try {
+        // Try to use Edamam API first
+        const nutrition = await foodApiService.getFoodNutrition(foodId, measureUri, quantity);
+        res.json(nutrition);
+      } catch (apiError) {
+        // If API fails, provide fallback nutrition data
+        console.log('Food nutrition API not available, using fallback data');
+        const fallbackNutrition = foodApiService.getFallbackNutrition(foodName || foodId, `${quantity}g`);
+        
+        res.json({
+          calories: fallbackNutrition.calories,
+          totalWeight: quantity || 100,
+          totalNutrients: {
+            ENERC_KCAL: { quantity: fallbackNutrition.calories, unit: 'kcal' },
+            PROCNT: { quantity: fallbackNutrition.protein, unit: 'g' },
+            CHOCDF: { quantity: fallbackNutrition.carbs, unit: 'g' },
+            FAT: { quantity: fallbackNutrition.fat, unit: 'g' }
+          }
+        });
+      }
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
