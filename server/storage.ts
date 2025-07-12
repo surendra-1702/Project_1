@@ -79,7 +79,7 @@ export class MemStorage implements IStorage {
       {
         username: 'admin',
         email: 'admin@fittrackpro.com',
-        password: '$2b$10$dhVWpqhP0mrBxOk8NhvGJuHl8ma3enI10vVGpBcXfm6DpKOO9.8UW', // "password123" hashed
+        password: '$2b$10$VH7RYhU41xfkINQ3ctKrFuu83obiSGHmm697O0C/BkRXt6UPl5Q46', // "admin123" hashed
         firstName: 'Admin',
         lastName: 'User',
         age: null,
