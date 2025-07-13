@@ -38,38 +38,7 @@ export default function Home() {
               </div>
             </div>
             
-            <div className="relative animate-slide-up">
-              <Card className="bg-white rounded-2xl shadow-2xl p-6">
-                <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-lg font-semibold text-gray-800">Today's Progress</h3>
-                  <span className="text-green-500 text-sm font-medium">
-                    <TrendingUp className="inline h-4 w-4 mr-1" />
-                    12% increase
-                  </span>
-                </div>
-                
-                <div className="grid grid-cols-2 gap-4 mb-6">
-                  <div className="bg-blue-50 rounded-lg p-4">
-                    <div className="text-2xl font-bold text-blue-600">1,247</div>
-                    <div className="text-sm text-gray-600">Calories Burned</div>
-                  </div>
-                  <div className="bg-green-50 rounded-lg p-4">
-                    <div className="text-2xl font-bold text-green-600">45min</div>
-                    <div className="text-sm text-gray-600">Active Time</div>
-                  </div>
-                </div>
-                
-                <div className="mb-4">
-                  <div className="flex justify-between text-sm mb-2">
-                    <span>Weekly Goal</span>
-                    <span>73%</span>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div className="bg-gradient-to-r from-blue-500 to-green-500 h-2 rounded-full w-3/4"></div>
-                  </div>
-                </div>
-              </Card>
-            </div>
+
           </div>
         </div>
 
