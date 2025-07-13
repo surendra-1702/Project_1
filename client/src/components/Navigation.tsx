@@ -50,14 +50,14 @@ export default function Navigation() {
           </div>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:block">
-            <div className="ml-10 flex items-baseline space-x-1">
+          <div className="hidden md:block overflow-hidden">
+            <div className="ml-10 flex items-center space-x-2">
               {navigation.map((item) => (
                 <Link key={item.name} href={item.href}>
                   <span
-                    className={`px-4 py-3 text-sm font-bold cursor-pointer transition-all duration-300 rounded-lg uppercase tracking-wide hover-lift ${
+                    className={`px-3 py-2 text-sm font-bold cursor-pointer transition-all duration-300 rounded-md uppercase tracking-wide ${
                       isActive(item.href)
-                        ? 'bg-red-600 text-white shadow-lg hover-glow'
+                        ? 'bg-red-600 text-white shadow-md'
                         : 'text-white hover:bg-red-600/10 hover:text-red-400'
                     }`}
                   >
@@ -68,9 +68,9 @@ export default function Navigation() {
               {user?.role === 'admin' && adminNavigation.map((item) => (
                 <Link key={item.name} href={item.href}>
                   <span
-                    className={`px-4 py-3 text-sm font-bold cursor-pointer transition-all duration-300 rounded-lg uppercase tracking-wide flex items-center gap-2 hover-lift ${
+                    className={`px-3 py-2 text-sm font-bold cursor-pointer transition-all duration-300 rounded-md uppercase tracking-wide flex items-center gap-1.5 ${
                       isActive(item.href)
-                        ? 'bg-red-600 text-white shadow-lg hover-glow'
+                        ? 'bg-red-600 text-white shadow-md'
                         : 'text-white hover:bg-red-600/10 hover:text-red-400'
                     }`}
                   >
@@ -83,13 +83,13 @@ export default function Navigation() {
           </div>
 
           {/* User Menu */}
-          <div className="hidden md:flex items-center space-x-4">
+          <div className="hidden md:flex items-center space-x-3 overflow-hidden">
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="flex items-center space-x-2 text-white hover:bg-red-600/10 hover:text-red-400 font-bold uppercase tracking-wide">
-                    <User className="h-5 w-5" />
-                    <span>{user.firstName || user.username}</span>
+                  <Button variant="ghost" className="flex items-center space-x-2 text-white hover:bg-red-600/10 hover:text-red-400 font-bold uppercase tracking-wide px-3 py-2 rounded-md">
+                    <User className="h-4 w-4" />
+                    <span className="text-sm">{user.firstName || user.username}</span>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="bg-black/95 border-red-600/20 backdrop-blur-md">
@@ -102,10 +102,10 @@ export default function Navigation() {
             ) : (
               <>
                 <Link href="/auth">
-                  <Button variant="ghost" className="text-white hover:bg-red-600/10 hover:text-red-400 font-bold uppercase tracking-wide">SIGN IN</Button>
+                  <Button variant="ghost" className="text-white hover:bg-red-600/10 hover:text-red-400 font-bold uppercase tracking-wide text-sm px-3 py-2 rounded-md">SIGN IN</Button>
                 </Link>
                 <Link href="/auth">
-                  <Button className="btn-primary hover-glow font-bold uppercase tracking-wide">GET STARTED</Button>
+                  <Button className="btn-primary font-bold uppercase tracking-wide text-sm px-4 py-2 rounded-md">GET STARTED</Button>
                 </Link>
               </>
             )}
