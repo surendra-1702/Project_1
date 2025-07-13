@@ -105,41 +105,37 @@ export default function Exercises() {
   };
 
   return (
-    <div className="min-h-screen bg-black">
+    <div className="min-h-screen bg-gray-50">
       <Navigation />
       
-      {/* Hero Section */}
-      <section className="py-24 bg-gradient-to-br from-black via-gray-900 to-black relative">
-        <div className="absolute inset-0 bg-red-600/5"></div>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="text-center mb-16">
-            <h1 className="text-7xl font-black text-white mb-6 text-athletic uppercase tracking-tight">
-              EXERCISE <span className="text-energy">ARSENAL</span>
-            </h1>
-            <p className="text-2xl text-gray-300 font-medium max-w-4xl mx-auto">
-              Master thousands of explosive exercises with step-by-step GIF demonstrations and detailed instructions
+      <section className="py-16 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h1 className="text-4xl font-bold text-gray-900 mb-4">Exercise Library</h1>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Discover thousands of exercises with step-by-step GIF demonstrations and detailed instructions
             </p>
           </div>
 
           {/* Search */}
-          <div className="mb-16">
-            <div className="max-w-3xl mx-auto">
-              <div className="relative glass-card-dark border border-red-600/20 hover-glow">
+          <div className="mb-12">
+            <div className="max-w-2xl mx-auto">
+              <div className="relative">
                 <Input
                   type="text"
                   placeholder="Search exercises (e.g., push-ups, squats, deadlifts...)"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyDown={handleKeyPress}
-                  className="pr-16 text-xl py-8 bg-transparent border-none text-white placeholder:text-gray-400 font-medium focus:ring-0 focus:outline-none"
+                  className="pr-12 text-lg py-6 border-2 focus:border-primary"
                 />
                 <Button
                   onClick={handleSearch}
                   variant="ghost"
                   size="icon"
-                  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-red-400 hover:text-white hover:bg-red-600/20"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2"
                 >
-                  <Search className="h-6 w-6" />
+                  <Search className="h-5 w-5" />
                 </Button>
               </div>
             </div>

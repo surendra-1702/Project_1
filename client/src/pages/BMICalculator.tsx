@@ -88,94 +88,90 @@ export default function BMICalculator() {
   };
 
   return (
-    <div className="min-h-screen bg-black">
+    <div className="min-h-screen bg-gray-50">
       <Navigation />
       
-      {/* Hero Section */}
-      <section className="py-24 bg-gradient-to-br from-black via-gray-900 to-black relative">
-        <div className="absolute inset-0 bg-red-600/5"></div>
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="text-center mb-16">
-            <h1 className="text-7xl font-black text-white mb-6 text-athletic uppercase tracking-tight">
-              BMI <span className="text-energy">DOMINATOR</span>
-            </h1>
-            <p className="text-2xl text-gray-300 font-medium max-w-3xl mx-auto">Unleash your potential with precise body metrics and personalized calorie strategies</p>
+      <section className="py-16 bg-gray-50">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h1 className="text-4xl font-bold text-gray-900 mb-4">BMI Calculator & Recommendations</h1>
+            <p className="text-xl text-gray-600">Get personalized health insights and calorie recommendations based on your BMI</p>
           </div>
 
-          <div className="glass-card-dark border border-red-600/20 overflow-hidden hover-glow">
-            <div className="p-8">
+          <Card className="bg-white rounded-2xl shadow-xl">
+            <CardContent className="p-8">
               <div className="grid lg:grid-cols-2 gap-8">
                 {/* Input Form */}
                 <div>
-                  <h3 className="text-3xl font-black text-white mb-8 flex items-center text-athletic uppercase tracking-wide">
-                    <Calculator className="h-8 w-8 mr-3 text-red-400" />
-                    ENTER YOUR STATS
+                  <h3 className="text-xl font-semibold mb-6 flex items-center">
+                    <Calculator className="h-5 w-5 mr-2" />
+                    Enter Your Details
                   </h3>
                   
                   <form onSubmit={handleSubmit} className="space-y-6">
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label htmlFor="height" className="text-gray-300 font-bold uppercase tracking-wide">Height (cm)</Label>
+                        <Label htmlFor="height">Height (cm)</Label>
                         <Input
                           id="height"
                           type="number"
                           placeholder="175"
                           value={height}
                           onChange={(e) => setHeight(e.target.value)}
-                          className="w-full bg-black/50 border-red-600/30 text-white placeholder:text-gray-500 focus:border-red-400"
+                          className="w-full"
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="weight" className="text-gray-300 font-bold uppercase tracking-wide">Weight (kg)</Label>
+                        <Label htmlFor="weight">Weight (kg)</Label>
                         <Input
                           id="weight"
                           type="number"
                           placeholder="70"
                           value={weight}
                           onChange={(e) => setWeight(e.target.value)}
-                          className="w-full bg-black/50 border-red-600/30 text-white placeholder:text-gray-500 focus:border-red-400"
+                          className="w-full"
                         />
                       </div>
                     </div>
                     
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label htmlFor="age" className="text-gray-300 font-bold uppercase tracking-wide">Age</Label>
+                        <Label htmlFor="age">Age</Label>
                         <Input
                           id="age"
                           type="number"
                           placeholder="25"
                           value={age}
                           onChange={(e) => setAge(e.target.value)}
-                          className="w-full bg-black/50 border-red-600/30 text-white placeholder:text-gray-500 focus:border-red-400"
+                          className="w-full"
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="gender" className="text-gray-300 font-bold uppercase tracking-wide">Gender</Label>
+                        <Label htmlFor="gender">Gender</Label>
                         <Select value={gender} onValueChange={setGender}>
-                          <SelectTrigger className="bg-black/50 border-red-600/30 text-white focus:border-red-400">
+                          <SelectTrigger>
                             <SelectValue placeholder="Select gender" />
                           </SelectTrigger>
-                          <SelectContent className="bg-black border-red-600/30">
-                            <SelectItem value="male" className="text-white hover:bg-red-600/20">Male</SelectItem>
-                            <SelectItem value="female" className="text-white hover:bg-red-600/20">Female</SelectItem>
+                          <SelectContent>
+                            <SelectItem value="male">Male</SelectItem>
+                            <SelectItem value="female">Female</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="activity" className="text-gray-300 font-bold uppercase tracking-wide">Activity Level</Label>
+                      <Label htmlFor="activity">Activity Level</Label>
                       <Select value={activityLevel} onValueChange={setActivityLevel}>
-                        <SelectTrigger className="bg-black/50 border-red-600/30 text-white focus:border-red-400">
+                        <SelectTrigger>
                           <SelectValue placeholder="Select activity level" />
                         </SelectTrigger>
-                        <SelectContent className="bg-black border-red-600/30">
-                          <SelectItem value="sedentary" className="text-white hover:bg-red-600/20">Sedentary (little/no exercise)</SelectItem>
-                          <SelectItem value="light" className="text-white hover:bg-red-600/20">Light (exercise 1-3 days/week)</SelectItem>
-                          <SelectItem value="moderate" className="text-white hover:bg-red-600/20">Moderate (exercise 3-5 days/week)</SelectItem>
-                          <SelectItem value="active" className="text-white hover:bg-red-600/20">Active (exercise 6-7 days/week)</SelectItem>
-                          <SelectItem value="very-active" className="text-white hover:bg-red-600/20">Very Active (2x/day or intense exercise)</SelectItem>
+                        <SelectContent>
+                          <SelectItem value="sedentary">Sedentary (little/no exercise)</SelectItem>
+                          <SelectItem value="light">Light (exercise 1-3 days/week)</SelectItem>
+                          <SelectItem value="moderate">Moderate (exercise 3-5 days/week)</SelectItem>
+                          <SelectItem value="active">Active (exercise 6-7 days/week)</SelectItem>
+                          <SelectItem value="very-active">Very Active (2x/day or intense exercise)</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -183,15 +179,15 @@ export default function BMICalculator() {
                     <Button
                       type="submit"
                       disabled={calculateBMIMutation.isPending}
-                      className="w-full btn-primary text-xl font-black py-4 uppercase tracking-wide hover-glow"
+                      className="w-full bg-fitness-primary text-white py-4 text-lg font-semibold hover:opacity-90 transition-all transform hover:scale-105 shadow-lg"
                     >
                       {calculateBMIMutation.isPending ? (
                         <>
-                          <Loader2 className="h-6 w-6 mr-3 animate-spin" />
-                          CALCULATING...
+                          <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+                          Calculating...
                         </>
                       ) : (
-                        'CALCULATE DOMINANCE'
+                        'Calculate BMI & Get Recommendations'
                       )}
                     </Button>
                   </form>
@@ -199,9 +195,9 @@ export default function BMICalculator() {
 
                 {/* Results Display */}
                 <div className="lg:pl-8">
-                  <h3 className="text-3xl font-black text-white mb-8 flex items-center text-athletic uppercase tracking-wide">
-                    <TrendingUp className="h-8 w-8 mr-3 text-red-400" />
-                    YOUR RESULTS
+                  <h3 className="text-xl font-semibold mb-6 flex items-center">
+                    <TrendingUp className="h-5 w-5 mr-2" />
+                    Your Results
                   </h3>
                   
                   {result ? (
@@ -312,8 +308,8 @@ export default function BMICalculator() {
                   )}
                 </div>
               </div>
-            </div>
-          </div>
+            </CardContent>
+          </Card>
         </div>
       </section>
 

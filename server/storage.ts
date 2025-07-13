@@ -5,9 +5,6 @@ import {
   type FoodEntry, type InsertFoodEntry, type WorkoutTrackerSession, type InsertWorkoutTrackerSession,
   type WeightEntry, type InsertWeightEntry
 } from "@shared/schema";
-import { db } from "./db";
-import { eq, and, desc, like, ilike } from "drizzle-orm";
-import bcrypt from "bcrypt";
 
 export interface IStorage {
   // User operations
@@ -39,7 +36,7 @@ export interface IStorage {
   updateWorkoutSession(id: number, updates: Partial<InsertWorkoutSession>): Promise<WorkoutSession | undefined>;
 
   // Food Entry operations
-  getFoodEntries(userId: number, date?: Date | string): Promise<FoodEntry[]>;
+  getFoodEntries(userId: number, date?: Date): Promise<FoodEntry[]>;
   createFoodEntry(entry: InsertFoodEntry): Promise<FoodEntry>;
   updateFoodEntry(id: number, updates: Partial<InsertFoodEntry>): Promise<FoodEntry | undefined>;
   deleteFoodEntry(id: number): Promise<boolean>;
@@ -348,15 +345,14 @@ export class MemStorage implements IStorage {
   }
 
   // Food Entry operations
-  async getFoodEntries(userId: number, date?: Date | string): Promise<FoodEntry[]> {
+  async getFoodEntries(userId: number, date?: Date): Promise<FoodEntry[]> {
     let entries = Array.from(this.foodEntries.values()).filter(entry => entry.userId === userId);
     
     if (date) {
-      const targetDate = typeof date === 'string' ? date : date.toDateString();
-      entries = entries.filter(entry => {
-        const entryDate = typeof entry.date === 'string' ? entry.date : new Date(entry.date).toDateString();
-        return entryDate === targetDate;
-      });
+      const targetDate = new Date(date).toDateString();
+      entries = entries.filter(entry => 
+        new Date(entry.date).toDateString() === targetDate
+      );
     }
     
     return entries.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
@@ -550,300 +546,4 @@ export class MemStorage implements IStorage {
 
 }
 
-export class DatabaseStorage implements IStorage {
-  // User operations
-  async getUser(id: number): Promise<User | undefined> {
-    const result = await db.select().from(users).where(eq(users.id, id));
-    return result[0];
-  }
-
-  async getUserByEmail(email: string): Promise<User | undefined> {
-    const result = await db.select().from(users).where(eq(users.email, email));
-    return result[0];
-  }
-
-  async getUserByUsername(username: string): Promise<User | undefined> {
-    const result = await db.select().from(users).where(eq(users.username, username));
-    return result[0];
-  }
-
-  async createUser(user: InsertUser): Promise<User> {
-    const result = await db.insert(users).values(user).returning();
-    return result[0];
-  }
-
-  async updateUser(id: number, updates: Partial<InsertUser>): Promise<User | undefined> {
-    const result = await db.update(users).set(updates).where(eq(users.id, id)).returning();
-    return result[0];
-  }
-
-  // Exercise operations
-  async getExercises(limit = 20, offset = 0): Promise<Exercise[]> {
-    return await db.select().from(exercises).limit(limit).offset(offset);
-  }
-
-  async getExerciseById(exerciseId: string): Promise<Exercise | undefined> {
-    const result = await db.select().from(exercises).where(eq(exercises.exerciseId, exerciseId));
-    return result[0];
-  }
-
-  async getExercisesByBodyPart(bodyPart: string): Promise<Exercise[]> {
-    return await db.select().from(exercises).where(eq(exercises.bodyPart, bodyPart));
-  }
-
-  async getExercisesByEquipment(equipment: string): Promise<Exercise[]> {
-    return await db.select().from(exercises).where(eq(exercises.equipment, equipment));
-  }
-
-  async getExercisesByTarget(target: string): Promise<Exercise[]> {
-    return await db.select().from(exercises).where(eq(exercises.target, target));
-  }
-
-  async createExercise(exercise: InsertExercise): Promise<Exercise> {
-    const result = await db.insert(exercises).values(exercise).returning();
-    return result[0];
-  }
-
-  async searchExercises(query: string): Promise<Exercise[]> {
-    return await db.select().from(exercises)
-      .where(ilike(exercises.name, `%${query}%`))
-      .limit(20);
-  }
-
-  // Workout Plan operations
-  async getWorkoutPlans(userId: number): Promise<WorkoutPlan[]> {
-    return await db.select().from(workoutPlans)
-      .where(eq(workoutPlans.userId, userId))
-      .orderBy(desc(workoutPlans.createdAt));
-  }
-
-  async getWorkoutPlan(id: number): Promise<WorkoutPlan | undefined> {
-    const result = await db.select().from(workoutPlans).where(eq(workoutPlans.id, id));
-    return result[0];
-  }
-
-  async createWorkoutPlan(plan: InsertWorkoutPlan): Promise<WorkoutPlan> {
-    const result = await db.insert(workoutPlans).values(plan).returning();
-    return result[0];
-  }
-
-  async updateWorkoutPlan(id: number, updates: Partial<InsertWorkoutPlan>): Promise<WorkoutPlan | undefined> {
-    const result = await db.update(workoutPlans).set(updates).where(eq(workoutPlans.id, id)).returning();
-    return result[0];
-  }
-
-  async deleteWorkoutPlan(id: number): Promise<boolean> {
-    const result = await db.delete(workoutPlans).where(eq(workoutPlans.id, id));
-    return result.rowCount > 0;
-  }
-
-  // Workout Session operations
-  async getWorkoutSessions(userId: number, date?: Date): Promise<WorkoutSession[]> {
-    let query = db.select().from(workoutSessions).where(eq(workoutSessions.userId, userId));
-    
-    if (date) {
-      const startOfDay = new Date(date);
-      startOfDay.setHours(0, 0, 0, 0);
-      const endOfDay = new Date(date);
-      endOfDay.setHours(23, 59, 59, 999);
-      
-      query = query.where(
-        and(
-          eq(workoutSessions.userId, userId),
-          // Note: You might need to adjust this date filtering based on your schema
-        )
-      );
-    }
-    
-    return await query.orderBy(desc(workoutSessions.date));
-  }
-
-  async createWorkoutSession(session: InsertWorkoutSession): Promise<WorkoutSession> {
-    const result = await db.insert(workoutSessions).values(session).returning();
-    return result[0];
-  }
-
-  async updateWorkoutSession(id: number, updates: Partial<InsertWorkoutSession>): Promise<WorkoutSession | undefined> {
-    const result = await db.update(workoutSessions).set(updates).where(eq(workoutSessions.id, id)).returning();
-    return result[0];
-  }
-
-  // Food Entry operations
-  async getFoodEntries(userId: number, date?: Date | string): Promise<FoodEntry[]> {
-    let query = db.select().from(foodEntries).where(eq(foodEntries.userId, userId));
-    
-    if (date) {
-      // Handle both Date objects and string dates
-      const targetDate = typeof date === 'string' ? date : date.toISOString().split('T')[0];
-      query = db.select().from(foodEntries).where(
-        and(
-          eq(foodEntries.userId, userId),
-          eq(foodEntries.date, targetDate)
-        )
-      );
-    }
-    
-    return await query.orderBy(desc(foodEntries.createdAt));
-  }
-
-  async createFoodEntry(entry: InsertFoodEntry): Promise<FoodEntry> {
-    const result = await db.insert(foodEntries).values(entry).returning();
-    return result[0];
-  }
-
-  async updateFoodEntry(id: number, updates: Partial<InsertFoodEntry>): Promise<FoodEntry | undefined> {
-    const result = await db.update(foodEntries).set(updates).where(eq(foodEntries.id, id)).returning();
-    return result[0];
-  }
-
-  async deleteFoodEntry(id: number): Promise<boolean> {
-    const result = await db.delete(foodEntries).where(eq(foodEntries.id, id));
-    return result.rowCount > 0;
-  }
-
-  // Workout Tracker operations
-  async getWorkoutTrackerSessions(userId: number, date?: Date): Promise<WorkoutTrackerSession[]> {
-    let query = db.select().from(workoutTrackerSessions).where(eq(workoutTrackerSessions.userId, userId));
-    
-    if (date) {
-      const targetDate = date.toISOString().split('T')[0];
-      query = db.select().from(workoutTrackerSessions).where(
-        and(
-          eq(workoutTrackerSessions.userId, userId),
-          eq(workoutTrackerSessions.date, targetDate)
-        )
-      );
-    }
-    
-    return await query.orderBy(desc(workoutTrackerSessions.createdAt));
-  }
-
-  async createWorkoutTrackerSession(session: InsertWorkoutTrackerSession): Promise<WorkoutTrackerSession> {
-    const result = await db.insert(workoutTrackerSessions).values(session).returning();
-    return result[0];
-  }
-
-  async updateWorkoutTrackerSession(id: number, updates: Partial<InsertWorkoutTrackerSession>): Promise<WorkoutTrackerSession | undefined> {
-    const result = await db.update(workoutTrackerSessions).set(updates).where(eq(workoutTrackerSessions.id, id)).returning();
-    return result[0];
-  }
-
-  async deleteWorkoutTrackerSession(id: number): Promise<boolean> {
-    const result = await db.delete(workoutTrackerSessions).where(eq(workoutTrackerSessions.id, id));
-    return result.rowCount > 0;
-  }
-
-  async getWorkoutTrackerStats(userId: number): Promise<{
-    totalWorkouts: number;
-    totalSets: number;
-    totalReps: number;
-  }> {
-    const sessions = await this.getWorkoutTrackerSessions(userId);
-    
-    const totalWorkouts = sessions.length;
-    const totalSets = sessions.reduce((sum, session) => sum + (session.sets || 0), 0);
-    const totalReps = sessions.reduce((sum, session) => sum + (session.reps || 0), 0);
-    
-    return { totalWorkouts, totalSets, totalReps };
-  }
-
-  // Weight Entry operations
-  async getWeightEntries(userId: number): Promise<WeightEntry[]> {
-    return await db.select().from(weightEntries)
-      .where(eq(weightEntries.userId, userId))
-      .orderBy(desc(weightEntries.date));
-  }
-
-  async createWeightEntry(entry: InsertWeightEntry): Promise<WeightEntry> {
-    const result = await db.insert(weightEntries).values(entry).returning();
-    return result[0];
-  }
-
-  async updateWeightEntry(id: number, updates: Partial<InsertWeightEntry>): Promise<WeightEntry | undefined> {
-    const result = await db.update(weightEntries).set(updates).where(eq(weightEntries.id, id)).returning();
-    return result[0];
-  }
-
-  async deleteWeightEntry(id: number): Promise<boolean> {
-    const result = await db.delete(weightEntries).where(eq(weightEntries.id, id));
-    return result.rowCount > 0;
-  }
-
-  async getLatestWeightEntry(userId: number): Promise<WeightEntry | undefined> {
-    const result = await db.select().from(weightEntries)
-      .where(eq(weightEntries.userId, userId))
-      .orderBy(desc(weightEntries.date))
-      .limit(1);
-    return result[0];
-  }
-
-  // Admin operations
-  async getAllUsers(): Promise<User[]> {
-    return await db.select().from(users).orderBy(desc(users.createdAt));
-  }
-
-  async getUserStats(): Promise<{
-    totalUsers: number;
-    activeUsers: number;
-    usersByGoal: Record<string, number>;
-    recentLogins: User[];
-  }> {
-    const allUsers = await this.getAllUsers();
-    const totalUsers = allUsers.length;
-    
-    // Active users (logged in within last 30 days)
-    const thirtyDaysAgo = new Date();
-    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-    const activeUsers = allUsers.filter(user => 
-      user.lastLoginAt && user.lastLoginAt >= thirtyDaysAgo
-    ).length;
-    
-    // Users by fitness goal
-    const usersByGoal: Record<string, number> = {};
-    allUsers.forEach(user => {
-      if (user.fitnessGoal) {
-        usersByGoal[user.fitnessGoal] = (usersByGoal[user.fitnessGoal] || 0) + 1;
-      }
-    });
-    
-    // Recent logins (last 10)
-    const recentLogins = allUsers
-      .filter(user => user.lastLoginAt)
-      .sort((a, b) => (b.lastLoginAt!.getTime() - a.lastLoginAt!.getTime()))
-      .slice(0, 10);
-    
-    return { totalUsers, activeUsers, usersByGoal, recentLogins };
-  }
-}
-
-// Initialize default admin user in database
-async function initializeDatabase() {
-  try {
-    // Check if admin user exists
-    const adminUser = await db.select().from(users).where(eq(users.username, 'admin'));
-    
-    if (adminUser.length === 0) {
-      // Create admin user
-      const hashedPassword = await bcrypt.hash('admin123', 10);
-      await db.insert(users).values({
-        username: 'admin',
-        email: 'admin@fittrackpro.com',
-        password: hashedPassword,
-        firstName: 'Admin',
-        lastName: 'User',
-        role: 'admin',
-        lastLoginAt: new Date(),
-        createdAt: new Date()
-      });
-      console.log('Admin user created successfully');
-    }
-  } catch (error) {
-    console.error('Error initializing database:', error);
-  }
-}
-
-// Use database storage for production
-export const storage = new DatabaseStorage();
-
-// Initialize database on startup
-initializeDatabase();
+export const storage = new MemStorage();

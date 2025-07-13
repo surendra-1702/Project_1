@@ -57,13 +57,6 @@ export default function CalorieCounter() {
   const [dailyCalorieGoal, setDailyCalorieGoal] = useState(user?.dailyCalorieGoal || 2000);
   const [showGoalDialog, setShowGoalDialog] = useState(false);
   const [showFoodDialog, setShowFoodDialog] = useState(false);
-
-  // Sync calorie goal with user profile changes
-  useEffect(() => {
-    if (user?.dailyCalorieGoal) {
-      setDailyCalorieGoal(user.dailyCalorieGoal);
-    }
-  }, [user?.dailyCalorieGoal]);
   
   // Food search and entry state
   const [foodSearch, setFoodSearch] = useState('');
@@ -79,7 +72,7 @@ export default function CalorieCounter() {
 
   // Fetch food entries for selected date
   const { data: foodEntries = [], isLoading } = useQuery({
-    queryKey: ['/api/food-entries', dateString],
+    queryKey: ['/api/food-entries', { date: dateString }],
     queryFn: async () => {
       const response = await fetch(`/api/food-entries?date=${dateString}`, {
         headers: getAuthHeaders(),
@@ -89,30 +82,238 @@ export default function CalorieCounter() {
     },
     enabled: !!user,
   });
-  // Group food entries by meal type
-  const mealGroups = foodEntries.reduce((groups: Record<string, FoodEntry[]>, entry: FoodEntry) => {
-    const meal = entry.meal;
-    if (!groups[meal]) {
-      groups[meal] = [];
+
+  // Food search function
+  const searchFood = async (query: string) => {
+    if (!query.trim()) {
+      setSearchResults([]);
+      return;
     }
-    groups[meal].push(entry);
-    return groups;
-  }, {
-    breakfast: [],
-    lunch: [],
-    dinner: [],
-    snack: []
+
+    setIsSearching(true);
+    try {
+      const response = await fetch(`/api/food/search?q=${encodeURIComponent(query)}`);
+      if (!response.ok) throw new Error('Failed to search foods');
+      const results = await response.json();
+      setSearchResults(results.slice(0, 10)); // Limit to 10 results
+    } catch (error) {
+      toast({
+        title: "Search Failed",
+        description: "Could not search for foods. Please try again.",
+        variant: "destructive",
+      });
+      setSearchResults([]);
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
+  // Debounced search
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (foodSearch) {
+        searchFood(foodSearch);
+      } else {
+        setSearchResults([]);
+      }
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [foodSearch]);
+
+  // Add food entry mutation
+  const addFoodMutation = useMutation({
+    mutationFn: async (foodData: any) => {
+      const response = await fetch('/api/food-entries', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...getAuthHeaders(),
+        },
+        body: JSON.stringify({
+          ...foodData,
+          date: selectedDate.toISOString(),
+        }),
+      });
+      if (!response.ok) throw new Error('Failed to add food entry');
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/food-entries'] });
+      setShowFoodDialog(false);
+      setSelectedFood(null);
+      setFoodSearch('');
+      setSearchResults([]);
+      setQuantity('100');
+      toast({
+        title: "Food Added",
+        description: "Food entry has been added to your log",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Failed to Add Food",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
   });
 
-  // Calculate daily totals
-  const dailyTotals = foodEntries.reduce((totals, entry) => ({
-    calories: totals.calories + entry.calories,
-    protein: totals.protein + (entry.protein || 0),
-    carbs: totals.carbs + (entry.carbs || 0),
-    fat: totals.fat + (entry.fat || 0)
-  }), { calories: 0, protein: 0, carbs: 0, fat: 0 });
+  // Delete food entry mutation
+  const deleteFoodMutation = useMutation({
+    mutationFn: async (entryId: number) => {
+      const response = await fetch(`/api/food-entries/${entryId}`, {
+        method: 'DELETE',
+        headers: getAuthHeaders(),
+      });
+      if (!response.ok) throw new Error('Failed to delete food entry');
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/food-entries'] });
+      toast({
+        title: "Food Removed",
+        description: "Food entry has been removed from your log",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Failed to Remove Food",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  });
 
-  const currentGoal = dailyCalorieGoal;
+  // Update daily calorie goal mutation
+  const updateGoalMutation = useMutation({
+    mutationFn: async (newGoal: number) => {
+      const response = await fetch(`/api/users/${user?.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          ...getAuthHeaders(),
+        },
+        body: JSON.stringify({ dailyCalorieGoal: newGoal }),
+      });
+      if (!response.ok) throw new Error('Failed to update calorie goal');
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/auth/me'] });
+      setShowGoalDialog(false);
+      toast({
+        title: "Goal Updated",
+        description: "Your daily calorie goal has been updated",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Failed to Update Goal",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  });
+
+  const handleAddFood = async () => {
+    if (!selectedFood) return;
+
+    const selectedMeasureObj = selectedFood.measures.find(m => m.uri === selectedMeasure) || selectedFood.measures[0];
+    const quantityNum = parseFloat(quantity) || 100;
+    
+    // Calculate nutrition based on quantity and measure
+    const baseNutrients = selectedFood.food.nutrients;
+    const weightFactor = selectedMeasureObj ? (quantityNum * selectedMeasureObj.weight) / 100 : quantityNum / 100;
+    
+    const calories = Math.round(baseNutrients.ENERC_KCAL * weightFactor);
+    const protein = baseNutrients.PROCNT ? Math.round(baseNutrients.PROCNT * weightFactor * 10) / 10 : null;
+    const carbs = baseNutrients.CHOCDF ? Math.round(baseNutrients.CHOCDF * weightFactor * 10) / 10 : null;
+    const fat = baseNutrients.FAT ? Math.round(baseNutrients.FAT * weightFactor * 10) / 10 : null;
+
+    const servingText = selectedMeasureObj ? `${quantity} ${selectedMeasureObj.label.toLowerCase()}` : `${quantity}g`;
+
+    addFoodMutation.mutate({
+      meal: selectedMeal,
+      foodName: selectedFood.food.label,
+      serving: servingText,
+      calories,
+      protein,
+      carbs,
+      fat,
+    });
+  };
+
+  const handleUpdateGoal = () => {
+    if (dailyCalorieGoal < 800 || dailyCalorieGoal > 5000) {
+      toast({
+        title: "Invalid Goal",
+        description: "Daily calorie goal should be between 800 and 5000 calories",
+        variant: "destructive",
+      });
+      return;
+    }
+    updateGoalMutation.mutate(dailyCalorieGoal);
+  };
+
+  const resetDayData = () => {
+    foodEntries.forEach((entry: FoodEntry) => {
+      deleteFoodMutation.mutate(entry.id);
+    });
+  };
+
+  // Log daily calories with achievement feedback
+  const logDayCalories = () => {
+    setIsLoggingDay(true);
+    
+    setTimeout(() => {
+      const totalCalories = dailyTotals.calories;
+      const percentageConsumed = (totalCalories / currentGoal) * 100;
+      
+      let message = "";
+      let title = "";
+      
+      if (percentageConsumed >= 90 && percentageConsumed <= 110) {
+        title = "🎉 Congratulations!";
+        message = "You achieved your calorie goal for the day! Great job maintaining your nutrition targets.";
+      } else if (percentageConsumed > 110) {
+        title = "⚠️ You Went Overboard";
+        message = `You consumed ${Math.round(totalCalories - currentGoal)} calories more than your goal. Consider lighter meals tomorrow.`;
+      } else {
+        title = "💪 Try Doing Better";
+        message = `You're ${Math.round(currentGoal - totalCalories)} calories short of your goal. Make sure you're eating enough to fuel your body.`;
+      }
+      
+      toast({
+        title,
+        description: message,
+        duration: 5000,
+      });
+      
+      setIsLoggingDay(false);
+    }, 1000);
+  };
+
+  // Calculate daily totals
+  const dailyTotals = foodEntries.reduce(
+    (totals, entry: FoodEntry) => ({
+      calories: totals.calories + entry.calories,
+      protein: totals.protein + (entry.protein || 0),
+      carbs: totals.carbs + (entry.carbs || 0),
+      fat: totals.fat + (entry.fat || 0),
+    }),
+    { calories: 0, protein: 0, carbs: 0, fat: 0 }
+  );
+
+  // Group entries by meal
+  const mealGroups = foodEntries.reduce((groups: Record<string, FoodEntry[]>, entry: FoodEntry) => {
+    const meal = entry.meal;
+    if (!groups[meal]) groups[meal] = [];
+    groups[meal].push(entry);
+    return groups;
+  }, {});
+
+  const currentGoal = user?.dailyCalorieGoal || dailyCalorieGoal;
   const caloriesRemaining = currentGoal - dailyTotals.calories;
   const caloriesProgress = Math.min((dailyTotals.calories / currentGoal) * 100, 100);
 
@@ -123,240 +324,20 @@ export default function CalorieCounter() {
     { key: 'snack', label: 'Snacks', icon: '🍎' }
   ];
 
-  // Delete food entry mutation
-  const deleteFoodMutation = useMutation({
-    mutationFn: async (entryId: number) => {
-      const response = await fetch(`/api/food-entries/${entryId}`, {
-        method: 'DELETE',
-        headers: getAuthHeaders()
-      });
-      if (!response.ok) throw new Error('Failed to delete food entry');
-      return response.json();
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/food-entries', dateString] });
-      toast({
-        title: "Success",
-        description: "Food entry deleted successfully"
-      });
-    },
-    onError: () => {
-      toast({
-        title: "Error",
-        description: "Failed to delete food entry"
-      });
-    }
-  });
-
-  // Update calorie goal mutation
-  const updateGoalMutation = useMutation({
-    mutationFn: async (newGoal: number) => {
-      const response = await fetch(`/api/users/${user?.id}`, {
-        method: 'PUT',
-        headers: {
-          ...getAuthHeaders(),
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ dailyCalorieGoal: newGoal })
-      });
-      if (!response.ok) throw new Error('Failed to update calorie goal');
-      return response.json();
-    },
-    onSuccess: (data) => {
-      const updatedGoal = data.dailyCalorieGoal || newGoal;
-      setDailyCalorieGoal(updatedGoal);
-      setShowGoalDialog(false);
-      queryClient.invalidateQueries({ queryKey: ['/api/auth/me'] });
-      toast({
-        title: "Success",
-        description: `Daily calorie goal updated to ${updatedGoal} calories`
-      });
-    },
-    onError: (error) => {
-      console.error('Goal update error:', error);
-      toast({
-        title: "Error",
-        description: "Failed to update calorie goal"
-      });
-    }
-  });
-
-  // Add food entry mutation
-  const addFoodMutation = useMutation({
-    mutationFn: async (foodData: any) => {
-      const response = await fetch('/api/food-entries', {
-        method: 'POST',
-        headers: {
-          ...getAuthHeaders(),
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(foodData)
-      });
-      if (!response.ok) throw new Error('Failed to add food entry');
-      return response.json();
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/food-entries', dateString] });
-      setShowFoodDialog(false);
-      setSelectedFood(null);
-      setFoodSearch('');
-      setSearchResults([]);
-      setQuantity('100');
-      setSelectedMeasure('');
-      toast({
-        title: "Success",
-        description: "Food entry added successfully"
-      });
-    },
-    onError: () => {
-      toast({
-        title: "Error",
-        description: "Failed to add food entry"
-      });
-    }
-  });
-
-  // Search food function
-  const searchFood = async (query: string) => {
-    if (!query.trim()) {
-      setSearchResults([]);
-      return;
-    }
-
-    setIsSearching(true);
-    try {
-      const response = await fetch(`/api/food/search?q=${encodeURIComponent(query)}`, {
-        headers: getAuthHeaders()
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setSearchResults(data);
-      } else {
-        setSearchResults([]);
-      }
-    } catch (error) {
-      console.error('Food search failed:', error);
-      setSearchResults([]);
-    } finally {
-      setIsSearching(false);
-    }
-  };
-
-  // Handle add food
-  const handleAddFood = () => {
-    if (!selectedFood || !selectedMeasure || !quantity) {
-      toast({
-        title: "Error",
-        description: "Please select a food, measure, and quantity"
-      });
-      return;
-    }
-
-    const measure = selectedFood.measures.find(m => m.uri === selectedMeasure);
-    if (!measure) {
-      toast({
-        title: "Error",
-        description: "Invalid measure selected"
-      });
-      return;
-    }
-
-    const quantityNum = parseFloat(quantity);
-    const weightMultiplier = (measure.weight / 100) * quantityNum;
-    
-    const foodData = {
-      date: dateString,
-      meal: selectedMeal,
-      foodName: selectedFood.food.label,
-      serving: `${quantity} ${measure.label}`,
-      calories: Math.round(selectedFood.food.nutrients.ENERC_KCAL * weightMultiplier),
-      protein: selectedFood.food.nutrients.PROCNT ? Math.round(selectedFood.food.nutrients.PROCNT * weightMultiplier) : 0,
-      carbs: selectedFood.food.nutrients.CHOCDF ? Math.round(selectedFood.food.nutrients.CHOCDF * weightMultiplier) : 0,
-      fat: selectedFood.food.nutrients.FAT ? Math.round(selectedFood.food.nutrients.FAT * weightMultiplier) : 0
-    };
-
-    addFoodMutation.mutate(foodData);
-  };
-
-  // Reset day functionality
-  const resetDayMutation = useMutation({
-    mutationFn: async () => {
-      // Delete all food entries for the selected date
-      const deletePromises = foodEntries.map(entry => 
-        fetch(`/api/food-entries/${entry.id}`, {
-          method: 'DELETE',
-          headers: getAuthHeaders()
-        })
-      );
-      await Promise.all(deletePromises);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/food-entries', dateString] });
-      toast({
-        title: "Day Reset",
-        description: "All food entries for the selected date have been cleared"
-      });
-    },
-    onError: () => {
-      toast({
-        title: "Error",
-        description: "Failed to reset day"
-      });
-    }
-  });
-
-  // Log day functionality
-  const logDayMutation = useMutation({
-    mutationFn: async () => {
-      // This could be enhanced to save the day as "logged" or create a daily summary
-      return Promise.resolve();
-    },
-    onSuccess: () => {
-      const goalAchieved = dailyTotals.calories >= (currentGoal * 0.9) && dailyTotals.calories <= (currentGoal * 1.1);
-      const caloriesOverUnder = dailyTotals.calories - currentGoal;
-      
-      if (goalAchieved) {
-        toast({
-          title: "🎉 Goal Achieved!",
-          description: `Perfect! You consumed ${dailyTotals.calories} calories, staying within your target range of ${currentGoal} calories.`
-        });
-      } else if (caloriesOverUnder > 0) {
-        toast({
-          title: "⚠️ Over Goal",
-          description: `You consumed ${dailyTotals.calories} calories, which is ${caloriesOverUnder} calories over your goal of ${currentGoal}.`
-        });
-      } else {
-        toast({
-          title: "📉 Under Goal", 
-          description: `You consumed ${dailyTotals.calories} calories, which is ${Math.abs(caloriesOverUnder)} calories under your goal of ${currentGoal}.`
-        });
-      }
-      
-      setIsLoggingDay(true);
-      setTimeout(() => setIsLoggingDay(false), 3000);
-    },
-    onError: () => {
-      toast({
-        title: "Error",
-        description: "Failed to log day"
-      });
-    }
-  });
-
   if (!user) {
     return (
-      <div className="min-h-screen bg-black">
+      <div className="min-h-screen bg-gray-50">
         <Navigation />
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
-          <div className="glass-card-dark border border-red-600/20 text-center hover-glow">
-            <div className="p-12">
-              <h2 className="text-4xl font-black text-white mb-6 text-athletic uppercase tracking-wide">ACCESS DENIED</h2>
-              <p className="text-gray-300 mb-8 text-xl">Sign in to access the calorie crusher</p>
-              <Button asChild className="btn-primary font-black uppercase tracking-wide text-xl px-8 py-4">
-                <a href="/auth">SIGN IN</a>
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+          <Card className="text-center">
+            <CardContent className="p-8">
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">Authentication Required</h2>
+              <p className="text-gray-600 mb-6">Please sign in to access the calorie counter</p>
+              <Button asChild>
+                <a href="/auth">Sign In</a>
               </Button>
-            </div>
-          </div>
+            </CardContent>
+          </Card>
         </div>
         <Footer />
       </div>
@@ -364,149 +345,300 @@ export default function CalorieCounter() {
   }
 
   return (
-    <div className="min-h-screen bg-black">
+    <div className="min-h-screen bg-gray-50">
       <Navigation />
       
-      <section className="py-24 bg-gradient-to-br from-black via-gray-900 to-black relative">
-        <div className="absolute inset-0 bg-red-600/5"></div>
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="text-center mb-16">
-            <h1 className="text-7xl font-black text-white mb-6 text-athletic uppercase tracking-tight">
-              CALORIE <span className="text-energy">CRUSHER</span>
-            </h1>
-            <p className="text-2xl text-gray-300 font-medium max-w-4xl mx-auto">Track your daily nutrition with automatic food lookup and macro domination</p>
+      <section className="py-16 bg-gray-50">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h1 className="text-4xl font-bold text-gray-900 mb-4">Smart Calorie Counter</h1>
+            <p className="text-xl text-gray-600">Track your daily nutrition with automatic food lookup</p>
           </div>
 
           {/* Date Navigation */}
-          <div className="flex items-center justify-center gap-6 mb-12">
-            <Button variant="outline" size="lg" onClick={() => setSelectedDate(subDays(selectedDate, 1))} className="bg-black/50 border-red-600/30 text-white hover:bg-red-600/20 font-bold uppercase tracking-wide">
-              <Calendar className="w-5 h-5 mr-2" />
-              PREVIOUS
+          <div className="flex items-center justify-center gap-4 mb-8">
+            <Button variant="outline" size="sm" onClick={() => setSelectedDate(subDays(selectedDate, 1))}>
+              <Calendar className="w-4 h-4 mr-2" />
+              Previous
             </Button>
-            <div className="text-2xl font-black text-white text-athletic uppercase tracking-wide">
+            <div className="text-lg font-semibold">
               {format(selectedDate, 'EEEE, MMMM d, yyyy')}
             </div>
-            <Button variant="outline" size="lg" onClick={() => setSelectedDate(addDays(selectedDate, 1))} className="bg-black/50 border-red-600/30 text-white hover:bg-red-600/20 font-bold uppercase tracking-wide">
-              NEXT
-              <Calendar className="w-5 h-5 ml-2" />
+            <Button variant="outline" size="sm" onClick={() => setSelectedDate(addDays(selectedDate, 1))}>
+              Next
+              <Calendar className="w-4 h-4 ml-2" />
             </Button>
           </div>
 
           <div className="grid lg:grid-cols-3 gap-8">
+            {/* Daily Overview */}
             <div className="lg:col-span-1">
-              <div className="glass-card-dark border border-red-600/20 hover-glow sticky top-24">
-                <div className="p-6">
-                  <div className="flex items-center justify-between mb-6">
-                    <h3 className="text-2xl font-black text-white text-athletic uppercase tracking-wide">DAILY PROGRESS</h3>
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      onClick={() => setShowGoalDialog(true)}
-                      className="bg-red-600/20 border-red-600/30 text-red-400 hover:bg-red-600 hover:text-white font-bold uppercase tracking-wide"
-                    >
-                      <Target className="w-4 h-4 mr-2" />
-                      SET GOAL
-                    </Button>
-                  </div>
-                  
-                  <div className="space-y-6">
-                    {/* Calorie Progress Circle */}
-                    <div className="text-center">
-                      <div className="relative w-32 h-32 mx-auto mb-4">
-                        <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-                          <circle cx="50" cy="50" r="40" stroke="#e5e7eb" strokeWidth="8" fill="none"></circle>
-                          <circle 
-                            cx="50" 
-                            cy="50" 
-                            r="40" 
-                            stroke="#dc2626" 
-                            strokeWidth="8" 
-                            fill="none"
-                            strokeDasharray="251.2" 
-                            strokeDashoffset={251.2 - (caloriesProgress / 100) * 251.2}
-                            strokeLinecap="round"
-                          ></circle>
-                        </svg>
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <div className="text-center">
-                            <div className="text-2xl font-bold text-white">{dailyTotals.calories}</div>
-                            <div className="text-xs text-gray-400">/ {currentGoal}</div>
+              <Card className="sticky top-24">
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <CardTitle>Daily Progress</CardTitle>
+                    <Dialog open={showGoalDialog} onOpenChange={setShowGoalDialog}>
+                      <DialogTrigger asChild>
+                        <Button variant="outline" size="sm">
+                          <Target className="w-4 h-4 mr-2" />
+                          Set Goal
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>Set Daily Calorie Goal</DialogTitle>
+                          <DialogDescription>
+                            Set your personalized daily calorie target to track your nutrition goals.
+                          </DialogDescription>
+                        </DialogHeader>
+                        <div className="space-y-4">
+                          <div>
+                            <Label htmlFor="calorie-goal">Daily Calorie Goal</Label>
+                            <Input
+                              id="calorie-goal"
+                              type="number"
+                              value={dailyCalorieGoal}
+                              onChange={(e) => setDailyCalorieGoal(parseInt(e.target.value) || 2000)}
+                              placeholder="2000"
+                              min="800"
+                              max="5000"
+                            />
+                            <p className="text-sm text-gray-600 mt-1">Recommended: 1500-2500 calories per day</p>
                           </div>
+                          <Button onClick={handleUpdateGoal} disabled={updateGoalMutation.isPending}>
+                            {updateGoalMutation.isPending ? (
+                              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                            ) : null}
+                            Update Goal
+                          </Button>
                         </div>
-                      </div>
-                      <div className={`text-sm font-medium ${caloriesRemaining >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                        {caloriesRemaining >= 0 ? `${caloriesRemaining} calories remaining` : `${Math.abs(caloriesRemaining)} calories over`}
+                      </DialogContent>
+                    </Dialog>
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  {/* Calorie Progress Circle */}
+                  <div className="text-center">
+                    <div className="relative w-32 h-32 mx-auto mb-4">
+                      <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                        <circle cx="50" cy="50" r="40" stroke="#e5e7eb" strokeWidth="8" fill="none"></circle>
+                        <circle 
+                          cx="50" 
+                          cy="50" 
+                          r="40" 
+                          stroke="#3b82f6" 
+                          strokeWidth="8" 
+                          fill="none"
+                          strokeDasharray="251.2" 
+                          strokeDashoffset={251.2 - (caloriesProgress / 100) * 251.2}
+                          strokeLinecap="round"
+                        ></circle>
+                      </svg>
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="text-center">
+                          <div className="text-2xl font-bold text-gray-900">{dailyTotals.calories}</div>
+                          <div className="text-xs text-gray-600">/ {currentGoal}</div>
+                        </div>
                       </div>
                     </div>
-
-                    {/* Macronutrients */}
-                    <div className="space-y-4">
-                      <h4 className="font-semibold text-white">Macronutrients</h4>
-                      <div className="grid grid-cols-3 gap-4 text-center">
-                        <div>
-                          <div className="text-lg font-bold text-blue-400">{Math.round(dailyTotals.protein)}g</div>
-                          <div className="text-xs text-gray-400">Protein</div>
-                        </div>
-                        <div>
-                          <div className="text-lg font-bold text-green-400">{Math.round(dailyTotals.carbs)}g</div>
-                          <div className="text-xs text-gray-400">Carbs</div>
-                        </div>
-                        <div>
-                          <div className="text-lg font-bold text-orange-400">{Math.round(dailyTotals.fat)}g</div>
-                          <div className="text-xs text-gray-400">Fat</div>
-                        </div>
-                      </div>
+                    <div className={`text-sm font-medium ${caloriesRemaining >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                      {caloriesRemaining >= 0 ? `${caloriesRemaining} calories remaining` : `${Math.abs(caloriesRemaining)} calories over`}
                     </div>
+                  </div>
 
-                    {/* Action Buttons */}
-                    <div className="space-y-2">
-                      <Button 
-                        onClick={() => setShowFoodDialog(true)}
-                        className="w-full bg-red-600 hover:bg-red-700 text-white font-bold uppercase tracking-wide"
-                      >
-                        <Plus className="w-4 h-4 mr-2" />
-                        Add Food
-                      </Button>
-                      
-                      <div className="flex gap-2">
-                        <Button 
-                          variant="outline" 
-                          onClick={() => resetDayMutation.mutate()}
-                          disabled={foodEntries.length === 0 || resetDayMutation.isPending}
-                          className="flex-1 bg-black/50 border-red-600/30 text-white hover:bg-red-600/20 font-bold uppercase tracking-wide disabled:bg-gray-600 disabled:cursor-not-allowed"
-                        >
-                          {resetDayMutation.isPending ? (
-                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                          ) : (
-                            <RotateCcw className="w-4 h-4 mr-2" />
-                          )}
-                          Reset Day
-                        </Button>
-                        <Button 
-                          onClick={() => logDayMutation.mutate()}
-                          disabled={dailyTotals.calories === 0 || logDayMutation.isPending || isLoggingDay} 
-                          className={`flex-1 font-bold uppercase tracking-wide ${
-                            isLoggingDay 
-                              ? 'bg-yellow-600 hover:bg-yellow-700' 
-                              : 'bg-green-600 hover:bg-green-700'
-                          } text-white disabled:bg-gray-600 disabled:cursor-not-allowed`}
-                        >
-                          {logDayMutation.isPending ? (
-                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                          ) : isLoggingDay ? (
-                            <TrendingUp className="w-4 h-4 mr-2" />
-                          ) : (
-                            <CheckCircle className="w-4 h-4 mr-2" />
-                          )}
-                          {isLoggingDay ? 'Day Logged!' : 'Log Day'}
-                        </Button>
+                  {/* Macronutrients */}
+                  <div className="space-y-4">
+                    <h4 className="font-semibold text-gray-900">Macronutrients</h4>
+                    <div className="grid grid-cols-3 gap-4 text-center">
+                      <div>
+                        <div className="text-lg font-bold text-blue-600">{Math.round(dailyTotals.protein)}g</div>
+                        <div className="text-xs text-gray-600">Protein</div>
+                      </div>
+                      <div>
+                        <div className="text-lg font-bold text-green-600">{Math.round(dailyTotals.carbs)}g</div>
+                        <div className="text-xs text-gray-600">Carbs</div>
+                      </div>
+                      <div>
+                        <div className="text-lg font-bold text-orange-600">{Math.round(dailyTotals.fat)}g</div>
+                        <div className="text-xs text-gray-600">Fat</div>
                       </div>
                     </div>
                   </div>
-                </div>
-              </div>
+
+                  {/* Action Buttons */}
+                  <div className="space-y-2">
+                    <Dialog open={showFoodDialog} onOpenChange={setShowFoodDialog}>
+                      <DialogTrigger asChild>
+                        <Button className="w-full">
+                          <Plus className="w-4 h-4 mr-2" />
+                          Add Food
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="max-w-md max-h-[80vh] overflow-y-auto">
+                        <DialogHeader>
+                          <DialogTitle>Add Food Entry</DialogTitle>
+                          <DialogDescription>
+                            Search for foods and add them to your daily nutrition log with automatic calorie calculation.
+                          </DialogDescription>
+                        </DialogHeader>
+                        <div className="space-y-4">
+                          {/* Meal Selection */}
+                          <div>
+                            <Label>Meal</Label>
+                            <Select value={selectedMeal} onValueChange={(value: any) => setSelectedMeal(value)}>
+                              <SelectTrigger>
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="breakfast">Breakfast</SelectItem>
+                                <SelectItem value="lunch">Lunch</SelectItem>
+                                <SelectItem value="dinner">Dinner</SelectItem>
+                                <SelectItem value="snack">Snack</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+
+                          {/* Food Search */}
+                          <div>
+                            <Label>Search Food</Label>
+                            <div className="relative">
+                              <Input
+                                placeholder="Type food name (e.g., banana, chicken breast)"
+                                value={foodSearch}
+                                onChange={(e) => setFoodSearch(e.target.value)}
+                              />
+                              <Search className="absolute right-3 top-3 w-4 h-4 text-gray-400" />
+                            </div>
+                            {isSearching && (
+                              <div className="flex items-center gap-2 mt-2 text-sm text-gray-600">
+                                <Loader2 className="w-4 h-4 animate-spin" />
+                                Searching foods...
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Search Results */}
+                          {searchResults.length > 0 && (
+                            <div className="space-y-2">
+                              <Label>Select Food</Label>
+                              <div className="max-h-48 overflow-y-auto space-y-1">
+                                {searchResults.map((result, index) => (
+                                  <div
+                                    key={index}
+                                    className={`p-3 border rounded-lg cursor-pointer transition-colors ${
+                                      selectedFood?.food.foodId === result.food.foodId
+                                        ? 'bg-blue-50 border-blue-300'
+                                        : 'hover:bg-gray-50'
+                                    }`}
+                                    onClick={() => {
+                                      setSelectedFood(result);
+                                      setSelectedMeasure(result.measures[0]?.uri || '');
+                                    }}
+                                  >
+                                    <div className="font-medium">{result.food.label}</div>
+                                    <div className="text-sm text-gray-600">
+                                      {result.food.nutrients.ENERC_KCAL} cal per 100g
+                                      {result.food.category && (
+                                        <Badge variant="secondary" className="ml-2 text-xs">
+                                          {result.food.category}
+                                        </Badge>
+                                      )}
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Quantity and Measure */}
+                          {selectedFood && (
+                            <div className="space-y-4">
+                              <Separator />
+                              <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                  <Label>Quantity</Label>
+                                  <Input
+                                    type="number"
+                                    value={quantity}
+                                    onChange={(e) => setQuantity(e.target.value)}
+                                    placeholder="100"
+                                    min="1"
+                                  />
+                                </div>
+                                <div>
+                                  <Label>Unit</Label>
+                                  <Select value={selectedMeasure} onValueChange={setSelectedMeasure}>
+                                    <SelectTrigger>
+                                      <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      {selectedFood.measures.map((measure) => (
+                                        <SelectItem key={measure.uri} value={measure.uri}>
+                                          {measure.label}
+                                        </SelectItem>
+                                      ))}
+                                    </SelectContent>
+                                  </Select>
+                                </div>
+                              </div>
+
+                              {/* Nutrition Preview */}
+                              <div className="bg-gray-50 p-3 rounded-lg">
+                                <h4 className="font-medium mb-2">Nutrition Preview</h4>
+                                <div className="grid grid-cols-2 gap-2 text-sm">
+                                  <div>Calories: <span className="font-medium">
+                                    {Math.round(selectedFood.food.nutrients.ENERC_KCAL * 
+                                      ((parseFloat(quantity) || 100) * (selectedFood.measures.find(m => m.uri === selectedMeasure)?.weight || 1)) / 100
+                                    )}
+                                  </span></div>
+                                  {selectedFood.food.nutrients.PROCNT && (
+                                    <div>Protein: <span className="font-medium">
+                                      {Math.round(selectedFood.food.nutrients.PROCNT * 
+                                        ((parseFloat(quantity) || 100) * (selectedFood.measures.find(m => m.uri === selectedMeasure)?.weight || 1)) / 100 * 10
+                                      ) / 10}g
+                                    </span></div>
+                                  )}
+                                </div>
+                              </div>
+
+                              <Button onClick={handleAddFood} disabled={addFoodMutation.isPending} className="w-full">
+                                {addFoodMutation.isPending ? (
+                                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                ) : (
+                                  <Plus className="w-4 h-4 mr-2" />
+                                )}
+                                Add to {selectedMeal}
+                              </Button>
+                            </div>
+                          )}
+                        </div>
+                      </DialogContent>
+                    </Dialog>
+
+                    <div className="flex gap-2">
+                      <Button variant="outline" onClick={resetDayData} className="flex-1">
+                        <RotateCcw className="w-4 h-4 mr-2" />
+                        Reset Day
+                      </Button>
+                      <Button 
+                        onClick={logDayCalories} 
+                        disabled={isLoggingDay || dailyTotals.calories === 0} 
+                        className="flex-1"
+                      >
+                        {isLoggingDay ? (
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        ) : (
+                          <CheckCircle className="w-4 h-4 mr-2" />
+                        )}
+                        Log Day
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
 
+            {/* Food Entries */}
             <div className="lg:col-span-2 space-y-6">
               {mealTypes.map(({ key, label, icon }) => (
                 <Card key={key}>
@@ -538,7 +670,6 @@ export default function CalorieCounter() {
                               size="sm"
                               onClick={() => deleteFoodMutation.mutate(entry.id)}
                               disabled={deleteFoodMutation.isPending}
-                              className="hover:bg-red-600/20 hover:text-red-400"
                             >
                               {deleteFoodMutation.isPending ? (
                                 <Loader2 className="w-4 h-4 animate-spin" />
@@ -562,231 +693,6 @@ export default function CalorieCounter() {
           </div>
         </div>
       </section>
-
-      {/* Set Goal Dialog */}
-      <Dialog open={showGoalDialog} onOpenChange={setShowGoalDialog}>
-        <DialogContent className="bg-black border border-red-600/30 text-white">
-          <DialogHeader>
-            <DialogTitle className="text-2xl font-black text-athletic uppercase tracking-wide">SET DAILY CALORIE GOAL</DialogTitle>
-            <DialogDescription className="text-gray-400">
-              Set your daily calorie target to track your nutrition progress effectively.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <Label htmlFor="calorie-goal" className="text-white font-medium">Daily Calorie Goal</Label>
-              <Input
-                id="calorie-goal"
-                type="number"
-                placeholder="Enter calorie goal..."
-                value={dailyCalorieGoal}
-                onChange={(e) => setDailyCalorieGoal(parseInt(e.target.value) || 0)}
-                className="bg-gray-900 border-red-600/30 text-white placeholder-gray-500"
-                min="500"
-                max="5000"
-              />
-            </div>
-            <div className="flex gap-2 pt-4">
-              <Button 
-                variant="outline" 
-                onClick={() => setShowGoalDialog(false)}
-                className="flex-1 bg-black/50 border-red-600/30 text-white hover:bg-red-600/20"
-              >
-                Cancel
-              </Button>
-              <Button 
-                onClick={() => updateGoalMutation.mutate(dailyCalorieGoal)}
-                disabled={updateGoalMutation.isPending}
-                className="flex-1 bg-red-600 hover:bg-red-700 text-white"
-              >
-                {updateGoalMutation.isPending ? (
-                  <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                ) : null}
-                Update Goal
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      {/* Add Food Dialog */}
-      <Dialog open={showFoodDialog} onOpenChange={setShowFoodDialog}>
-        <DialogContent className="bg-black border border-red-600/30 text-white max-w-2xl">
-          <DialogHeader>
-            <DialogTitle className="text-2xl font-black text-athletic uppercase tracking-wide">ADD FOOD ENTRY</DialogTitle>
-            <DialogDescription className="text-gray-400">
-              Search for food items and add them to your daily nutrition log.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-6 py-4">
-            {/* Meal Selection */}
-            <div className="space-y-2">
-              <Label className="text-white font-medium">Meal Type</Label>
-              <Select value={selectedMeal} onValueChange={(value: any) => setSelectedMeal(value)}>
-                <SelectTrigger className="bg-gray-900 border-red-600/30 text-white">
-                  <SelectValue placeholder="Select meal type" />
-                </SelectTrigger>
-                <SelectContent className="bg-gray-900 border-red-600/30">
-                  {mealTypes.map(meal => (
-                    <SelectItem key={meal.key} value={meal.key} className="text-white hover:bg-red-600/20">
-                      {meal.icon} {meal.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Food Search */}
-            <div className="space-y-2">
-              <Label className="text-white font-medium">Search Food</Label>
-              <div className="relative">
-                <Input
-                  placeholder="Search for food items..."
-                  value={foodSearch}
-                  onChange={(e) => {
-                    setFoodSearch(e.target.value);
-                    searchFood(e.target.value);
-                  }}
-                  className="bg-gray-900 border-red-600/30 text-white placeholder-gray-500 pr-10"
-                />
-                <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-              </div>
-              
-              {isSearching && (
-                <div className="flex items-center gap-2 text-gray-400">
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  Searching for foods...
-                </div>
-              )}
-
-              {/* Search Results */}
-              {searchResults.length > 0 && (
-                <div className="max-h-48 overflow-y-auto space-y-1 bg-gray-900 border border-red-600/30 rounded-md p-2">
-                  {searchResults.slice(0, 10).map((result, index) => (
-                    <button
-                      key={index}
-                      onClick={() => {
-                        setSelectedFood(result);
-                        setSelectedMeasure(result.measures[0]?.uri || '');
-                        setFoodSearch(result.food.label);
-                        setSearchResults([]);
-                      }}
-                      className="w-full text-left p-2 hover:bg-red-600/20 rounded text-white"
-                    >
-                      <div className="font-medium">{result.food.label}</div>
-                      <div className="text-sm text-gray-400">
-                        {Math.round(result.food.nutrients.ENERC_KCAL)} cal per 100g
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* Quantity and Measure */}
-            {selectedFood && (
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label className="text-white font-medium">Quantity</Label>
-                  <Input
-                    type="number"
-                    placeholder="100"
-                    value={quantity}
-                    onChange={(e) => setQuantity(e.target.value)}
-                    className="bg-gray-900 border-red-600/30 text-white placeholder-gray-500"
-                    min="1"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label className="text-white font-medium">Measure</Label>
-                  <Select value={selectedMeasure} onValueChange={setSelectedMeasure}>
-                    <SelectTrigger className="bg-gray-900 border-red-600/30 text-white">
-                      <SelectValue placeholder="Select measure" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-gray-900 border-red-600/30">
-                      {selectedFood.measures.map((measure, index) => (
-                        <SelectItem key={index} value={measure.uri} className="text-white hover:bg-red-600/20">
-                          {measure.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-            )}
-
-            {/* Nutrition Preview */}
-            {selectedFood && selectedMeasure && quantity && (
-              <div className="bg-gray-900 border border-red-600/30 rounded-lg p-4">
-                <h4 className="font-medium text-white mb-2">Nutrition Preview</h4>
-                <div className="grid grid-cols-4 gap-4 text-center">
-                  <div>
-                    <div className="text-lg font-bold text-red-400">
-                      {Math.round(selectedFood.food.nutrients.ENERC_KCAL * 
-                        (selectedFood.measures.find(m => m.uri === selectedMeasure)?.weight || 100) / 100 * 
-                        parseFloat(quantity))}
-                    </div>
-                    <div className="text-xs text-gray-400">Calories</div>
-                  </div>
-                  <div>
-                    <div className="text-lg font-bold text-blue-400">
-                      {Math.round((selectedFood.food.nutrients.PROCNT || 0) * 
-                        (selectedFood.measures.find(m => m.uri === selectedMeasure)?.weight || 100) / 100 * 
-                        parseFloat(quantity))}g
-                    </div>
-                    <div className="text-xs text-gray-400">Protein</div>
-                  </div>
-                  <div>
-                    <div className="text-lg font-bold text-green-400">
-                      {Math.round((selectedFood.food.nutrients.CHOCDF || 0) * 
-                        (selectedFood.measures.find(m => m.uri === selectedMeasure)?.weight || 100) / 100 * 
-                        parseFloat(quantity))}g
-                    </div>
-                    <div className="text-xs text-gray-400">Carbs</div>
-                  </div>
-                  <div>
-                    <div className="text-lg font-bold text-orange-400">
-                      {Math.round((selectedFood.food.nutrients.FAT || 0) * 
-                        (selectedFood.measures.find(m => m.uri === selectedMeasure)?.weight || 100) / 100 * 
-                        parseFloat(quantity))}g
-                    </div>
-                    <div className="text-xs text-gray-400">Fat</div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            <div className="flex gap-2 pt-4">
-              <Button 
-                variant="outline" 
-                onClick={() => setShowFoodDialog(false)}
-                className="flex-1 bg-black/50 border-red-600/30 text-white hover:bg-red-600/20 font-bold uppercase tracking-wide"
-              >
-                Cancel
-              </Button>
-              <Button 
-                onClick={handleAddFood}
-                disabled={!selectedFood || !selectedMeasure || !quantity || addFoodMutation.isPending}
-                className="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold uppercase tracking-wide disabled:bg-gray-600 disabled:cursor-not-allowed"
-              >
-                {addFoodMutation.isPending ? (
-                  <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                ) : (
-                  <Plus className="w-4 h-4 mr-2" />
-                )}
-                ADD FOOD
-              </Button>
-            </div>
-
-            {/* Debug info for troubleshooting */}
-            {process.env.NODE_ENV === 'development' && (
-              <div className="mt-4 p-2 bg-gray-800 rounded text-xs text-gray-400">
-                Debug: Food: {selectedFood ? '✓' : '✗'} | Measure: {selectedMeasure ? '✓' : '✗'} | Quantity: {quantity ? '✓' : '✗'}
-              </div>
-            )}
-          </div>
-        </DialogContent>
-      </Dialog>
       
       <Footer />
     </div>

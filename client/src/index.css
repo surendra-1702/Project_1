@@ -3,60 +3,58 @@
 @tailwind utilities;
 
 :root {
-  /* Fitness Theme: Black, Red, Grey, White */
-  --background: hsl(0, 0%, 100%); /* White background */
-  --foreground: hsl(0, 0%, 0%); /* Black text */
-  --muted: hsl(0, 0%, 87%); /* Light grey */
-  --muted-foreground: hsl(0, 0%, 45%); /* Medium grey */
-  --popover: hsl(0, 0%, 100%); /* White */
-  --popover-foreground: hsl(0, 0%, 0%); /* Black */
-  --card: hsl(0, 0%, 95%); /* Light grey cards */
-  --card-foreground: hsl(0, 0%, 0%); /* Black text on cards */
-  --border: hsl(0, 0%, 85%); /* Light grey borders */
-  --input: hsl(0, 0%, 95%); /* Light grey inputs */
-  --primary: hsl(0, 84%, 60%); /* Red primary */
-  --primary-foreground: hsl(0, 0%, 100%); /* White text on red */
-  --secondary: hsl(0, 0%, 75%); /* Medium grey */
-  --secondary-foreground: hsl(0, 0%, 0%); /* Black text */
-  --accent: hsl(0, 84%, 95%); /* Light red accent */
-  --accent-foreground: hsl(0, 84%, 20%); /* Dark red text */
-  --destructive: hsl(0, 84%, 60%); /* Red destructive */
-  --destructive-foreground: hsl(0, 0%, 100%); /* White text */
-  --ring: hsl(0, 84%, 60%); /* Red focus ring */
-  --radius: 0.75rem; /* Slightly more rounded */
-  --chart-1: hsl(0, 84%, 60%); /* Red */
-  --chart-2: hsl(0, 0%, 25%); /* Dark grey */
-  --chart-3: hsl(0, 0%, 50%); /* Medium grey */
-  --chart-4: hsl(0, 84%, 70%); /* Light red */
-  --chart-5: hsl(0, 0%, 75%); /* Light grey */
+  --background: hsl(0, 0%, 100%);
+  --foreground: hsl(20, 14.3%, 4.1%);
+  --muted: hsl(60, 4.8%, 95.9%);
+  --muted-foreground: hsl(25, 5.3%, 44.7%);
+  --popover: hsl(0, 0%, 100%);
+  --popover-foreground: hsl(20, 14.3%, 4.1%);
+  --card: hsl(0, 0%, 100%);
+  --card-foreground: hsl(20, 14.3%, 4.1%);
+  --border: hsl(20, 5.9%, 90%);
+  --input: hsl(20, 5.9%, 90%);
+  --primary: hsl(207, 90%, 54%);
+  --primary-foreground: hsl(211, 100%, 99%);
+  --secondary: hsl(60, 4.8%, 95.9%);
+  --secondary-foreground: hsl(24, 9.8%, 10%);
+  --accent: hsl(60, 4.8%, 95.9%);
+  --accent-foreground: hsl(24, 9.8%, 10%);
+  --destructive: hsl(0, 84.2%, 60.2%);
+  --destructive-foreground: hsl(60, 9.1%, 97.8%);
+  --ring: hsl(20, 14.3%, 4.1%);
+  --radius: 0.5rem;
+  --chart-1: hsl(207, 90%, 54%);
+  --chart-2: hsl(173, 58%, 39%);
+  --chart-3: hsl(197, 37%, 24%);
+  --chart-4: hsl(43, 74%, 66%);
+  --chart-5: hsl(27, 87%, 67%);
 }
 
 .dark {
-  /* Dark theme: Black backgrounds, white text, red accents */
-  --background: hsl(0, 0%, 8%); /* Deep black background */
-  --foreground: hsl(0, 0%, 98%); /* White text */
-  --muted: hsl(0, 0%, 15%); /* Dark grey */
-  --muted-foreground: hsl(0, 0%, 65%); /* Light grey */
-  --popover: hsl(0, 0%, 10%); /* Dark black */
-  --popover-foreground: hsl(0, 0%, 98%); /* White */
-  --card: hsl(0, 0%, 12%); /* Dark grey cards */
-  --card-foreground: hsl(0, 0%, 98%); /* White text on cards */
-  --border: hsl(0, 0%, 20%); /* Dark grey borders */
-  --input: hsl(0, 0%, 15%); /* Dark grey inputs */
-  --primary: hsl(0, 84%, 60%); /* Red primary */
-  --primary-foreground: hsl(0, 0%, 100%); /* White text on red */
-  --secondary: hsl(0, 0%, 18%); /* Dark grey */
-  --secondary-foreground: hsl(0, 0%, 98%); /* White text */
-  --accent: hsl(0, 84%, 15%); /* Dark red accent */
-  --accent-foreground: hsl(0, 84%, 85%); /* Light red text */
-  --destructive: hsl(0, 84%, 60%); /* Red destructive */
-  --destructive-foreground: hsl(0, 0%, 100%); /* White text */
-  --ring: hsl(0, 84%, 60%); /* Red focus ring */
-  --chart-1: hsl(0, 84%, 60%); /* Red */
-  --chart-2: hsl(0, 0%, 25%); /* Dark grey */
-  --chart-3: hsl(0, 0%, 50%); /* Medium grey */
-  --chart-4: hsl(0, 84%, 70%); /* Light red */
-  --chart-5: hsl(0, 0%, 75%); /* Light grey */
+  --background: hsl(240, 10%, 3.9%);
+  --foreground: hsl(0, 0%, 98%);
+  --muted: hsl(240, 3.7%, 15.9%);
+  --muted-foreground: hsl(240, 5%, 64.9%);
+  --popover: hsl(240, 10%, 3.9%);
+  --popover-foreground: hsl(0, 0%, 98%);
+  --card: hsl(240, 10%, 3.9%);
+  --card-foreground: hsl(0, 0%, 98%);
+  --border: hsl(240, 3.7%, 15.9%);
+  --input: hsl(240, 3.7%, 15.9%);
+  --primary: hsl(207, 90%, 54%);
+  --primary-foreground: hsl(211, 100%, 99%);
+  --secondary: hsl(240, 3.7%, 15.9%);
+  --secondary-foreground: hsl(0, 0%, 98%);
+  --accent: hsl(240, 3.7%, 15.9%);
+  --accent-foreground: hsl(0, 0%, 98%);
+  --destructive: hsl(0, 62.8%, 30.6%);
+  --destructive-foreground: hsl(0, 0%, 98%);
+  --ring: hsl(240, 4.9%, 83.9%);
+  --chart-1: hsl(207, 90%, 54%);
+  --chart-2: hsl(173, 58%, 39%);
+  --chart-3: hsl(197, 37%, 24%);
+  --chart-4: hsl(43, 74%, 66%);
+  --chart-5: hsl(27, 87%, 67%);
 }
 
 @layer base {
@@ -66,121 +64,69 @@
 
   body {
     @apply font-sans antialiased bg-background text-foreground;
-    font-family: 'Inter', 'system-ui', sans-serif;
-    font-weight: 500;
   }
 
-  /* Import modern fonts */
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
-
-  /* Fitness theme gradients - Black to Red */
+  /* Custom fitness theme colors */
   .bg-fitness-primary {
-    background: linear-gradient(135deg, hsl(0, 0%, 8%) 0%, hsl(0, 84%, 35%) 100%);
+    background: linear-gradient(135deg, hsl(207, 90%, 54%), hsl(197, 37%, 24%));
   }
   
   .bg-fitness-secondary {
-    background: linear-gradient(135deg, hsl(0, 0%, 15%) 0%, hsl(0, 0%, 25%) 100%);
+    background: linear-gradient(135deg, hsl(173, 58%, 39%), hsl(207, 90%, 54%));
   }
   
   .bg-fitness-accent {
-    background: linear-gradient(135deg, hsl(0, 84%, 60%) 0%, hsl(0, 84%, 70%) 100%);
+    background: linear-gradient(135deg, hsl(43, 74%, 66%), hsl(27, 87%, 67%));
   }
 
-  /* Hero gradient - Dynamic black to red */
+  /* Hero gradient */
   .hero-gradient {
-    background: linear-gradient(135deg, hsl(0, 0%, 5%) 0%, hsl(0, 84%, 25%) 50%, hsl(0, 84%, 60%) 100%);
+    background: linear-gradient(135deg, hsl(207, 90%, 54%) 0%, hsl(197, 37%, 24%) 50%, hsl(173, 58%, 39%) 100%);
   }
 
-  /* Glassmorphism effect */
-  .glass-card {
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  }
-
-  .glass-card-dark {
-    background: rgba(0, 0, 0, 0.3);
-    backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  }
-
-  /* Athletic button styles */
-  .btn-primary {
-    background: linear-gradient(135deg, hsl(0, 84%, 60%) 0%, hsl(0, 84%, 50%) 100%);
-    border: none;
-    color: white;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(240, 68, 68, 0.3);
-  }
-
-  .btn-primary:hover {
-    background: linear-gradient(135deg, hsl(0, 84%, 50%) 0%, hsl(0, 84%, 40%) 100%);
-    box-shadow: 0 6px 20px rgba(240, 68, 68, 0.4);
-    transform: translateY(-2px);
-  }
-
-  /* Body part button gradients - Red variations */
+  /* Body part button gradients */
   .bodypart-chest {
-    background: linear-gradient(135deg, hsl(0, 84%, 60%) 0%, hsl(0, 84%, 50%) 100%);
+    background: linear-gradient(135deg, hsl(217, 91%, 60%) 0%, hsl(217, 91%, 50%) 100%);
   }
   
   .bodypart-back {
-    background: linear-gradient(135deg, hsl(0, 70%, 55%) 0%, hsl(0, 70%, 45%) 100%);
+    background: linear-gradient(135deg, hsl(142, 76%, 36%) 0%, hsl(142, 76%, 46%) 100%);
   }
   
   .bodypart-shoulders {
-    background: linear-gradient(135deg, hsl(0, 60%, 50%) 0%, hsl(0, 60%, 40%) 100%);
+    background: linear-gradient(135deg, hsl(271, 76%, 53%) 0%, hsl(271, 76%, 63%) 100%);
   }
   
   .bodypart-arms {
-    background: linear-gradient(135deg, hsl(0, 84%, 65%) 0%, hsl(0, 84%, 55%) 100%);
+    background: linear-gradient(135deg, hsl(0, 84%, 60%) 0%, hsl(0, 84%, 50%) 100%);
   }
   
   .bodypart-abs {
-    background: linear-gradient(135deg, hsl(0, 75%, 58%) 0%, hsl(0, 75%, 48%) 100%);
+    background: linear-gradient(135deg, hsl(43, 96%, 56%) 0%, hsl(43, 96%, 66%) 100%);
   }
   
   .bodypart-legs {
-    background: linear-gradient(135deg, hsl(0, 65%, 52%) 0%, hsl(0, 65%, 42%) 100%);
+    background: linear-gradient(135deg, hsl(238, 76%, 53%) 0%, hsl(238, 76%, 63%) 100%);
   }
 
-  /* Modern smooth animations */
+  /* Smooth animations */
   .animate-fade-in {
-    animation: fadeIn 0.6s ease-out;
+    animation: fadeIn 0.5s ease-in-out;
   }
 
   .animate-slide-up {
-    animation: slideUp 0.8s ease-out;
-  }
-
-  .animate-scale-up {
-    animation: scaleUp 0.4s ease-out;
-  }
-
-  .animate-bounce-in {
-    animation: bounceIn 0.6s ease-out;
+    animation: slideUp 0.6s ease-out;
   }
 
   @keyframes fadeIn {
-    from { 
-      opacity: 0;
-      transform: scale(0.95);
-    }
-    to { 
-      opacity: 1;
-      transform: scale(1);
-    }
+    from { opacity: 0; }
+    to { opacity: 1; }
   }
 
   @keyframes slideUp {
     from { 
       opacity: 0;
-      transform: translateY(30px);
+      transform: translateY(20px);
     }
     to { 
       opacity: 1;
@@ -188,77 +134,21 @@
     }
   }
 
-  @keyframes scaleUp {
-    from { 
-      opacity: 0;
-      transform: scale(0.9);
-    }
-    to { 
-      opacity: 1;
-      transform: scale(1);
-    }
-  }
-
-  @keyframes bounceIn {
-    0% { 
-      opacity: 0;
-      transform: scale(0.8);
-    }
-    60% { 
-      opacity: 1;
-      transform: scale(1.05);
-    }
-    100% { 
-      opacity: 1;
-      transform: scale(1);
-    }
-  }
-
-  /* Hover effects */
-  .hover-lift {
-    transition: all 0.3s ease;
-  }
-
-  .hover-lift:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
-  }
-
-  .hover-glow:hover {
-    box-shadow: 0 0 20px rgba(240, 68, 68, 0.4);
-  }
-
-  /* Custom scrollbar - Red theme */
+  /* Custom scrollbar */
   ::-webkit-scrollbar {
-    width: 10px;
+    width: 8px;
   }
 
   ::-webkit-scrollbar-track {
-    background: hsl(0, 0%, 90%);
+    background: hsl(60, 4.8%, 95.9%);
   }
 
   ::-webkit-scrollbar-thumb {
-    background: linear-gradient(135deg, hsl(0, 84%, 60%) 0%, hsl(0, 84%, 50%) 100%);
-    border-radius: 6px;
+    background: hsl(207, 90%, 54%);
+    border-radius: 4px;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(135deg, hsl(0, 84%, 50%) 0%, hsl(0, 84%, 40%) 100%);
-  }
-
-  /* Typography - Athletic and bold */
-  .text-athletic {
-    font-family: 'Inter', sans-serif;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-  }
-
-  .text-energy {
-    background: linear-gradient(135deg, hsl(0, 84%, 60%) 0%, hsl(0, 84%, 40%) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    font-weight: 900;
+    background: hsl(197, 37%, 24%);
   }
 }
