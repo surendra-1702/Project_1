@@ -55,7 +55,7 @@ export default function Navigation() {
               {navigation.map((item) => (
                 <Link key={item.name} href={item.href}>
                   <span
-                    className={`px-3 py-2 text-sm font-bold cursor-pointer transition-all duration-300 rounded-md uppercase tracking-wide ${
+                    className={`px-3 py-2 text-sm font-bold cursor-pointer transition-all duration-300 rounded-md uppercase tracking-wide flex items-center justify-center ${
                       isActive(item.href)
                         ? 'bg-red-600 text-white shadow-md'
                         : 'text-white hover:bg-red-600/10 hover:text-red-400'
@@ -68,7 +68,7 @@ export default function Navigation() {
               {user?.role === 'admin' && adminNavigation.map((item) => (
                 <Link key={item.name} href={item.href}>
                   <span
-                    className={`px-3 py-2 text-sm font-bold cursor-pointer transition-all duration-300 rounded-md uppercase tracking-wide flex items-center gap-1.5 ${
+                    className={`px-3 py-2 text-sm font-bold cursor-pointer transition-all duration-300 rounded-md uppercase tracking-wide flex items-center justify-center gap-1.5 ${
                       isActive(item.href)
                         ? 'bg-red-600 text-white shadow-md'
                         : 'text-white hover:bg-red-600/10 hover:text-red-400'
