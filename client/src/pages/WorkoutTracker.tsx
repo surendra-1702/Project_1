@@ -56,10 +56,7 @@ export default function WorkoutTracker() {
 
   const createSessionMutation = useMutation({
     mutationFn: async (sessionData: any) => {
-      return await apiRequest('/api/workout-tracker-sessions', {
-        method: 'POST',
-        body: JSON.stringify(sessionData),
-      });
+      return await apiRequest('POST', '/api/workout-tracker-sessions', sessionData);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/workout-tracker-sessions'] });
@@ -81,10 +78,7 @@ export default function WorkoutTracker() {
 
   const updateSessionMutation = useMutation({
     mutationFn: async ({ id, ...sessionData }: any) => {
-      return await apiRequest(`/api/workout-tracker-sessions/${id}`, {
-        method: 'PUT',
-        body: JSON.stringify(sessionData),
-      });
+      return await apiRequest('PUT', `/api/workout-tracker-sessions/${id}`, sessionData);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/workout-tracker-sessions'] });
@@ -106,9 +100,7 @@ export default function WorkoutTracker() {
 
   const deleteSessionMutation = useMutation({
     mutationFn: async (sessionId: number) => {
-      return await apiRequest(`/api/workout-tracker-sessions/${sessionId}`, {
-        method: 'DELETE',
-      });
+      return await apiRequest('DELETE', `/api/workout-tracker-sessions/${sessionId}`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/workout-tracker-sessions'] });
