@@ -86,50 +86,7 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Feature highlights */}
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
-          <div className="grid md:grid-cols-4 gap-6 text-center">
-            <Card className="bg-white bg-opacity-10 backdrop-blur-sm border-none text-white">
-              <CardContent className="p-6">
-                <div className="text-3xl mb-3">
-                  <Dumbbell className="h-8 w-8 text-amber-400 mx-auto" />
-                </div>
-                <h3 className="font-semibold mb-2">1000+ Exercises</h3>
-                <p className="text-sm text-blue-100">GIF demonstrations for all muscle groups</p>
-              </CardContent>
-            </Card>
-            
-            <Card className="bg-white bg-opacity-10 backdrop-blur-sm border-none text-white">
-              <CardContent className="p-6">
-                <div className="text-3xl mb-3">
-                  <Bot className="h-8 w-8 text-amber-400 mx-auto" />
-                </div>
-                <h3 className="font-semibold mb-2">AI-Powered Plans</h3>
-                <p className="text-sm text-blue-100">Personalized workouts based on your goals</p>
-              </CardContent>
-            </Card>
-            
-            <Card className="bg-white bg-opacity-10 backdrop-blur-sm border-none text-white">
-              <CardContent className="p-6">
-                <div className="text-3xl mb-3">
-                  <TrendingUp className="h-8 w-8 text-amber-400 mx-auto" />
-                </div>
-                <h3 className="font-semibold mb-2">Progress Tracking</h3>
-                <p className="text-sm text-blue-100">Monitor your fitness journey in real-time</p>
-              </CardContent>
-            </Card>
-            
-            <Card className="bg-white bg-opacity-10 backdrop-blur-sm border-none text-white">
-              <CardContent className="p-6">
-                <div className="text-3xl mb-3">
-                  <Users className="h-8 w-8 text-amber-400 mx-auto" />
-                </div>
-                <h3 className="font-semibold mb-2">Community</h3>
-                <p className="text-sm text-blue-100">Share tips and motivation with others</p>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
+
       </section>
 
       {/* Quick Access Section */}
