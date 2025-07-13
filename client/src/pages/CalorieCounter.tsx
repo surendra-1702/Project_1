@@ -326,18 +326,18 @@ export default function CalorieCounter() {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-black">
         <Navigation />
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <Card className="text-center">
-            <CardContent className="p-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">Authentication Required</h2>
-              <p className="text-gray-600 mb-6">Please sign in to access the calorie counter</p>
-              <Button asChild>
-                <a href="/auth">Sign In</a>
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+          <div className="glass-card-dark border border-red-600/20 text-center hover-glow">
+            <div className="p-12">
+              <h2 className="text-4xl font-black text-white mb-6 text-athletic uppercase tracking-wide">ACCESS DENIED</h2>
+              <p className="text-gray-300 mb-8 text-xl">Sign in to access the calorie crusher</p>
+              <Button asChild className="btn-primary font-black uppercase tracking-wide text-xl px-8 py-4">
+                <a href="/auth">SIGN IN</a>
               </Button>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
         <Footer />
       </div>
@@ -345,43 +345,47 @@ export default function CalorieCounter() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-black">
       <Navigation />
       
-      <section className="py-16 bg-gray-50">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">Smart Calorie Counter</h1>
-            <p className="text-xl text-gray-600">Track your daily nutrition with automatic food lookup</p>
+      {/* Hero Section */}
+      <section className="py-24 bg-gradient-to-br from-black via-gray-900 to-black relative">
+        <div className="absolute inset-0 bg-red-600/5"></div>
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="text-center mb-16">
+            <h1 className="text-7xl font-black text-white mb-6 text-athletic uppercase tracking-tight">
+              CALORIE <span className="text-energy">CRUSHER</span>
+            </h1>
+            <p className="text-2xl text-gray-300 font-medium max-w-4xl mx-auto">Track your daily nutrition with automatic food lookup and macro domination</p>
           </div>
 
           {/* Date Navigation */}
-          <div className="flex items-center justify-center gap-4 mb-8">
-            <Button variant="outline" size="sm" onClick={() => setSelectedDate(subDays(selectedDate, 1))}>
-              <Calendar className="w-4 h-4 mr-2" />
-              Previous
+          <div className="flex items-center justify-center gap-6 mb-12">
+            <Button variant="outline" size="lg" onClick={() => setSelectedDate(subDays(selectedDate, 1))} className="bg-black/50 border-red-600/30 text-white hover:bg-red-600/20 font-bold uppercase tracking-wide">
+              <Calendar className="w-5 w-5 mr-2" />
+              PREVIOUS
             </Button>
-            <div className="text-lg font-semibold">
+            <div className="text-2xl font-black text-white text-athletic uppercase tracking-wide">
               {format(selectedDate, 'EEEE, MMMM d, yyyy')}
             </div>
-            <Button variant="outline" size="sm" onClick={() => setSelectedDate(addDays(selectedDate, 1))}>
-              Next
-              <Calendar className="w-4 h-4 ml-2" />
+            <Button variant="outline" size="lg" onClick={() => setSelectedDate(addDays(selectedDate, 1))} className="bg-black/50 border-red-600/30 text-white hover:bg-red-600/20 font-bold uppercase tracking-wide">
+              NEXT
+              <Calendar className="w-5 h-5 ml-2" />
             </Button>
           </div>
 
           <div className="grid lg:grid-cols-3 gap-8">
             {/* Daily Overview */}
             <div className="lg:col-span-1">
-              <Card className="sticky top-24">
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <CardTitle>Daily Progress</CardTitle>
+              <div className="glass-card-dark border border-red-600/20 hover-glow sticky top-24">
+                <div className="p-6">
+                  <div className="flex items-center justify-between mb-6">
+                    <h3 className="text-2xl font-black text-white text-athletic uppercase tracking-wide">DAILY PROGRESS</h3>
                     <Dialog open={showGoalDialog} onOpenChange={setShowGoalDialog}>
                       <DialogTrigger asChild>
-                        <Button variant="outline" size="sm">
+                        <Button variant="outline" size="sm" className="bg-red-600/20 border-red-600/30 text-red-400 hover:bg-red-600 hover:text-white font-bold uppercase tracking-wide">
                           <Target className="w-4 h-4 mr-2" />
-                          Set Goal
+                          SET GOAL
                         </Button>
                       </DialogTrigger>
                       <DialogContent>
@@ -415,8 +419,7 @@ export default function CalorieCounter() {
                       </DialogContent>
                     </Dialog>
                   </div>
-                </CardHeader>
-                <CardContent className="space-y-6">
+                <div className="space-y-6">
                   {/* Calorie Progress Circle */}
                   <div className="text-center">
                     <div className="relative w-32 h-32 mx-auto mb-4">
@@ -634,8 +637,8 @@ export default function CalorieCounter() {
                       </Button>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             </div>
 
             {/* Food Entries */}
