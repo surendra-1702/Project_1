@@ -39,7 +39,7 @@ export interface IStorage {
   updateWorkoutSession(id: number, updates: Partial<InsertWorkoutSession>): Promise<WorkoutSession | undefined>;
 
   // Food Entry operations
-  getFoodEntries(userId: number, date?: Date): Promise<FoodEntry[]>;
+  getFoodEntries(userId: number, date?: Date | string): Promise<FoodEntry[]>;
   createFoodEntry(entry: InsertFoodEntry): Promise<FoodEntry>;
   updateFoodEntry(id: number, updates: Partial<InsertFoodEntry>): Promise<FoodEntry | undefined>;
   deleteFoodEntry(id: number): Promise<boolean>;
@@ -348,14 +348,15 @@ export class MemStorage implements IStorage {
   }
 
   // Food Entry operations
-  async getFoodEntries(userId: number, date?: Date): Promise<FoodEntry[]> {
+  async getFoodEntries(userId: number, date?: Date | string): Promise<FoodEntry[]> {
     let entries = Array.from(this.foodEntries.values()).filter(entry => entry.userId === userId);
     
     if (date) {
-      const targetDate = new Date(date).toDateString();
-      entries = entries.filter(entry => 
-        new Date(entry.date).toDateString() === targetDate
-      );
+      const targetDate = typeof date === 'string' ? date : date.toDateString();
+      entries = entries.filter(entry => {
+        const entryDate = typeof entry.date === 'string' ? entry.date : new Date(entry.date).toDateString();
+        return entryDate === targetDate;
+      });
     }
     
     return entries.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
@@ -668,11 +669,12 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Food Entry operations
-  async getFoodEntries(userId: number, date?: Date): Promise<FoodEntry[]> {
+  async getFoodEntries(userId: number, date?: Date | string): Promise<FoodEntry[]> {
     let query = db.select().from(foodEntries).where(eq(foodEntries.userId, userId));
     
     if (date) {
-      const targetDate = date.toISOString().split('T')[0]; // Get YYYY-MM-DD format
+      // Handle both Date objects and string dates
+      const targetDate = typeof date === 'string' ? date : date.toISOString().split('T')[0];
       query = db.select().from(foodEntries).where(
         and(
           eq(foodEntries.userId, userId),
