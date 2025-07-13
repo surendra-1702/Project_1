@@ -57,6 +57,13 @@ export default function CalorieCounter() {
   const [dailyCalorieGoal, setDailyCalorieGoal] = useState(user?.dailyCalorieGoal || 2000);
   const [showGoalDialog, setShowGoalDialog] = useState(false);
   const [showFoodDialog, setShowFoodDialog] = useState(false);
+
+  // Sync calorie goal with user profile changes
+  useEffect(() => {
+    if (user?.dailyCalorieGoal) {
+      setDailyCalorieGoal(user.dailyCalorieGoal);
+    }
+  }, [user?.dailyCalorieGoal]);
   
   // Food search and entry state
   const [foodSearch, setFoodSearch] = useState('');
@@ -72,8 +79,15 @@ export default function CalorieCounter() {
 
   // Fetch food entries for selected date
   const { data: foodEntries = [], isLoading } = useQuery({
-    queryKey: ['/api/food-entries', { date: dateString }],
-    enabled: !!user
+    queryKey: ['/api/food-entries', dateString],
+    queryFn: async () => {
+      const response = await fetch(`/api/food-entries?date=${dateString}`, {
+        headers: getAuthHeaders(),
+      });
+      if (!response.ok) throw new Error('Failed to fetch food entries');
+      return response.json();
+    },
+    enabled: !!user,
   });
   // Group food entries by meal type
   const mealGroups = foodEntries.reduce((groups: Record<string, FoodEntry[]>, entry: FoodEntry) => {
@@ -120,7 +134,7 @@ export default function CalorieCounter() {
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/food-entries'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/food-entries', dateString] });
       toast({
         title: "Success",
         description: "Food entry deleted successfully"
@@ -149,12 +163,13 @@ export default function CalorieCounter() {
       return response.json();
     },
     onSuccess: (data) => {
-      setDailyCalorieGoal(data.dailyCalorieGoal || newGoal);
+      const updatedGoal = data.dailyCalorieGoal || newGoal;
+      setDailyCalorieGoal(updatedGoal);
       setShowGoalDialog(false);
       queryClient.invalidateQueries({ queryKey: ['/api/auth/me'] });
       toast({
         title: "Success",
-        description: "Daily calorie goal updated successfully"
+        description: `Daily calorie goal updated to ${updatedGoal} calories`
       });
     },
     onError: (error) => {
@@ -181,7 +196,7 @@ export default function CalorieCounter() {
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/food-entries'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/food-entries', dateString] });
       setShowFoodDialog(false);
       setSelectedFood(null);
       setFoodSearch('');
@@ -276,10 +291,10 @@ export default function CalorieCounter() {
       await Promise.all(deletePromises);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/food-entries'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/food-entries', dateString] });
       toast({
         title: "Day Reset",
-        description: "All food entries for today have been cleared"
+        description: "All food entries for the selected date have been cleared"
       });
     },
     onError: () => {
