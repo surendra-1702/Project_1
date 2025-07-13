@@ -137,8 +137,8 @@ export default function CalorieCounter() {
   // Update calorie goal mutation
   const updateGoalMutation = useMutation({
     mutationFn: async (newGoal: number) => {
-      const response = await fetch('/api/auth/profile', {
-        method: 'PATCH',
+      const response = await fetch(`/api/users/${user?.id}`, {
+        method: 'PUT',
         headers: {
           ...getAuthHeaders(),
           'Content-Type': 'application/json'
@@ -149,7 +149,7 @@ export default function CalorieCounter() {
       return response.json();
     },
     onSuccess: (data) => {
-      setDailyCalorieGoal(data.dailyCalorieGoal);
+      setDailyCalorieGoal(data.dailyCalorieGoal || newGoal);
       setShowGoalDialog(false);
       queryClient.invalidateQueries({ queryKey: ['/api/auth/me'] });
       toast({
@@ -157,7 +157,8 @@ export default function CalorieCounter() {
         description: "Daily calorie goal updated successfully"
       });
     },
-    onError: () => {
+    onError: (error) => {
+      console.error('Goal update error:', error);
       toast({
         title: "Error",
         description: "Failed to update calorie goal"
