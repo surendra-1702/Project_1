@@ -70,14 +70,14 @@ export const foodEntries = pgTable("food_entries", {
   fat: real("fat"), // in grams
 });
 
-// Workout Tracker - Individual workout sessions
+// Workout Tracker - Individual workout sessions with multiple exercises
 export const workoutTrackerSessions = pgTable("workout_tracker_sessions", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").references(() => users.id).notNull(),
   date: timestamp("date").defaultNow().notNull(),
-  exerciseName: text("exercise_name").notNull(),
-  sets: integer("sets").notNull(),
-  repsPerSet: integer("reps_per_set").notNull(),
+  workoutName: text("workout_name").notNull(),
+  exercises: jsonb("exercises").notNull(), // Array of exercises with name, sets, reps
+  totalDuration: integer("total_duration"), // in minutes
   notes: text("notes"),
   createdAt: timestamp("created_at").defaultNow(),
 });

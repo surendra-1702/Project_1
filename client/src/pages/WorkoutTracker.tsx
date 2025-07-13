@@ -12,13 +12,20 @@ import { useAuth } from '@/hooks/useAuth';
 import { Activity, Dumbbell, Calendar, Trash2, Edit, Target, Timer, Flame } from 'lucide-react';
 import { format } from 'date-fns';
 
+interface Exercise {
+  name: string;
+  sets: number;
+  reps: number;
+  weight?: number;
+}
+
 interface WorkoutTrackerSession {
   id: number;
   userId: number;
   date: string;
-  exerciseName: string;
-  sets: number;
-  repsPerSet: number;
+  workoutName: string;
+  exercises: Exercise[];
+  totalDuration?: number;
   notes?: string;
   createdAt: string;
 }
@@ -33,11 +40,17 @@ export default function WorkoutTracker() {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingSession, setEditingSession] = useState<WorkoutTrackerSession | null>(null);
   const [formData, setFormData] = useState({
-    exerciseName: '',
-    sets: '',
-    repsPerSet: '',
+    workoutName: '',
+    totalDuration: '',
     notes: '',
     date: new Date().toISOString().split('T')[0]
+  });
+  const [exercises, setExercises] = useState<Exercise[]>([]);
+  const [currentExercise, setCurrentExercise] = useState({
+    name: '',
+    sets: '',
+    reps: '',
+    weight: ''
   });
 
   const { toast } = useToast();
@@ -121,27 +134,75 @@ export default function WorkoutTracker() {
 
   const resetForm = () => {
     setFormData({
-      exerciseName: '',
-      sets: '',
-      repsPerSet: '',
+      workoutName: '',
+      totalDuration: '',
       notes: '',
       date: new Date().toISOString().split('T')[0]
+    });
+    setExercises([]);
+    setCurrentExercise({
+      name: '',
+      sets: '',
+      reps: '',
+      weight: ''
     });
     setIsFormOpen(false);
     setEditingSession(null);
   };
 
+  const addExercise = () => {
+    if (!currentExercise.name || !currentExercise.sets || !currentExercise.reps) {
+      toast({
+        title: "Missing Information",
+        description: "Please fill in exercise name, sets, and reps",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const newExercise: Exercise = {
+      name: currentExercise.name,
+      sets: parseInt(currentExercise.sets),
+      reps: parseInt(currentExercise.reps),
+      weight: currentExercise.weight ? parseFloat(currentExercise.weight) : undefined
+    };
+
+    setExercises([...exercises, newExercise]);
+    setCurrentExercise({
+      name: '',
+      sets: '',
+      reps: '',
+      weight: ''
+    });
+  };
+
+  const removeExercise = (index: number) => {
+    setExercises(exercises.filter((_, i) => i !== index));
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
+    if (exercises.length === 0) {
+      toast({
+        title: "No Exercises",
+        description: "Please add at least one exercise to your workout",
+        variant: "destructive",
+      });
+      return;
+    }
+
     const sessionData = {
       ...formData,
-      sets: parseInt(formData.sets),
-      repsPerSet: parseInt(formData.repsPerSet),
+      exercises,
+      totalDuration: formData.totalDuration ? parseInt(formData.totalDuration) : undefined,
     };
 
     if (editingSession) {
-      updateSessionMutation.mutate({ id: editingSession.id, ...sessionData });
+      updateSessionMutation.mutate({ 
+        id: editingSession.id, 
+        ...sessionData 
+      });
     } else {
       createSessionMutation.mutate(sessionData);
     }
@@ -150,12 +211,12 @@ export default function WorkoutTracker() {
   const handleEdit = (session: WorkoutTrackerSession) => {
     setEditingSession(session);
     setFormData({
-      exerciseName: session.exerciseName,
-      sets: session.sets.toString(),
-      repsPerSet: session.repsPerSet.toString(),
+      workoutName: session.workoutName,
+      totalDuration: session.totalDuration?.toString() || '',
       notes: session.notes || '',
       date: new Date(session.date).toISOString().split('T')[0]
     });
+    setExercises(session.exercises);
     setIsFormOpen(true);
   };
 
@@ -239,15 +300,16 @@ export default function WorkoutTracker() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Workout Details */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="exerciseName">Exercise Name</Label>
+                  <Label htmlFor="workoutName">Workout Name</Label>
                   <Input
-                    id="exerciseName"
-                    value={formData.exerciseName}
-                    onChange={(e) => setFormData({ ...formData, exerciseName: e.target.value })}
-                    placeholder="e.g., Push-ups, Bench Press"
+                    id="workoutName"
+                    value={formData.workoutName}
+                    onChange={(e) => setFormData({ ...formData, workoutName: e.target.value })}
+                    placeholder="e.g., Chest & Triceps, Full Body"
                     required
                   />
                 </div>
@@ -264,31 +326,102 @@ export default function WorkoutTracker() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="sets">Number of Sets</Label>
+                  <Label htmlFor="totalDuration">Total Duration (minutes)</Label>
                   <Input
-                    id="sets"
+                    id="totalDuration"
                     type="number"
                     min="1"
-                    value={formData.sets}
-                    onChange={(e) => setFormData({ ...formData, sets: e.target.value })}
-                    placeholder="3"
-                    required
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="repsPerSet">Reps per Set</Label>
-                  <Input
-                    id="repsPerSet"
-                    type="number"
-                    min="1"
-                    value={formData.repsPerSet}
-                    onChange={(e) => setFormData({ ...formData, repsPerSet: e.target.value })}
-                    placeholder="12"
-                    required
+                    value={formData.totalDuration}
+                    onChange={(e) => setFormData({ ...formData, totalDuration: e.target.value })}
+                    placeholder="45"
                   />
                 </div>
               </div>
+
+              {/* Add Exercise Section */}
+              <div className="border rounded-lg p-4 space-y-4">
+                <h3 className="text-lg font-semibold">Add Exercise</h3>
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="exerciseName">Exercise Name</Label>
+                    <Input
+                      id="exerciseName"
+                      value={currentExercise.name}
+                      onChange={(e) => setCurrentExercise({ ...currentExercise, name: e.target.value })}
+                      placeholder="e.g., Push-ups"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="sets">Sets</Label>
+                    <Input
+                      id="sets"
+                      type="number"
+                      min="1"
+                      value={currentExercise.sets}
+                      onChange={(e) => setCurrentExercise({ ...currentExercise, sets: e.target.value })}
+                      placeholder="3"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="reps">Reps</Label>
+                    <Input
+                      id="reps"
+                      type="number"
+                      min="1"
+                      value={currentExercise.reps}
+                      onChange={(e) => setCurrentExercise({ ...currentExercise, reps: e.target.value })}
+                      placeholder="12"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="weight">Weight (optional)</Label>
+                    <Input
+                      id="weight"
+                      type="number"
+                      min="0"
+                      step="0.5"
+                      value={currentExercise.weight}
+                      onChange={(e) => setCurrentExercise({ ...currentExercise, weight: e.target.value })}
+                      placeholder="50kg"
+                    />
+                  </div>
+                </div>
+
+                <Button type="button" onClick={addExercise} className="w-full">
+                  Add Exercise
+                </Button>
+              </div>
+
+              {/* Exercise List */}
+              {exercises.length > 0 && (
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold">Exercises ({exercises.length})</h3>
+                  <div className="space-y-3">
+                    {exercises.map((exercise, index) => (
+                      <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+                        <div className="flex-1">
+                          <p className="font-medium">{exercise.name}</p>
+                          <p className="text-sm text-gray-600 dark:text-gray-400">
+                            {exercise.sets} sets × {exercise.reps} reps
+                            {exercise.weight && ` @ ${exercise.weight}kg`}
+                          </p>
+                        </div>
+                        <Button
+                          type="button"
+                          variant="destructive"
+                          size="sm"
+                          onClick={() => removeExercise(index)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               <div className="space-y-2">
                 <Label htmlFor="notes">Notes (optional)</Label>
@@ -344,29 +477,51 @@ export default function WorkoutTracker() {
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
                         <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                          {session.exerciseName}
+                          {session.workoutName || session.exerciseName || 'Workout Session'}
                         </h3>
                         <Badge variant="secondary" className="flex items-center gap-1">
                           <Calendar className="h-3 w-3" />
                           {format(new Date(session.date), 'MMM d, yyyy')}
                         </Badge>
+                        {session.totalDuration && (
+                          <Badge variant="outline" className="flex items-center gap-1">
+                            <Timer className="h-3 w-3" />
+                            {session.totalDuration}m
+                          </Badge>
+                        )}
                       </div>
                       
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
-                        <div className="flex items-center gap-2">
-                          <Target className="h-4 w-4 text-gray-500" />
-                          <span className="text-sm text-gray-600 dark:text-gray-400">
-                            {session.sets} sets × {session.repsPerSet} reps
-                          </span>
+                      {/* Show exercises list for new format or single exercise for old format */}
+                      {session.exercises && Array.isArray(session.exercises) ? (
+                        <div className="space-y-2 mb-3">
+                          {session.exercises.map((exercise, index) => (
+                            <div key={index} className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded">
+                              <span className="font-medium">{exercise.name}</span>
+                              <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
+                                <span>{exercise.sets} × {exercise.reps}</span>
+                                {exercise.weight && <span>{exercise.weight}kg</span>}
+                              </div>
+                            </div>
+                          ))}
                         </div>
-                        
-                        <div className="flex items-center gap-2">
-                          <Dumbbell className="h-4 w-4 text-purple-500" />
-                          <span className="text-sm text-gray-600 dark:text-gray-400">
-                            Total: {session.sets * session.repsPerSet} reps
-                          </span>
+                      ) : (
+                        // Legacy format support
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
+                          <div className="flex items-center gap-2">
+                            <Target className="h-4 w-4 text-gray-500" />
+                            <span className="text-sm text-gray-600 dark:text-gray-400">
+                              {session.sets} sets × {session.repsPerSet} reps
+                            </span>
+                          </div>
+                          
+                          <div className="flex items-center gap-2">
+                            <Dumbbell className="h-4 w-4 text-purple-500" />
+                            <span className="text-sm text-gray-600 dark:text-gray-400">
+                              Total: {session.sets * session.repsPerSet} reps
+                            </span>
+                          </div>
                         </div>
-                      </div>
+                      )}
                       
                       {session.notes && (
                         <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">

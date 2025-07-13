@@ -476,11 +476,29 @@ export class MemStorage implements IStorage {
     const sessions = Array.from(this.workoutTrackerSessions.values())
       .filter(session => session.userId === userId);
     
-    const stats = sessions.reduce((acc, session) => ({
-      totalWorkouts: acc.totalWorkouts + 1,
-      totalSets: acc.totalSets + session.sets,
-      totalReps: acc.totalReps + (session.sets * session.repsPerSet)
-    }), {
+    const stats = sessions.reduce((acc, session) => {
+      let sessionSets = 0;
+      let sessionReps = 0;
+      
+      // Handle both old format (single exercise) and new format (multiple exercises)
+      if (session.exercises && Array.isArray(session.exercises)) {
+        // New format with multiple exercises
+        session.exercises.forEach((exercise: any) => {
+          sessionSets += exercise.sets;
+          sessionReps += exercise.sets * exercise.reps;
+        });
+      } else if (session.sets && session.repsPerSet) {
+        // Old format with single exercise
+        sessionSets = session.sets;
+        sessionReps = session.sets * session.repsPerSet;
+      }
+      
+      return {
+        totalWorkouts: acc.totalWorkouts + 1,
+        totalSets: acc.totalSets + sessionSets,
+        totalReps: acc.totalReps + sessionReps
+      };
+    }, {
       totalWorkouts: 0,
       totalSets: 0,
       totalReps: 0
