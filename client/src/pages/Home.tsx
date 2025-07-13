@@ -78,10 +78,10 @@ export default function Home() {
             <Card className="bg-white bg-opacity-10 backdrop-blur-sm border-none text-white">
               <CardContent className="p-6">
                 <div className="text-3xl mb-3">
-                  <Users className="h-8 w-8 text-amber-400 mx-auto" />
+                  <TrendingUp className="h-8 w-8 text-amber-400 mx-auto" />
                 </div>
-                <h3 className="font-semibold mb-2">Community</h3>
-                <p className="text-sm text-blue-100">Share tips and motivation with others</p>
+                <h3 className="font-semibold mb-2">Calorie Counter</h3>
+                <p className="text-sm text-blue-100">Track your daily nutrition and calorie intake</p>
               </CardContent>
             </Card>
           </div>
