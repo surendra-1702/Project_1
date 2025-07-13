@@ -145,14 +145,26 @@ export default function Home() {
               </Card>
             </Link>
 
-            <Link href="/blogs">
+            <Link href="/workout-tracker">
               <Card className="hover:shadow-xl transition-shadow cursor-pointer group">
                 <CardContent className="p-8 text-center">
-                  <div className="bg-red-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-red-200 transition-colors">
-                    <Users className="h-8 w-8 text-red-600" />
+                  <div className="bg-orange-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-orange-200 transition-colors">
+                    <Dumbbell className="h-8 w-8 text-orange-600" />
                   </div>
-                  <h3 className="text-xl font-semibold mb-2">Community Blogs</h3>
-                  <p className="text-gray-600">Share your journey and get inspired by others</p>
+                  <h3 className="text-xl font-semibold mb-2">Workout Tracker</h3>
+                  <p className="text-gray-600">Log your workouts and track your fitness progress</p>
+                </CardContent>
+              </Card>
+            </Link>
+
+            <Link href="/weight-tracker">
+              <Card className="hover:shadow-xl transition-shadow cursor-pointer group">
+                <CardContent className="p-8 text-center">
+                  <div className="bg-indigo-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-indigo-200 transition-colors">
+                    <TrendingUp className="h-8 w-8 text-indigo-600" />
+                  </div>
+                  <h3 className="text-xl font-semibold mb-2">Weight Tracker</h3>
+                  <p className="text-gray-600">Monitor your weight changes and goal progress</p>
                 </CardContent>
               </Card>
             </Link>
