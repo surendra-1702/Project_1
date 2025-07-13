@@ -37,28 +37,28 @@ export default function Navigation() {
   };
 
   return (
-    <nav className="bg-white shadow-lg sticky top-0 z-50">
+    <nav className="bg-black/95 backdrop-blur-md shadow-2xl sticky top-0 z-50 border-b border-red-600/20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+        <div className="flex justify-between items-center h-20">
           {/* Logo */}
           <div className="flex items-center">
             <Link href="/">
-              <span className="text-2xl font-bold text-primary cursor-pointer">
-                FitTrack Pro
+              <span className="text-3xl font-black text-energy cursor-pointer text-athletic tracking-wider hover:scale-105 transition-all duration-300">
+                FITTRACK PRO
               </span>
             </Link>
           </div>
 
           {/* Desktop Navigation */}
           <div className="hidden md:block">
-            <div className="ml-10 flex items-baseline space-x-8">
+            <div className="ml-10 flex items-baseline space-x-1">
               {navigation.map((item) => (
                 <Link key={item.name} href={item.href}>
                   <span
-                    className={`px-3 py-2 text-sm font-medium cursor-pointer transition-colors ${
+                    className={`px-4 py-3 text-sm font-bold cursor-pointer transition-all duration-300 rounded-lg uppercase tracking-wide hover-lift ${
                       isActive(item.href)
-                        ? 'text-primary'
-                        : 'text-gray-700 hover:text-primary'
+                        ? 'bg-red-600 text-white shadow-lg hover-glow'
+                        : 'text-white hover:bg-red-600/10 hover:text-red-400'
                     }`}
                   >
                     {item.name}
@@ -68,10 +68,10 @@ export default function Navigation() {
               {user?.role === 'admin' && adminNavigation.map((item) => (
                 <Link key={item.name} href={item.href}>
                   <span
-                    className={`px-3 py-2 text-sm font-medium cursor-pointer transition-colors flex items-center gap-2 ${
+                    className={`px-4 py-3 text-sm font-bold cursor-pointer transition-all duration-300 rounded-lg uppercase tracking-wide flex items-center gap-2 hover-lift ${
                       isActive(item.href)
-                        ? 'text-primary'
-                        : 'text-gray-700 hover:text-primary'
+                        ? 'bg-red-600 text-white shadow-lg hover-glow'
+                        : 'text-white hover:bg-red-600/10 hover:text-red-400'
                     }`}
                   >
                     <item.icon className="h-4 w-4" />
@@ -88,25 +88,25 @@ export default function Navigation() {
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="flex items-center space-x-2">
-                    <User className="h-4 w-4" />
+                  <Button variant="ghost" className="flex items-center space-x-2 text-white hover:bg-red-600/10 hover:text-red-400 font-bold uppercase tracking-wide">
+                    <User className="h-5 w-5" />
                     <span>{user.firstName || user.username}</span>
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={logout}>
+                <DropdownMenuContent align="end" className="bg-black/95 border-red-600/20 backdrop-blur-md">
+                  <DropdownMenuItem onClick={logout} className="text-white hover:bg-red-600/20 hover:text-red-400 font-medium">
                     <LogOut className="h-4 w-4 mr-2" />
-                    Sign Out
+                    SIGN OUT
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
               <>
                 <Link href="/auth">
-                  <Button variant="ghost">Sign In</Button>
+                  <Button variant="ghost" className="text-white hover:bg-red-600/10 hover:text-red-400 font-bold uppercase tracking-wide">SIGN IN</Button>
                 </Link>
                 <Link href="/auth">
-                  <Button>Get Started</Button>
+                  <Button className="btn-primary hover-glow font-bold uppercase tracking-wide">GET STARTED</Button>
                 </Link>
               </>
             )}
@@ -116,11 +116,11 @@ export default function Navigation() {
           <div className="md:hidden">
             <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="icon">
+                <Button variant="ghost" size="icon" className="text-white hover:bg-red-600/10 hover:text-red-400">
                   <Menu className="h-6 w-6" />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="right" className="w-[300px]">
+              <SheetContent side="right" className="w-[300px] bg-black/95 border-red-600/20 backdrop-blur-md">
                 <div className="flex flex-col space-y-4 mt-8">
                   {navigation.map((item) => (
                     <Link
@@ -129,10 +129,10 @@ export default function Navigation() {
                       onClick={() => setMobileOpen(false)}
                     >
                       <span
-                        className={`block px-3 py-2 text-base font-medium cursor-pointer transition-colors ${
+                        className={`block px-4 py-3 text-base font-bold cursor-pointer transition-all duration-300 rounded-lg uppercase tracking-wide hover-lift ${
                           isActive(item.href)
-                            ? 'text-primary'
-                            : 'text-gray-700 hover:text-primary'
+                            ? 'bg-red-600 text-white shadow-lg'
+                            : 'text-white hover:bg-red-600/10 hover:text-red-400'
                         }`}
                       >
                         {item.name}
@@ -146,10 +146,10 @@ export default function Navigation() {
                       href={item.href}
                       onClick={() => setMobileOpen(false)}
                     >
-                      <span className={`block px-3 py-2 text-base font-medium cursor-pointer transition-colors flex items-center gap-2 ${
+                      <span className={`block px-4 py-3 text-base font-bold cursor-pointer transition-all duration-300 rounded-lg uppercase tracking-wide flex items-center gap-2 hover-lift ${
                         isActive(item.href)
-                          ? 'text-primary'
-                          : 'text-gray-700 hover:text-primary'
+                          ? 'bg-red-600 text-white shadow-lg'
+                          : 'text-white hover:bg-red-600/10 hover:text-red-400'
                       }`}>
                         <item.icon className="h-4 w-4" />
                         {item.name}
