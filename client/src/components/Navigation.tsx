@@ -76,7 +76,6 @@ export default function Navigation() {
                   >
                     <item.icon className="h-4 w-4" />
                     {item.name}
-                    <Badge variant="secondary" className="text-xs ml-1">Admin</Badge>
                   </span>
                 </Link>
               ))}
