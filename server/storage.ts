@@ -95,7 +95,7 @@ export class MemStorage implements IStorage {
   }
 
   private initializeSampleData() {
-    // Add only the admin user - real users will register themselves
+    // Add admin user
     const adminUser = {
       username: 'admin',
       email: 'admin@fittrackpro.com',
@@ -116,6 +116,28 @@ export class MemStorage implements IStorage {
 
     const adminId = this.currentId++;
     this.users.set(adminId, { ...adminUser, id: adminId });
+
+    // Add test user
+    const testUser = {
+      username: 'testuser',
+      email: 'test@example.com',
+      password: '$2b$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // "password123" hashed
+      firstName: 'Test',
+      lastName: 'User',
+      age: 25,
+      height: 175,
+      weight: 70,
+      gender: 'male',
+      activityLevel: 'moderate',
+      fitnessGoal: 'Build muscle',
+      dailyCalorieGoal: 2500,
+      role: 'user',
+      lastLoginAt: new Date(),
+      createdAt: new Date()
+    };
+
+    const testId = this.currentId++;
+    this.users.set(testId, { ...testUser, id: testId });
 
     // Add some sample exercises for immediate app functionality
     const sampleExercises = [
