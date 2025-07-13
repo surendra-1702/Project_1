@@ -116,6 +116,9 @@ FitTrack Pro is a comprehensive full-stack fitness platform built with React, Ex
 - Environment variable support for configuration
 
 ## Changelog
+- July 13, 2025. **MAJOR: Migrated from in-memory storage to PostgreSQL database** - Implemented comprehensive DatabaseStorage class for proper multi-user data persistence across all features
+- July 13, 2025. Fixed calorie counter date navigation and goal persistence issues - Food entries now properly update when changing dates and calorie goals persist across all dates
+- July 13, 2025. Restored "Log Day" and "Reset Day" functionality with intelligent goal-based messaging system that analyzes calorie achievement
 - July 13, 2025. Implemented complete UI/UX redesign with modern, energetic fitness aesthetic using Black/Red/Grey/White color palette targeting young fitness enthusiasts
 - July 13, 2025. Added comprehensive theme transformation with glassmorphism effects, athletic typography, smooth animations, and premium visual impact
 - July 12, 2025. Added comprehensive role-based authentication system with admin dashboard for user monitoring and fitness goal tracking
