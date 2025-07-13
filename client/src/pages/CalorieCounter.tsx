@@ -263,6 +263,71 @@ export default function CalorieCounter() {
     addFoodMutation.mutate(foodData);
   };
 
+  // Reset day functionality
+  const resetDayMutation = useMutation({
+    mutationFn: async () => {
+      // Delete all food entries for the selected date
+      const deletePromises = foodEntries.map(entry => 
+        fetch(`/api/food-entries/${entry.id}`, {
+          method: 'DELETE',
+          headers: getAuthHeaders()
+        })
+      );
+      await Promise.all(deletePromises);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/food-entries'] });
+      toast({
+        title: "Day Reset",
+        description: "All food entries for today have been cleared"
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to reset day"
+      });
+    }
+  });
+
+  // Log day functionality
+  const logDayMutation = useMutation({
+    mutationFn: async () => {
+      // This could be enhanced to save the day as "logged" or create a daily summary
+      return Promise.resolve();
+    },
+    onSuccess: () => {
+      const goalAchieved = dailyTotals.calories >= (currentGoal * 0.9) && dailyTotals.calories <= (currentGoal * 1.1);
+      const caloriesOverUnder = dailyTotals.calories - currentGoal;
+      
+      if (goalAchieved) {
+        toast({
+          title: "🎉 Goal Achieved!",
+          description: `Perfect! You consumed ${dailyTotals.calories} calories, staying within your target range of ${currentGoal} calories.`
+        });
+      } else if (caloriesOverUnder > 0) {
+        toast({
+          title: "⚠️ Over Goal",
+          description: `You consumed ${dailyTotals.calories} calories, which is ${caloriesOverUnder} calories over your goal of ${currentGoal}.`
+        });
+      } else {
+        toast({
+          title: "📉 Under Goal", 
+          description: `You consumed ${dailyTotals.calories} calories, which is ${Math.abs(caloriesOverUnder)} calories under your goal of ${currentGoal}.`
+        });
+      }
+      
+      setIsLoggingDay(true);
+      setTimeout(() => setIsLoggingDay(false), 3000);
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to log day"
+      });
+    }
+  });
+
   if (!user) {
     return (
       <div className="min-h-screen bg-black">
@@ -389,16 +454,36 @@ export default function CalorieCounter() {
                       </Button>
                       
                       <div className="flex gap-2">
-                        <Button variant="outline" className="flex-1 bg-black/50 border-red-600/30 text-white hover:bg-red-600/20 font-bold uppercase tracking-wide">
-                          <RotateCcw className="w-4 h-4 mr-2" />
+                        <Button 
+                          variant="outline" 
+                          onClick={() => resetDayMutation.mutate()}
+                          disabled={foodEntries.length === 0 || resetDayMutation.isPending}
+                          className="flex-1 bg-black/50 border-red-600/30 text-white hover:bg-red-600/20 font-bold uppercase tracking-wide disabled:bg-gray-600 disabled:cursor-not-allowed"
+                        >
+                          {resetDayMutation.isPending ? (
+                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          ) : (
+                            <RotateCcw className="w-4 h-4 mr-2" />
+                          )}
                           Reset Day
                         </Button>
                         <Button 
-                          disabled={dailyTotals.calories === 0} 
-                          className="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold uppercase tracking-wide"
+                          onClick={() => logDayMutation.mutate()}
+                          disabled={dailyTotals.calories === 0 || logDayMutation.isPending || isLoggingDay} 
+                          className={`flex-1 font-bold uppercase tracking-wide ${
+                            isLoggingDay 
+                              ? 'bg-yellow-600 hover:bg-yellow-700' 
+                              : 'bg-green-600 hover:bg-green-700'
+                          } text-white disabled:bg-gray-600 disabled:cursor-not-allowed`}
                         >
-                          <CheckCircle className="w-4 h-4 mr-2" />
-                          Log Day
+                          {logDayMutation.isPending ? (
+                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          ) : isLoggingDay ? (
+                            <TrendingUp className="w-4 h-4 mr-2" />
+                          ) : (
+                            <CheckCircle className="w-4 h-4 mr-2" />
+                          )}
+                          {isLoggingDay ? 'Day Logged!' : 'Log Day'}
                         </Button>
                       </div>
                     </div>
