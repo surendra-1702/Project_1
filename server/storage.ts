@@ -48,7 +48,6 @@ export interface IStorage {
   deleteWorkoutTrackerSession(id: number): Promise<boolean>;
   getWorkoutTrackerStats(userId: number): Promise<{
     totalWorkouts: number;
-    totalCaloriesBurned: number;
     totalSets: number;
     totalReps: number;
   }>;
@@ -449,7 +448,6 @@ export class MemStorage implements IStorage {
 
   async getWorkoutTrackerStats(userId: number): Promise<{
     totalWorkouts: number;
-    totalCaloriesBurned: number;
     totalSets: number;
     totalReps: number;
   }> {
@@ -458,12 +456,10 @@ export class MemStorage implements IStorage {
     
     const stats = sessions.reduce((acc, session) => ({
       totalWorkouts: acc.totalWorkouts + 1,
-      totalCaloriesBurned: acc.totalCaloriesBurned + session.caloriesBurned,
       totalSets: acc.totalSets + session.sets,
       totalReps: acc.totalReps + (session.sets * session.repsPerSet)
     }), {
       totalWorkouts: 0,
-      totalCaloriesBurned: 0,
       totalSets: 0,
       totalReps: 0
     });

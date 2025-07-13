@@ -78,8 +78,6 @@ export const workoutTrackerSessions = pgTable("workout_tracker_sessions", {
   exerciseName: text("exercise_name").notNull(),
   sets: integer("sets").notNull(),
   repsPerSet: integer("reps_per_set").notNull(),
-  caloriesBurned: integer("calories_burned").notNull(),
-  duration: integer("duration"), // in minutes
   notes: text("notes"),
   createdAt: timestamp("created_at").defaultNow(),
 });

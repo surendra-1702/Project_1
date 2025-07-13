@@ -19,15 +19,12 @@ interface WorkoutTrackerSession {
   exerciseName: string;
   sets: number;
   repsPerSet: number;
-  caloriesBurned: number;
-  duration?: number;
   notes?: string;
   createdAt: string;
 }
 
 interface WorkoutStats {
   totalWorkouts: number;
-  totalCaloriesBurned: number;
   totalSets: number;
   totalReps: number;
 }
@@ -39,8 +36,6 @@ export default function WorkoutTracker() {
     exerciseName: '',
     sets: '',
     repsPerSet: '',
-    caloriesBurned: '',
-    duration: '',
     notes: '',
     date: new Date().toISOString().split('T')[0]
   });
@@ -137,8 +132,6 @@ export default function WorkoutTracker() {
       exerciseName: '',
       sets: '',
       repsPerSet: '',
-      caloriesBurned: '',
-      duration: '',
       notes: '',
       date: new Date().toISOString().split('T')[0]
     });
@@ -153,8 +146,6 @@ export default function WorkoutTracker() {
       ...formData,
       sets: parseInt(formData.sets),
       repsPerSet: parseInt(formData.repsPerSet),
-      caloriesBurned: parseInt(formData.caloriesBurned),
-      duration: formData.duration ? parseInt(formData.duration) : undefined,
     };
 
     if (editingSession) {
@@ -170,8 +161,6 @@ export default function WorkoutTracker() {
       exerciseName: session.exerciseName,
       sets: session.sets.toString(),
       repsPerSet: session.repsPerSet.toString(),
-      caloriesBurned: session.caloriesBurned.toString(),
-      duration: session.duration?.toString() || '',
       notes: session.notes || '',
       date: new Date(session.date).toISOString().split('T')[0]
     });
@@ -209,7 +198,7 @@ export default function WorkoutTracker() {
 
       {/* Stats Cards */}
       {stats && (
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <Card>
             <CardContent className="flex items-center p-6">
               <div className="flex items-center justify-center w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-lg mr-4">
@@ -218,18 +207,6 @@ export default function WorkoutTracker() {
               <div>
                 <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Workouts</p>
                 <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.totalWorkouts}</p>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="flex items-center p-6">
-              <div className="flex items-center justify-center w-12 h-12 bg-orange-100 dark:bg-orange-900 rounded-lg mr-4">
-                <Flame className="h-6 w-6 text-orange-600 dark:text-orange-300" />
-              </div>
-              <div>
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Calories Burned</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.totalCaloriesBurned}</p>
               </div>
             </CardContent>
           </Card>
@@ -319,31 +296,6 @@ export default function WorkoutTracker() {
                     required
                   />
                 </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="caloriesBurned">Calories Burned</Label>
-                  <Input
-                    id="caloriesBurned"
-                    type="number"
-                    min="1"
-                    value={formData.caloriesBurned}
-                    onChange={(e) => setFormData({ ...formData, caloriesBurned: e.target.value })}
-                    placeholder="150"
-                    required
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="duration">Duration (minutes)</Label>
-                  <Input
-                    id="duration"
-                    type="number"
-                    min="1"
-                    value={formData.duration}
-                    onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
-                    placeholder="30"
-                  />
-                </div>
               </div>
 
               <div className="space-y-2">
@@ -408,7 +360,7 @@ export default function WorkoutTracker() {
                         </Badge>
                       </div>
                       
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-3">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
                         <div className="flex items-center gap-2">
                           <Target className="h-4 w-4 text-gray-500" />
                           <span className="text-sm text-gray-600 dark:text-gray-400">
@@ -417,20 +369,11 @@ export default function WorkoutTracker() {
                         </div>
                         
                         <div className="flex items-center gap-2">
-                          <Flame className="h-4 w-4 text-orange-500" />
+                          <Dumbbell className="h-4 w-4 text-purple-500" />
                           <span className="text-sm text-gray-600 dark:text-gray-400">
-                            {session.caloriesBurned} cal
+                            Total: {session.sets * session.repsPerSet} reps
                           </span>
                         </div>
-                        
-                        {session.duration && (
-                          <div className="flex items-center gap-2">
-                            <Timer className="h-4 w-4 text-blue-500" />
-                            <span className="text-sm text-gray-600 dark:text-gray-400">
-                              {session.duration} min
-                            </span>
-                          </div>
-                        )}
                       </div>
                       
                       {session.notes && (
