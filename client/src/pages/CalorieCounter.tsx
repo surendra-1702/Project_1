@@ -660,21 +660,30 @@ export default function CalorieCounter() {
               <Button 
                 variant="outline" 
                 onClick={() => setShowFoodDialog(false)}
-                className="flex-1 bg-black/50 border-red-600/30 text-white hover:bg-red-600/20"
+                className="flex-1 bg-black/50 border-red-600/30 text-white hover:bg-red-600/20 font-bold uppercase tracking-wide"
               >
                 Cancel
               </Button>
               <Button 
                 onClick={handleAddFood}
                 disabled={!selectedFood || !selectedMeasure || !quantity || addFoodMutation.isPending}
-                className="flex-1 bg-red-600 hover:bg-red-700 text-white"
+                className="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold uppercase tracking-wide disabled:bg-gray-600 disabled:cursor-not-allowed"
               >
                 {addFoodMutation.isPending ? (
                   <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                ) : null}
-                Add Food
+                ) : (
+                  <Plus className="w-4 h-4 mr-2" />
+                )}
+                ADD FOOD
               </Button>
             </div>
+
+            {/* Debug info for troubleshooting */}
+            {process.env.NODE_ENV === 'development' && (
+              <div className="mt-4 p-2 bg-gray-800 rounded text-xs text-gray-400">
+                Debug: Food: {selectedFood ? '✓' : '✗'} | Measure: {selectedMeasure ? '✓' : '✗'} | Quantity: {quantity ? '✓' : '✗'}
+              </div>
+            )}
           </div>
         </DialogContent>
       </Dialog>
