@@ -23,6 +23,8 @@ export default function Navigation() {
     { name: 'BMI Calculator', href: '/bmi' },
     { name: 'Workout Planner', href: '/planner' },
     { name: 'Calorie Counter', href: '/calories' },
+    { name: 'Workout Tracker', href: '/workout-tracker' },
+    { name: 'Weight Tracker', href: '/weight-tracker' },
   ];
 
   const adminNavigation = [

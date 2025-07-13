@@ -70,6 +70,31 @@ export const foodEntries = pgTable("food_entries", {
   fat: real("fat"), // in grams
 });
 
+// Workout Tracker - Individual workout sessions
+export const workoutTrackerSessions = pgTable("workout_tracker_sessions", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  date: timestamp("date").defaultNow().notNull(),
+  exerciseName: text("exercise_name").notNull(),
+  sets: integer("sets").notNull(),
+  repsPerSet: integer("reps_per_set").notNull(),
+  caloriesBurned: integer("calories_burned").notNull(),
+  duration: integer("duration"), // in minutes
+  notes: text("notes"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Weight Tracking for goal progress
+export const weightEntries = pgTable("weight_entries", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  weight: real("weight").notNull(), // in kg or lbs
+  date: timestamp("date").defaultNow().notNull(),
+  goalWeight: real("goal_weight"),
+  notes: text("notes"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 
 
 // Insert schemas
@@ -97,7 +122,19 @@ export const insertFoodEntrySchema = createInsertSchema(foodEntries).omit({
   date: z.coerce.date()
 });
 
+export const insertWorkoutTrackerSessionSchema = createInsertSchema(workoutTrackerSessions).omit({
+  id: true,
+  createdAt: true,
+}).extend({
+  date: z.coerce.date()
+});
 
+export const insertWeightEntrySchema = createInsertSchema(weightEntries).omit({
+  id: true,
+  createdAt: true,
+}).extend({
+  date: z.coerce.date()
+});
 
 // Types
 export type User = typeof users.$inferSelect;
@@ -108,5 +145,9 @@ export type WorkoutPlan = typeof workoutPlans.$inferSelect;
 export type InsertWorkoutPlan = z.infer<typeof insertWorkoutPlanSchema>;
 export type WorkoutSession = typeof workoutSessions.$inferSelect;
 export type InsertWorkoutSession = z.infer<typeof insertWorkoutSessionSchema>;
+export type WorkoutTrackerSession = typeof workoutTrackerSessions.$inferSelect;
+export type InsertWorkoutTrackerSession = z.infer<typeof insertWorkoutTrackerSessionSchema>;
+export type WeightEntry = typeof weightEntries.$inferSelect;
+export type InsertWeightEntry = z.infer<typeof insertWeightEntrySchema>;
 export type FoodEntry = typeof foodEntries.$inferSelect;
 export type InsertFoodEntry = z.infer<typeof insertFoodEntrySchema>;

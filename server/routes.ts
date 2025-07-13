@@ -7,7 +7,7 @@ import { openaiService } from "./services/openaiService";
 import { foodApiService } from "./services/foodApi";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { insertUserSchema, insertWorkoutPlanSchema, insertWorkoutSessionSchema, insertFoodEntrySchema } from "@shared/schema";
+import { insertUserSchema, insertWorkoutPlanSchema, insertWorkoutSessionSchema, insertFoodEntrySchema, insertWorkoutTrackerSessionSchema, insertWeightEntrySchema } from "@shared/schema";
 
 const JWT_SECRET = process.env.JWT_SECRET || "fitness-app-secret-key";
 
@@ -715,6 +715,139 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       res.json({ message: "Food entry deleted successfully" });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // ============= WORKOUT TRACKER ROUTES =============
+  
+  app.post("/api/workout-tracker-sessions", authenticateToken, async (req, res) => {
+    try {
+      const sessionData = insertWorkoutTrackerSessionSchema.parse({
+        ...req.body,
+        userId: req.user.userId
+      });
+      
+      const session = await storage.createWorkoutTrackerSession(sessionData);
+      res.status(201).json(session);
+    } catch (error: any) {
+      console.error('Workout tracker session creation error:', error);
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  app.get("/api/workout-tracker-sessions", authenticateToken, async (req, res) => {
+    try {
+      const date = req.query.date ? new Date(req.query.date as string) : undefined;
+      const sessions = await storage.getWorkoutTrackerSessions(req.user.userId, date);
+      res.json(sessions);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.put("/api/workout-tracker-sessions/:id", authenticateToken, async (req, res) => {
+    try {
+      const sessionId = parseInt(req.params.id);
+      const updates = req.body;
+      
+      const updatedSession = await storage.updateWorkoutTrackerSession(sessionId, updates);
+      if (!updatedSession) {
+        return res.status(404).json({ message: "Workout session not found" });
+      }
+      
+      res.json(updatedSession);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.delete("/api/workout-tracker-sessions/:id", authenticateToken, async (req, res) => {
+    try {
+      const sessionId = parseInt(req.params.id);
+      
+      const deleted = await storage.deleteWorkoutTrackerSession(sessionId);
+      if (!deleted) {
+        return res.status(404).json({ message: "Workout session not found" });
+      }
+      
+      res.json({ message: "Workout session deleted successfully" });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.get("/api/workout-tracker-stats", authenticateToken, async (req, res) => {
+    try {
+      const stats = await storage.getWorkoutTrackerStats(req.user.userId);
+      res.json(stats);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // ============= WEIGHT TRACKING ROUTES =============
+  
+  app.post("/api/weight-entries", authenticateToken, async (req, res) => {
+    try {
+      const entryData = insertWeightEntrySchema.parse({
+        ...req.body,
+        userId: req.user.userId
+      });
+      
+      const entry = await storage.createWeightEntry(entryData);
+      res.status(201).json(entry);
+    } catch (error: any) {
+      console.error('Weight entry creation error:', error);
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  app.get("/api/weight-entries", authenticateToken, async (req, res) => {
+    try {
+      const entries = await storage.getWeightEntries(req.user.userId);
+      res.json(entries);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.get("/api/weight-entries/latest", authenticateToken, async (req, res) => {
+    try {
+      const latestEntry = await storage.getLatestWeightEntry(req.user.userId);
+      res.json(latestEntry || null);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.put("/api/weight-entries/:id", authenticateToken, async (req, res) => {
+    try {
+      const entryId = parseInt(req.params.id);
+      const updates = req.body;
+      
+      const updatedEntry = await storage.updateWeightEntry(entryId, updates);
+      if (!updatedEntry) {
+        return res.status(404).json({ message: "Weight entry not found" });
+      }
+      
+      res.json(updatedEntry);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.delete("/api/weight-entries/:id", authenticateToken, async (req, res) => {
+    try {
+      const entryId = parseInt(req.params.id);
+      
+      const deleted = await storage.deleteWeightEntry(entryId);
+      if (!deleted) {
+        return res.status(404).json({ message: "Weight entry not found" });
+      }
+      
+      res.json({ message: "Weight entry deleted successfully" });
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }

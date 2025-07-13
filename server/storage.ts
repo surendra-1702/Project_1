@@ -1,8 +1,9 @@
 import { 
-  users, exercises, workoutPlans, workoutSessions, foodEntries,
+  users, exercises, workoutPlans, workoutSessions, foodEntries, workoutTrackerSessions, weightEntries,
   type User, type InsertUser, type Exercise, type InsertExercise, 
   type WorkoutPlan, type InsertWorkoutPlan, type WorkoutSession, type InsertWorkoutSession,
-  type FoodEntry, type InsertFoodEntry
+  type FoodEntry, type InsertFoodEntry, type WorkoutTrackerSession, type InsertWorkoutTrackerSession,
+  type WeightEntry, type InsertWeightEntry
 } from "@shared/schema";
 
 export interface IStorage {
@@ -40,6 +41,25 @@ export interface IStorage {
   updateFoodEntry(id: number, updates: Partial<InsertFoodEntry>): Promise<FoodEntry | undefined>;
   deleteFoodEntry(id: number): Promise<boolean>;
 
+  // Workout Tracker operations
+  getWorkoutTrackerSessions(userId: number, date?: Date): Promise<WorkoutTrackerSession[]>;
+  createWorkoutTrackerSession(session: InsertWorkoutTrackerSession): Promise<WorkoutTrackerSession>;
+  updateWorkoutTrackerSession(id: number, updates: Partial<InsertWorkoutTrackerSession>): Promise<WorkoutTrackerSession | undefined>;
+  deleteWorkoutTrackerSession(id: number): Promise<boolean>;
+  getWorkoutTrackerStats(userId: number): Promise<{
+    totalWorkouts: number;
+    totalCaloriesBurned: number;
+    totalSets: number;
+    totalReps: number;
+  }>;
+
+  // Weight Entry operations
+  getWeightEntries(userId: number): Promise<WeightEntry[]>;
+  createWeightEntry(entry: InsertWeightEntry): Promise<WeightEntry>;
+  updateWeightEntry(id: number, updates: Partial<InsertWeightEntry>): Promise<WeightEntry | undefined>;
+  deleteWeightEntry(id: number): Promise<boolean>;
+  getLatestWeightEntry(userId: number): Promise<WeightEntry | undefined>;
+
   // Admin operations
   getAllUsers(): Promise<User[]>;
   getUserStats(): Promise<{
@@ -49,7 +69,6 @@ export interface IStorage {
     recentLogins: User[];
   }>;
 
-
 }
 
 export class MemStorage implements IStorage {
@@ -58,6 +77,8 @@ export class MemStorage implements IStorage {
   private workoutPlans: Map<number, WorkoutPlan>;
   private workoutSessions: Map<number, WorkoutSession>;
   private foodEntries: Map<number, FoodEntry>;
+  private workoutTrackerSessions: Map<number, WorkoutTrackerSession>;
+  private weightEntries: Map<number, WeightEntry>;
 
   private currentId: number;
 
@@ -67,6 +88,8 @@ export class MemStorage implements IStorage {
     this.workoutPlans = new Map();
     this.workoutSessions = new Map();
     this.foodEntries = new Map();
+    this.workoutTrackerSessions = new Map();
+    this.weightEntries = new Map();
 
     this.currentId = 1;
     this.initializeSampleData();
@@ -382,6 +405,107 @@ export class MemStorage implements IStorage {
       usersByGoal,
       recentLogins
     };
+  }
+
+  // Workout Tracker Session operations
+  async getWorkoutTrackerSessions(userId: number, date?: Date): Promise<WorkoutTrackerSession[]> {
+    const sessions = Array.from(this.workoutTrackerSessions.values())
+      .filter(session => session.userId === userId);
+    
+    if (date) {
+      const targetDate = new Date(date).toDateString();
+      return sessions.filter(session => 
+        new Date(session.date).toDateString() === targetDate
+      );
+    }
+    
+    return sessions.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  }
+
+  async createWorkoutTrackerSession(insertSession: InsertWorkoutTrackerSession): Promise<WorkoutTrackerSession> {
+    const id = this.currentId++;
+    const session: WorkoutTrackerSession = { 
+      ...insertSession, 
+      id,
+      createdAt: new Date()
+    };
+    this.workoutTrackerSessions.set(id, session);
+    return session;
+  }
+
+  async updateWorkoutTrackerSession(id: number, updates: Partial<InsertWorkoutTrackerSession>): Promise<WorkoutTrackerSession | undefined> {
+    const session = this.workoutTrackerSessions.get(id);
+    if (session) {
+      const updatedSession = { ...session, ...updates };
+      this.workoutTrackerSessions.set(id, updatedSession);
+      return updatedSession;
+    }
+    return undefined;
+  }
+
+  async deleteWorkoutTrackerSession(id: number): Promise<boolean> {
+    return this.workoutTrackerSessions.delete(id);
+  }
+
+  async getWorkoutTrackerStats(userId: number): Promise<{
+    totalWorkouts: number;
+    totalCaloriesBurned: number;
+    totalSets: number;
+    totalReps: number;
+  }> {
+    const sessions = Array.from(this.workoutTrackerSessions.values())
+      .filter(session => session.userId === userId);
+    
+    const stats = sessions.reduce((acc, session) => ({
+      totalWorkouts: acc.totalWorkouts + 1,
+      totalCaloriesBurned: acc.totalCaloriesBurned + session.caloriesBurned,
+      totalSets: acc.totalSets + session.sets,
+      totalReps: acc.totalReps + (session.sets * session.repsPerSet)
+    }), {
+      totalWorkouts: 0,
+      totalCaloriesBurned: 0,
+      totalSets: 0,
+      totalReps: 0
+    });
+    
+    return stats;
+  }
+
+  // Weight Entry operations
+  async getWeightEntries(userId: number): Promise<WeightEntry[]> {
+    return Array.from(this.weightEntries.values())
+      .filter(entry => entry.userId === userId)
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  }
+
+  async createWeightEntry(insertEntry: InsertWeightEntry): Promise<WeightEntry> {
+    const id = this.currentId++;
+    const entry: WeightEntry = { 
+      ...insertEntry, 
+      id,
+      createdAt: new Date()
+    };
+    this.weightEntries.set(id, entry);
+    return entry;
+  }
+
+  async updateWeightEntry(id: number, updates: Partial<InsertWeightEntry>): Promise<WeightEntry | undefined> {
+    const entry = this.weightEntries.get(id);
+    if (entry) {
+      const updatedEntry = { ...entry, ...updates };
+      this.weightEntries.set(id, updatedEntry);
+      return updatedEntry;
+    }
+    return undefined;
+  }
+
+  async deleteWeightEntry(id: number): Promise<boolean> {
+    return this.weightEntries.delete(id);
+  }
+
+  async getLatestWeightEntry(userId: number): Promise<WeightEntry | undefined> {
+    const entries = await this.getWeightEntries(userId);
+    return entries.length > 0 ? entries[entries.length - 1] : undefined;
   }
 
 }

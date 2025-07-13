@@ -9,6 +9,8 @@ import Exercises from "@/pages/Exercises";
 import BMICalculator from "@/pages/BMICalculator";
 import WorkoutPlanner from "@/pages/WorkoutPlanner";
 import CalorieCounter from "@/pages/CalorieCounter";
+import WorkoutTracker from "@/pages/WorkoutTracker";
+import WeightTracker from "@/pages/WeightTracker";
 import Auth from "@/pages/Auth";
 import AdminDashboard from "@/pages/AdminDashboard";
 import NotFound from "@/pages/not-found";
@@ -21,6 +23,8 @@ function Router() {
       <Route path="/bmi" component={BMICalculator} />
       <Route path="/planner" component={WorkoutPlanner} />
       <Route path="/calories" component={CalorieCounter} />
+      <Route path="/workout-tracker" component={WorkoutTracker} />
+      <Route path="/weight-tracker" component={WeightTracker} />
       <Route path="/auth" component={Auth} />
       <Route path="/admin" component={AdminDashboard} />
       <Route component={NotFound} />
