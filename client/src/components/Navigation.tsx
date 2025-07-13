@@ -87,12 +87,6 @@ export default function Navigation() {
           <div className="hidden md:flex items-center space-x-3">
             {user ? (
               <div className="flex items-center space-x-3">
-                {user.role === 'admin' && (
-                  <Badge variant="default" className="text-xs px-2 py-1">
-                    <Shield className="h-3 w-3 mr-1" />
-                    Admin
-                  </Badge>
-                )}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" className="flex items-center space-x-2 px-3 py-2 rounded-md hover:bg-gray-100">
