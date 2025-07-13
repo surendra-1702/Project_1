@@ -76,7 +76,6 @@ export default function Navigation() {
                   >
                     <item.icon className="h-4 w-4" />
                     {item.name}
-                    <Badge variant="secondary" className="text-xs">Admin</Badge>
                   </span>
                 </Link>
               ))}
@@ -153,7 +152,6 @@ export default function Navigation() {
                       }`}>
                         <item.icon className="h-4 w-4" />
                         {item.name}
-                        <Badge variant="secondary" className="text-xs">Admin</Badge>
                       </span>
                     </Link>
                   ))}
@@ -163,9 +161,6 @@ export default function Navigation() {
                       <div className="space-y-2">
                         <div className="px-3 py-2 text-sm text-gray-600">
                           Welcome, {user.firstName || user.username}
-                          {user.role === 'admin' && (
-                            <Badge variant="default" className="ml-2 text-xs">Admin</Badge>
-                          )}
                         </div>
                         <Button
                           variant="ghost"
