@@ -5,37 +5,8 @@ import { exerciseApiService } from "./services/exerciseApi";
 import { youtubeApiService } from "./services/youtubeApi";
 import { openaiService } from "./services/openaiService";
 import { foodApiService } from "./services/foodApi";
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
+import { authenticateToken, requireAdmin, hashPassword, verifyPassword, generateToken, AuthRequest } from "./auth";
 import { insertUserSchema, insertWorkoutPlanSchema, insertWorkoutSessionSchema, insertFoodEntrySchema, insertWorkoutTrackerSessionSchema, insertWeightEntrySchema } from "@shared/schema";
-
-const JWT_SECRET = process.env.JWT_SECRET || "fitness-app-secret-key";
-
-// Middleware to verify JWT tokens
-const authenticateToken = (req: any, res: any, next: any) => {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
-
-  if (!token) {
-    return res.status(401).json({ message: 'Access token required' });
-  }
-
-  jwt.verify(token, JWT_SECRET, (err: any, user: any) => {
-    if (err) {
-      return res.status(403).json({ message: 'Invalid or expired token' });
-    }
-    req.user = user;
-    next();
-  });
-};
-
-// Middleware to check admin role
-const requireAdmin = (req: any, res: any, next: any) => {
-  if (req.user.role !== 'admin') {
-    return res.status(403).json({ message: 'Admin access required' });
-  }
-  next();
-};
 
 export async function registerRoutes(app: Express): Promise<Server> {
   
@@ -57,7 +28,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Hash password
-      const hashedPassword = await bcrypt.hash(userData.password, 10);
+      const hashedPassword = await hashPassword(userData.password);
       
       const user = await storage.createUser({
         ...userData,
@@ -65,11 +36,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
 
       // Generate JWT token
-      const token = jwt.sign(
-        { userId: user.id, email: user.email, role: user.role },
-        JWT_SECRET,
-        { expiresIn: '7d' }
-      );
+      const token = generateToken(user.id, user.username, user.email, user.role || 'user');
 
       // Don't send password in response
       const { password, ...userWithoutPassword } = user;
@@ -92,7 +59,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ message: "Invalid email or password" });
       }
 
-      const isValidPassword = await bcrypt.compare(password, user.password);
+      const isValidPassword = await verifyPassword(password, user.password);
       if (!isValidPassword) {
         return res.status(401).json({ message: "Invalid email or password" });
       }
@@ -100,11 +67,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Update last login time
       await storage.updateUser(user.id, { lastLoginAt: new Date() });
 
-      const token = jwt.sign(
-        { userId: user.id, email: user.email, role: user.role },
-        JWT_SECRET,
-        { expiresIn: '7d' }
-      );
+      const token = generateToken(user.id, user.username, user.email, user.role || 'user');
 
       const { password: _, ...userWithoutPassword } = user;
       
@@ -117,9 +80,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/auth/me", authenticateToken, async (req, res) => {
+  app.get("/api/auth/me", authenticateToken, async (req: AuthRequest, res) => {
     try {
-      const user = await storage.getUser(req.user.userId);
+      const user = await storage.getUser(req.user!.id);
       if (!user) {
         return res.status(404).json({ message: "User not found" });
       }
@@ -131,12 +94,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/users/:id", authenticateToken, async (req, res) => {
+  app.put("/api/users/:id", authenticateToken, async (req: AuthRequest, res) => {
     try {
       const userId = parseInt(req.params.id);
       
       // Ensure user can only update their own profile
-      if (req.user.userId !== userId) {
+      if (req.user!.id !== userId) {
         return res.status(403).json({ message: "You can only update your own profile" });
       }
 
@@ -448,7 +411,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // ============= WORKOUT PLAN ROUTES =============
   
-  app.post("/api/workout-plans/generate", authenticateToken, async (req, res) => {
+  app.post("/api/workout-plans/generate", authenticateToken, async (req: AuthRequest, res) => {
     try {
       const { 
         height, weight, age, gender, activityLevel,
@@ -466,7 +429,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Save the generated plan to storage
       const savedPlan = await storage.createWorkoutPlan({
-        userId: req.user.userId,
+        userId: req.user!.id,
         title: workoutPlan.title,
         description: workoutPlan.description,
         goal: fitnessGoal,
@@ -483,21 +446,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/workout-plans", authenticateToken, async (req, res) => {
+  app.get("/api/workout-plans", authenticateToken, async (req: AuthRequest, res) => {
     try {
-      const plans = await storage.getWorkoutPlans(req.user.userId);
+      const plans = await storage.getWorkoutPlans(req.user!.id);
       res.json(plans);
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
   });
 
-  app.get("/api/workout-plans/:id", authenticateToken, async (req, res) => {
+  app.get("/api/workout-plans/:id", authenticateToken, async (req: AuthRequest, res) => {
     try {
       const planId = parseInt(req.params.id);
       const plan = await storage.getWorkoutPlan(planId);
       
-      if (!plan || plan.userId !== req.user.userId) {
+      if (!plan || plan.userId !== req.user!.id) {
         return res.status(404).json({ message: "Workout plan not found" });
       }
       
@@ -507,13 +470,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/workout-plans/:id", authenticateToken, async (req, res) => {
+  app.put("/api/workout-plans/:id", authenticateToken, async (req: AuthRequest, res) => {
     try {
       const planId = parseInt(req.params.id);
       const updates = req.body;
       
       const plan = await storage.getWorkoutPlan(planId);
-      if (!plan || plan.userId !== req.user.userId) {
+      if (!plan || plan.userId !== req.user!.id) {
         return res.status(404).json({ message: "Workout plan not found" });
       }
       
@@ -524,12 +487,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/workout-plans/:id", authenticateToken, async (req, res) => {
+  app.delete("/api/workout-plans/:id", authenticateToken, async (req: AuthRequest, res) => {
     try {
       const planId = parseInt(req.params.id);
       
       const plan = await storage.getWorkoutPlan(planId);
-      if (!plan || plan.userId !== req.user.userId) {
+      if (!plan || plan.userId !== req.user!.id) {
         return res.status(404).json({ message: "Workout plan not found" });
       }
       
@@ -542,11 +505,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // ============= WORKOUT SESSION ROUTES =============
   
-  app.post("/api/workout-sessions", authenticateToken, async (req, res) => {
+  app.post("/api/workout-sessions", authenticateToken, async (req: AuthRequest, res) => {
     try {
       const sessionData = insertWorkoutSessionSchema.parse({
         ...req.body,
-        userId: req.user.userId
+        userId: req.user!.id
       });
       
       const session = await storage.createWorkoutSession(sessionData);
@@ -556,17 +519,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/workout-sessions", authenticateToken, async (req, res) => {
+  app.get("/api/workout-sessions", authenticateToken, async (req: AuthRequest, res) => {
     try {
       const date = req.query.date ? new Date(req.query.date as string) : undefined;
-      const sessions = await storage.getWorkoutSessions(req.user.userId, date);
+      const sessions = await storage.getWorkoutSessions(req.user!.id, date);
       res.json(sessions);
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
   });
 
-  app.put("/api/workout-sessions/:id", authenticateToken, async (req, res) => {
+  app.put("/api/workout-sessions/:id", authenticateToken, async (req: AuthRequest, res) => {
     try {
       const sessionId = parseInt(req.params.id);
       const updates = req.body;
@@ -664,11 +627,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // ============= FOOD ENTRY ROUTES =============
   
-  app.post("/api/food-entries", authenticateToken, async (req, res) => {
+  app.post("/api/food-entries", authenticateToken, async (req: AuthRequest, res) => {
     try {
       const entryData = insertFoodEntrySchema.parse({
         ...req.body,
-        userId: req.user.userId
+        userId: req.user!.id
       });
       
       const entry = await storage.createFoodEntry(entryData);
@@ -679,17 +642,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/food-entries", authenticateToken, async (req, res) => {
+  app.get("/api/food-entries", authenticateToken, async (req: AuthRequest, res) => {
     try {
       const date = req.query.date ? new Date(req.query.date as string) : undefined;
-      const entries = await storage.getFoodEntries(req.user.userId, date);
+      const entries = await storage.getFoodEntries(req.user!.id, date);
       res.json(entries);
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
   });
 
-  app.put("/api/food-entries/:id", authenticateToken, async (req, res) => {
+  app.put("/api/food-entries/:id", authenticateToken, async (req: AuthRequest, res) => {
     try {
       const entryId = parseInt(req.params.id);
       const updates = req.body;
@@ -705,7 +668,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/food-entries/:id", authenticateToken, async (req, res) => {
+  app.delete("/api/food-entries/:id", authenticateToken, async (req: AuthRequest, res) => {
     try {
       const entryId = parseInt(req.params.id);
       
@@ -722,11 +685,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // ============= WORKOUT TRACKER ROUTES =============
   
-  app.post("/api/workout-tracker-sessions", authenticateToken, async (req, res) => {
+  app.post("/api/workout-tracker-sessions", authenticateToken, async (req: AuthRequest, res) => {
     try {
       const sessionData = insertWorkoutTrackerSessionSchema.parse({
         ...req.body,
-        userId: req.user.userId
+        userId: req.user!.id
       });
       
       const session = await storage.createWorkoutTrackerSession(sessionData);
@@ -737,17 +700,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/workout-tracker-sessions", authenticateToken, async (req, res) => {
+  app.get("/api/workout-tracker-sessions", authenticateToken, async (req: AuthRequest, res) => {
     try {
       const date = req.query.date ? new Date(req.query.date as string) : undefined;
-      const sessions = await storage.getWorkoutTrackerSessions(req.user.userId, date);
+      const sessions = await storage.getWorkoutTrackerSessions(req.user!.id, date);
       res.json(sessions);
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
   });
 
-  app.put("/api/workout-tracker-sessions/:id", authenticateToken, async (req, res) => {
+  app.put("/api/workout-tracker-sessions/:id", authenticateToken, async (req: AuthRequest, res) => {
     try {
       const sessionId = parseInt(req.params.id);
       const updates = req.body;
@@ -763,7 +726,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/workout-tracker-sessions/:id", authenticateToken, async (req, res) => {
+  app.delete("/api/workout-tracker-sessions/:id", authenticateToken, async (req: AuthRequest, res) => {
     try {
       const sessionId = parseInt(req.params.id);
       
@@ -778,9 +741,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/workout-tracker-stats", authenticateToken, async (req, res) => {
+  app.get("/api/workout-tracker-stats", authenticateToken, async (req: AuthRequest, res) => {
     try {
-      const stats = await storage.getWorkoutTrackerStats(req.user.userId);
+      const stats = await storage.getWorkoutTrackerStats(req.user!.id);
       res.json(stats);
     } catch (error: any) {
       res.status(500).json({ message: error.message });
@@ -789,11 +752,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // ============= WEIGHT TRACKING ROUTES =============
   
-  app.post("/api/weight-entries", authenticateToken, async (req, res) => {
+  app.post("/api/weight-entries", authenticateToken, async (req: AuthRequest, res) => {
     try {
       const entryData = insertWeightEntrySchema.parse({
         ...req.body,
-        userId: req.user.userId
+        userId: req.user!.id
       });
       
       const entry = await storage.createWeightEntry(entryData);
@@ -804,25 +767,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/weight-entries", authenticateToken, async (req, res) => {
+  app.get("/api/weight-entries", authenticateToken, async (req: AuthRequest, res) => {
     try {
-      const entries = await storage.getWeightEntries(req.user.userId);
+      const entries = await storage.getWeightEntries(req.user!.id);
       res.json(entries);
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
   });
 
-  app.get("/api/weight-entries/latest", authenticateToken, async (req, res) => {
+  app.get("/api/weight-entries/latest", authenticateToken, async (req: AuthRequest, res) => {
     try {
-      const latestEntry = await storage.getLatestWeightEntry(req.user.userId);
+      const latestEntry = await storage.getLatestWeightEntry(req.user!.id);
       res.json(latestEntry || null);
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
   });
 
-  app.put("/api/weight-entries/:id", authenticateToken, async (req, res) => {
+  app.put("/api/weight-entries/:id", authenticateToken, async (req: AuthRequest, res) => {
     try {
       const entryId = parseInt(req.params.id);
       const updates = req.body;
@@ -838,7 +801,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/weight-entries/:id", authenticateToken, async (req, res) => {
+  app.delete("/api/weight-entries/:id", authenticateToken, async (req: AuthRequest, res) => {
     try {
       const entryId = parseInt(req.params.id);
       
@@ -855,7 +818,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // ============= ADMIN ROUTES =============
   
-  app.get("/api/admin/users", authenticateToken, requireAdmin, async (req, res) => {
+  app.get("/api/admin/users", authenticateToken, requireAdmin, async (req: AuthRequest, res) => {
     try {
       const users = await storage.getAllUsers();
       res.json(users);
@@ -864,7 +827,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/admin/stats", authenticateToken, requireAdmin, async (req, res) => {
+  app.get("/api/admin/stats", authenticateToken, requireAdmin, async (req: AuthRequest, res) => {
     try {
       const stats = await storage.getUserStats();
       res.json(stats);

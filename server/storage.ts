@@ -70,6 +70,400 @@ export interface IStorage {
 
 }
 
+export class DatabaseStorage implements IStorage {
+  // User operations
+  async getUser(id: number): Promise<User | undefined> {
+    const { db } = await import('./db');
+    const { eq } = await import('drizzle-orm');
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user || undefined;
+  }
+
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    const { db } = await import('./db');
+    const { eq } = await import('drizzle-orm');
+    const [user] = await db.select().from(users).where(eq(users.email, email));
+    return user || undefined;
+  }
+
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    const { db } = await import('./db');
+    const { eq } = await import('drizzle-orm');
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user || undefined;
+  }
+
+  async createUser(insertUser: InsertUser): Promise<User> {
+    const { db } = await import('./db');
+    const [user] = await db
+      .insert(users)
+      .values(insertUser)
+      .returning();
+    return user;
+  }
+
+  async updateUser(id: number, updates: Partial<InsertUser>): Promise<User | undefined> {
+    const { db } = await import('./db');
+    const { eq } = await import('drizzle-orm');
+    const [user] = await db
+      .update(users)
+      .set(updates)
+      .where(eq(users.id, id))
+      .returning();
+    return user || undefined;
+  }
+
+  // Exercise operations
+  async getExercises(limit = 20, offset = 0): Promise<Exercise[]> {
+    const { db } = await import('./db');
+    return await db.select().from(exercises).limit(limit).offset(offset);
+  }
+
+  async getExerciseById(exerciseId: string): Promise<Exercise | undefined> {
+    const { db } = await import('./db');
+    const { eq } = await import('drizzle-orm');
+    const [exercise] = await db.select().from(exercises).where(eq(exercises.exerciseId, exerciseId));
+    return exercise || undefined;
+  }
+
+  async getExercisesByBodyPart(bodyPart: string): Promise<Exercise[]> {
+    const { db } = await import('./db');
+    const { eq } = await import('drizzle-orm');
+    return await db.select().from(exercises).where(eq(exercises.bodyPart, bodyPart));
+  }
+
+  async getExercisesByEquipment(equipment: string): Promise<Exercise[]> {
+    const { db } = await import('./db');
+    const { eq } = await import('drizzle-orm');
+    return await db.select().from(exercises).where(eq(exercises.equipment, equipment));
+  }
+
+  async getExercisesByTarget(target: string): Promise<Exercise[]> {
+    const { db } = await import('./db');
+    const { eq } = await import('drizzle-orm');
+    return await db.select().from(exercises).where(eq(exercises.target, target));
+  }
+
+  async createExercise(insertExercise: InsertExercise): Promise<Exercise> {
+    const { db } = await import('./db');
+    const [exercise] = await db
+      .insert(exercises)
+      .values(insertExercise)
+      .returning();
+    return exercise;
+  }
+
+  async searchExercises(query: string): Promise<Exercise[]> {
+    const { db } = await import('./db');
+    const { ilike, or } = await import('drizzle-orm');
+    const searchPattern = `%${query}%`;
+    return await db.select().from(exercises).where(
+      or(
+        ilike(exercises.name, searchPattern),
+        ilike(exercises.bodyPart, searchPattern),
+        ilike(exercises.target, searchPattern)
+      )
+    );
+  }
+
+  // Workout Plan operations
+  async getWorkoutPlans(userId: number): Promise<WorkoutPlan[]> {
+    const { db } = await import('./db');
+    const { eq } = await import('drizzle-orm');
+    return await db.select().from(workoutPlans).where(eq(workoutPlans.userId, userId));
+  }
+
+  async getWorkoutPlan(id: number): Promise<WorkoutPlan | undefined> {
+    const { db } = await import('./db');
+    const { eq } = await import('drizzle-orm');
+    const [plan] = await db.select().from(workoutPlans).where(eq(workoutPlans.id, id));
+    return plan || undefined;
+  }
+
+  async createWorkoutPlan(insertPlan: InsertWorkoutPlan): Promise<WorkoutPlan> {
+    const { db } = await import('./db');
+    const [plan] = await db
+      .insert(workoutPlans)
+      .values(insertPlan)
+      .returning();
+    return plan;
+  }
+
+  async updateWorkoutPlan(id: number, updates: Partial<InsertWorkoutPlan>): Promise<WorkoutPlan | undefined> {
+    const { db } = await import('./db');
+    const { eq } = await import('drizzle-orm');
+    const [plan] = await db
+      .update(workoutPlans)
+      .set(updates)
+      .where(eq(workoutPlans.id, id))
+      .returning();
+    return plan || undefined;
+  }
+
+  async deleteWorkoutPlan(id: number): Promise<boolean> {
+    const { db } = await import('./db');
+    const { eq } = await import('drizzle-orm');
+    const result = await db.delete(workoutPlans).where(eq(workoutPlans.id, id));
+    return result.rowCount > 0;
+  }
+
+  // Workout Session operations
+  async getWorkoutSessions(userId: number, date?: Date): Promise<WorkoutSession[]> {
+    const { db } = await import('./db');
+    const { eq, and, gte, lt } = await import('drizzle-orm');
+    
+    let whereCondition = eq(workoutSessions.userId, userId);
+    
+    if (date) {
+      const startOfDay = new Date(date);
+      startOfDay.setHours(0, 0, 0, 0);
+      const endOfDay = new Date(date);
+      endOfDay.setHours(23, 59, 59, 999);
+      
+      whereCondition = and(
+        eq(workoutSessions.userId, userId),
+        gte(workoutSessions.date, startOfDay),
+        lt(workoutSessions.date, endOfDay)
+      );
+    }
+    
+    return await db.select().from(workoutSessions).where(whereCondition);
+  }
+
+  async createWorkoutSession(insertSession: InsertWorkoutSession): Promise<WorkoutSession> {
+    const { db } = await import('./db');
+    const [session] = await db
+      .insert(workoutSessions)
+      .values(insertSession)
+      .returning();
+    return session;
+  }
+
+  async updateWorkoutSession(id: number, updates: Partial<InsertWorkoutSession>): Promise<WorkoutSession | undefined> {
+    const { db } = await import('./db');
+    const { eq } = await import('drizzle-orm');
+    const [session] = await db
+      .update(workoutSessions)
+      .set(updates)
+      .where(eq(workoutSessions.id, id))
+      .returning();
+    return session || undefined;
+  }
+
+  // Food Entry operations
+  async getFoodEntries(userId: number, date?: Date): Promise<FoodEntry[]> {
+    const { db } = await import('./db');
+    const { eq, and, gte, lt } = await import('drizzle-orm');
+    
+    let whereCondition = eq(foodEntries.userId, userId);
+    
+    if (date) {
+      const startOfDay = new Date(date);
+      startOfDay.setHours(0, 0, 0, 0);
+      const endOfDay = new Date(date);
+      endOfDay.setHours(23, 59, 59, 999);
+      
+      whereCondition = and(
+        eq(foodEntries.userId, userId),
+        gte(foodEntries.date, startOfDay),
+        lt(foodEntries.date, endOfDay)
+      );
+    }
+    
+    return await db.select().from(foodEntries).where(whereCondition);
+  }
+
+  async createFoodEntry(insertEntry: InsertFoodEntry): Promise<FoodEntry> {
+    const { db } = await import('./db');
+    const [entry] = await db
+      .insert(foodEntries)
+      .values(insertEntry)
+      .returning();
+    return entry;
+  }
+
+  async updateFoodEntry(id: number, updates: Partial<InsertFoodEntry>): Promise<FoodEntry | undefined> {
+    const { db } = await import('./db');
+    const { eq } = await import('drizzle-orm');
+    const [entry] = await db
+      .update(foodEntries)
+      .set(updates)
+      .where(eq(foodEntries.id, id))
+      .returning();
+    return entry || undefined;
+  }
+
+  async deleteFoodEntry(id: number): Promise<boolean> {
+    const { db } = await import('./db');
+    const { eq } = await import('drizzle-orm');
+    const result = await db.delete(foodEntries).where(eq(foodEntries.id, id));
+    return result.rowCount > 0;
+  }
+
+  // Workout Tracker operations
+  async getWorkoutTrackerSessions(userId: number, date?: Date): Promise<WorkoutTrackerSession[]> {
+    const { db } = await import('./db');
+    const { eq, and, gte, lt } = await import('drizzle-orm');
+    
+    let whereCondition = eq(workoutTrackerSessions.userId, userId);
+    
+    if (date) {
+      const startOfDay = new Date(date);
+      startOfDay.setHours(0, 0, 0, 0);
+      const endOfDay = new Date(date);
+      endOfDay.setHours(23, 59, 59, 999);
+      
+      whereCondition = and(
+        eq(workoutTrackerSessions.userId, userId),
+        gte(workoutTrackerSessions.date, startOfDay),
+        lt(workoutTrackerSessions.date, endOfDay)
+      );
+    }
+    
+    return await db.select().from(workoutTrackerSessions).where(whereCondition);
+  }
+
+  async createWorkoutTrackerSession(insertSession: InsertWorkoutTrackerSession): Promise<WorkoutTrackerSession> {
+    const { db } = await import('./db');
+    const [session] = await db
+      .insert(workoutTrackerSessions)
+      .values(insertSession)
+      .returning();
+    return session;
+  }
+
+  async updateWorkoutTrackerSession(id: number, updates: Partial<InsertWorkoutTrackerSession>): Promise<WorkoutTrackerSession | undefined> {
+    const { db } = await import('./db');
+    const { eq } = await import('drizzle-orm');
+    const [session] = await db
+      .update(workoutTrackerSessions)
+      .set(updates)
+      .where(eq(workoutTrackerSessions.id, id))
+      .returning();
+    return session || undefined;
+  }
+
+  async deleteWorkoutTrackerSession(id: number): Promise<boolean> {
+    const { db } = await import('./db');
+    const { eq } = await import('drizzle-orm');
+    const result = await db.delete(workoutTrackerSessions).where(eq(workoutTrackerSessions.id, id));
+    return result.rowCount > 0;
+  }
+
+  async getWorkoutTrackerStats(userId: number): Promise<{
+    totalWorkouts: number;
+    totalSets: number;
+    totalReps: number;
+  }> {
+    const { db } = await import('./db');
+    const { eq, sql } = await import('drizzle-orm');
+    
+    const sessions = await db.select().from(workoutTrackerSessions).where(eq(workoutTrackerSessions.userId, userId));
+    
+    let totalWorkouts = sessions.length;
+    let totalSets = 0;
+    let totalReps = 0;
+    
+    sessions.forEach(session => {
+      if (session.exercises && Array.isArray(session.exercises)) {
+        session.exercises.forEach((exercise: any) => {
+          if (exercise.sets && Array.isArray(exercise.sets)) {
+            totalSets += exercise.sets.length;
+            exercise.sets.forEach((set: any) => {
+              if (set.reps) totalReps += parseInt(set.reps) || 0;
+            });
+          }
+        });
+      }
+    });
+    
+    return { totalWorkouts, totalSets, totalReps };
+  }
+
+  // Weight Entry operations
+  async getWeightEntries(userId: number): Promise<WeightEntry[]> {
+    const { db } = await import('./db');
+    const { eq, desc } = await import('drizzle-orm');
+    return await db.select().from(weightEntries).where(eq(weightEntries.userId, userId)).orderBy(desc(weightEntries.date));
+  }
+
+  async createWeightEntry(insertEntry: InsertWeightEntry): Promise<WeightEntry> {
+    const { db } = await import('./db');
+    const [entry] = await db
+      .insert(weightEntries)
+      .values(insertEntry)
+      .returning();
+    return entry;
+  }
+
+  async updateWeightEntry(id: number, updates: Partial<InsertWeightEntry>): Promise<WeightEntry | undefined> {
+    const { db } = await import('./db');
+    const { eq } = await import('drizzle-orm');
+    const [entry] = await db
+      .update(weightEntries)
+      .set(updates)
+      .where(eq(weightEntries.id, id))
+      .returning();
+    return entry || undefined;
+  }
+
+  async deleteWeightEntry(id: number): Promise<boolean> {
+    const { db } = await import('./db');
+    const { eq } = await import('drizzle-orm');
+    const result = await db.delete(weightEntries).where(eq(weightEntries.id, id));
+    return result.rowCount > 0;
+  }
+
+  async getLatestWeightEntry(userId: number): Promise<WeightEntry | undefined> {
+    const { db } = await import('./db');
+    const { eq, desc } = await import('drizzle-orm');
+    const [entry] = await db.select().from(weightEntries).where(eq(weightEntries.userId, userId)).orderBy(desc(weightEntries.date)).limit(1);
+    return entry || undefined;
+  }
+
+  // Admin operations
+  async getAllUsers(): Promise<User[]> {
+    const { db } = await import('./db');
+    return await db.select().from(users);
+  }
+
+  async getUserStats(): Promise<{
+    totalUsers: number;
+    activeUsers: number;
+    usersByGoal: Record<string, number>;
+    recentLogins: User[];
+  }> {
+    const { db } = await import('./db');
+    const { desc, gte } = await import('drizzle-orm');
+    
+    const allUsers = await db.select().from(users);
+    const totalUsers = allUsers.length;
+    
+    // Active users (logged in within last 30 days)
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    const activeUsers = allUsers.filter(user => 
+      user.lastLoginAt && user.lastLoginAt >= thirtyDaysAgo
+    ).length;
+    
+    // Users by goal
+    const usersByGoal: Record<string, number> = {};
+    allUsers.forEach(user => {
+      if (user.fitnessGoal) {
+        usersByGoal[user.fitnessGoal] = (usersByGoal[user.fitnessGoal] || 0) + 1;
+      }
+    });
+    
+    // Recent logins (last 10)
+    const recentLogins = await db.select().from(users)
+      .where(gte(users.lastLoginAt, thirtyDaysAgo))
+      .orderBy(desc(users.lastLoginAt))
+      .limit(10);
+    
+    return { totalUsers, activeUsers, usersByGoal, recentLogins };
+  }
+}
+
 export class MemStorage implements IStorage {
   private users: Map<number, User>;
   private exercises: Map<number, Exercise>;
@@ -546,4 +940,4 @@ export class MemStorage implements IStorage {
 
 }
 
-export const storage = new MemStorage();
+export const storage = new DatabaseStorage();
