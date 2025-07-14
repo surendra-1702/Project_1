@@ -5,12 +5,33 @@ import { exerciseApiService } from "./services/exerciseApi";
 import { youtubeApiService } from "./services/youtubeApi";
 import { openaiService } from "./services/openaiService";
 import { foodApiService } from "./services/foodApi";
-import { setupGoogleAuth, requireAuth } from "./auth/googleAuth";
-import { insertWorkoutPlanSchema, insertWorkoutSessionSchema, insertFoodEntrySchema, insertWorkoutTrackerSessionSchema, insertWeightEntrySchema } from "@shared/schema";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import { insertUserSchema, insertWorkoutPlanSchema, insertWorkoutSessionSchema, insertFoodEntrySchema, insertWorkoutTrackerSessionSchema, insertWeightEntrySchema } from "@shared/schema";
+
+const JWT_SECRET = process.env.JWT_SECRET || "fitness-app-secret-key";
+
+// Middleware to verify JWT tokens
+const authenticateToken = (req: any, res: any, next: any) => {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+
+  if (!token) {
+    return res.status(401).json({ message: 'Access token required' });
+  }
+
+  jwt.verify(token, JWT_SECRET, (err: any, user: any) => {
+    if (err) {
+      return res.status(403).json({ message: 'Invalid or expired token' });
+    }
+    req.user = user;
+    next();
+  });
+};
 
 // Middleware to check admin role
 const requireAdmin = (req: any, res: any, next: any) => {
-  if (req.user?.role !== 'admin') {
+  if (req.user.role !== 'admin') {
     return res.status(403).json({ message: 'Admin access required' });
   }
   next();
@@ -18,20 +39,40 @@ const requireAdmin = (req: any, res: any, next: any) => {
 
 export async function registerRoutes(app: Express): Promise<Server> {
   
-  // Setup Google OAuth authentication
-  setupGoogleAuth(app);
-  
   // ============= AUTH ROUTES =============
-  // Google OAuth routes are handled in setupGoogleAuth
   
-  // Get current user endpoint
-  app.get("/api/auth/user", (req, res) => {
-    if (req.isAuthenticated() && req.user) {
-      res.json(req.user);
-    } else {
-      res.status(401).json({ message: 'Not authenticated' });
-    }
-  });
+  app.post("/api/auth/register", async (req, res) => {
+    try {
+      const userData = insertUserSchema.parse(req.body);
+      
+      // Check if user already exists
+      const existingUser = await storage.getUserByEmail(userData.email);
+      if (existingUser) {
+        return res.status(400).json({ message: "User with this email already exists" });
+      }
+
+      const existingUsername = await storage.getUserByUsername(userData.username);
+      if (existingUsername) {
+        return res.status(400).json({ message: "Username already taken" });
+      }
+
+      // Hash password
+      const hashedPassword = await bcrypt.hash(userData.password, 10);
+      
+      const user = await storage.createUser({
+        ...userData,
+        password: hashedPassword
+      });
+
+      // Generate JWT token
+      const token = jwt.sign(
+        { userId: user.id, email: user.email, role: user.role },
+        JWT_SECRET,
+        { expiresIn: '7d' }
+      );
+
+      // Don't send password in response
+      const { password, ...userWithoutPassword } = user;
       
       res.status(201).json({ 
         user: userWithoutPassword, 

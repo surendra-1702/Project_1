@@ -1,19 +1,18 @@
 import { 
   users, exercises, workoutPlans, workoutSessions, foodEntries, workoutTrackerSessions, weightEntries,
-  type User, type InsertUser, type UpsertUser, type Exercise, type InsertExercise, 
+  type User, type InsertUser, type Exercise, type InsertExercise, 
   type WorkoutPlan, type InsertWorkoutPlan, type WorkoutSession, type InsertWorkoutSession,
   type FoodEntry, type InsertFoodEntry, type WorkoutTrackerSession, type InsertWorkoutTrackerSession,
   type WeightEntry, type InsertWeightEntry
 } from "@shared/schema";
-import { db } from "./db";
-import { eq, and, gte, lte, desc, sql } from "drizzle-orm";
 
 export interface IStorage {
-  // User operations (for Google OAuth)
-  getUser(id: string): Promise<User | undefined>;
+  // User operations
+  getUser(id: number): Promise<User | undefined>;
   getUserByEmail(email: string): Promise<User | undefined>;
-  upsertUser(user: UpsertUser): Promise<User>;
-  updateUser(id: string, updates: Partial<UpsertUser>): Promise<User | undefined>;
+  getUserByUsername(username: string): Promise<User | undefined>;
+  createUser(user: InsertUser): Promise<User>;
+  updateUser(id: number, updates: Partial<InsertUser>): Promise<User | undefined>;
 
   // Exercise operations
   getExercises(limit?: number, offset?: number): Promise<Exercise[]>;
@@ -25,40 +24,40 @@ export interface IStorage {
   searchExercises(query: string): Promise<Exercise[]>;
 
   // Workout Plan operations
-  getWorkoutPlans(userId: string): Promise<WorkoutPlan[]>;
+  getWorkoutPlans(userId: number): Promise<WorkoutPlan[]>;
   getWorkoutPlan(id: number): Promise<WorkoutPlan | undefined>;
   createWorkoutPlan(plan: InsertWorkoutPlan): Promise<WorkoutPlan>;
   updateWorkoutPlan(id: number, updates: Partial<InsertWorkoutPlan>): Promise<WorkoutPlan | undefined>;
   deleteWorkoutPlan(id: number): Promise<boolean>;
 
   // Workout Session operations
-  getWorkoutSessions(userId: string, date?: Date): Promise<WorkoutSession[]>;
+  getWorkoutSessions(userId: number, date?: Date): Promise<WorkoutSession[]>;
   createWorkoutSession(session: InsertWorkoutSession): Promise<WorkoutSession>;
   updateWorkoutSession(id: number, updates: Partial<InsertWorkoutSession>): Promise<WorkoutSession | undefined>;
 
   // Food Entry operations
-  getFoodEntries(userId: string, date?: Date): Promise<FoodEntry[]>;
+  getFoodEntries(userId: number, date?: Date): Promise<FoodEntry[]>;
   createFoodEntry(entry: InsertFoodEntry): Promise<FoodEntry>;
   updateFoodEntry(id: number, updates: Partial<InsertFoodEntry>): Promise<FoodEntry | undefined>;
   deleteFoodEntry(id: number): Promise<boolean>;
 
   // Workout Tracker operations
-  getWorkoutTrackerSessions(userId: string, date?: Date): Promise<WorkoutTrackerSession[]>;
+  getWorkoutTrackerSessions(userId: number, date?: Date): Promise<WorkoutTrackerSession[]>;
   createWorkoutTrackerSession(session: InsertWorkoutTrackerSession): Promise<WorkoutTrackerSession>;
   updateWorkoutTrackerSession(id: number, updates: Partial<InsertWorkoutTrackerSession>): Promise<WorkoutTrackerSession | undefined>;
   deleteWorkoutTrackerSession(id: number): Promise<boolean>;
-  getWorkoutTrackerStats(userId: string): Promise<{
+  getWorkoutTrackerStats(userId: number): Promise<{
     totalWorkouts: number;
     totalSets: number;
     totalReps: number;
   }>;
 
   // Weight Entry operations
-  getWeightEntries(userId: string): Promise<WeightEntry[]>;
+  getWeightEntries(userId: number): Promise<WeightEntry[]>;
   createWeightEntry(entry: InsertWeightEntry): Promise<WeightEntry>;
   updateWeightEntry(id: number, updates: Partial<InsertWeightEntry>): Promise<WeightEntry | undefined>;
   deleteWeightEntry(id: number): Promise<boolean>;
-  getLatestWeightEntry(userId: string): Promise<WeightEntry | undefined>;
+  getLatestWeightEntry(userId: number): Promise<WeightEntry | undefined>;
 
   // Admin operations
   getAllUsers(): Promise<User[]>;
@@ -547,314 +546,4 @@ export class MemStorage implements IStorage {
 
 }
 
-export class DatabaseStorage implements IStorage {
-  // User operations (for Google OAuth)
-  async getUser(id: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.id, id));
-    return user;
-  }
-
-  async getUserByEmail(email: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.email, email));
-    return user;
-  }
-
-  async upsertUser(userData: UpsertUser): Promise<User> {
-    const [user] = await db
-      .insert(users)
-      .values(userData)
-      .onConflictDoUpdate({
-        target: users.id,
-        set: {
-          ...userData,
-          updatedAt: new Date(),
-        },
-      })
-      .returning();
-    return user;
-  }
-
-  async updateUser(id: string, updates: Partial<UpsertUser>): Promise<User | undefined> {
-    const [user] = await db
-      .update(users)
-      .set({ ...updates, updatedAt: new Date() })
-      .where(eq(users.id, id))
-      .returning();
-    return user;
-  }
-
-  // Exercise operations
-  async getExercises(limit = 20, offset = 0): Promise<Exercise[]> {
-    return await db.select().from(exercises).limit(limit).offset(offset);
-  }
-
-  async getExerciseById(exerciseId: string): Promise<Exercise | undefined> {
-    const [exercise] = await db.select().from(exercises).where(eq(exercises.exerciseId, exerciseId));
-    return exercise;
-  }
-
-  async getExercisesByBodyPart(bodyPart: string): Promise<Exercise[]> {
-    return await db.select().from(exercises).where(eq(exercises.bodyPart, bodyPart));
-  }
-
-  async getExercisesByEquipment(equipment: string): Promise<Exercise[]> {
-    return await db.select().from(exercises).where(eq(exercises.equipment, equipment));
-  }
-
-  async getExercisesByTarget(target: string): Promise<Exercise[]> {
-    return await db.select().from(exercises).where(eq(exercises.target, target));
-  }
-
-  async createExercise(exerciseData: InsertExercise): Promise<Exercise> {
-    const [exercise] = await db.insert(exercises).values(exerciseData).returning();
-    return exercise;
-  }
-
-  async searchExercises(query: string): Promise<Exercise[]> {
-    return await db.select().from(exercises)
-      .where(sql`${exercises.name} ILIKE ${'%' + query + '%'}`);
-  }
-
-  // Workout Plan operations
-  async getWorkoutPlans(userId: string): Promise<WorkoutPlan[]> {
-    return await db.select().from(workoutPlans)
-      .where(eq(workoutPlans.userId, userId))
-      .orderBy(desc(workoutPlans.createdAt));
-  }
-
-  async getWorkoutPlan(id: number): Promise<WorkoutPlan | undefined> {
-    const [plan] = await db.select().from(workoutPlans).where(eq(workoutPlans.id, id));
-    return plan;
-  }
-
-  async createWorkoutPlan(planData: InsertWorkoutPlan): Promise<WorkoutPlan> {
-    const [plan] = await db.insert(workoutPlans).values(planData).returning();
-    return plan;
-  }
-
-  async updateWorkoutPlan(id: number, updates: Partial<InsertWorkoutPlan>): Promise<WorkoutPlan | undefined> {
-    const [plan] = await db.update(workoutPlans)
-      .set(updates)
-      .where(eq(workoutPlans.id, id))
-      .returning();
-    return plan;
-  }
-
-  async deleteWorkoutPlan(id: number): Promise<boolean> {
-    const result = await db.delete(workoutPlans).where(eq(workoutPlans.id, id));
-    return result.rowCount > 0;
-  }
-
-  // Workout Session operations
-  async getWorkoutSessions(userId: string, date?: Date): Promise<WorkoutSession[]> {
-    let query = db.select().from(workoutSessions).where(eq(workoutSessions.userId, userId));
-    
-    if (date) {
-      const startOfDay = new Date(date);
-      startOfDay.setHours(0, 0, 0, 0);
-      const endOfDay = new Date(date);
-      endOfDay.setHours(23, 59, 59, 999);
-      
-      query = query.where(and(
-        eq(workoutSessions.userId, userId),
-        gte(workoutSessions.date, startOfDay),
-        lte(workoutSessions.date, endOfDay)
-      ));
-    }
-    
-    return await query.orderBy(desc(workoutSessions.date));
-  }
-
-  async createWorkoutSession(sessionData: InsertWorkoutSession): Promise<WorkoutSession> {
-    const [session] = await db.insert(workoutSessions).values(sessionData).returning();
-    return session;
-  }
-
-  async updateWorkoutSession(id: number, updates: Partial<InsertWorkoutSession>): Promise<WorkoutSession | undefined> {
-    const [session] = await db.update(workoutSessions)
-      .set(updates)
-      .where(eq(workoutSessions.id, id))
-      .returning();
-    return session;
-  }
-
-  // Food Entry operations
-  async getFoodEntries(userId: string, date?: Date): Promise<FoodEntry[]> {
-    let query = db.select().from(foodEntries).where(eq(foodEntries.userId, userId));
-    
-    if (date) {
-      const startOfDay = new Date(date);
-      startOfDay.setHours(0, 0, 0, 0);
-      const endOfDay = new Date(date);
-      endOfDay.setHours(23, 59, 59, 999);
-      
-      query = query.where(and(
-        eq(foodEntries.userId, userId),
-        gte(foodEntries.date, startOfDay),
-        lte(foodEntries.date, endOfDay)
-      ));
-    }
-    
-    return await query.orderBy(desc(foodEntries.date));
-  }
-
-  async createFoodEntry(entryData: InsertFoodEntry): Promise<FoodEntry> {
-    const [entry] = await db.insert(foodEntries).values(entryData).returning();
-    return entry;
-  }
-
-  async updateFoodEntry(id: number, updates: Partial<InsertFoodEntry>): Promise<FoodEntry | undefined> {
-    const [entry] = await db.update(foodEntries)
-      .set(updates)
-      .where(eq(foodEntries.id, id))
-      .returning();
-    return entry;
-  }
-
-  async deleteFoodEntry(id: number): Promise<boolean> {
-    const result = await db.delete(foodEntries).where(eq(foodEntries.id, id));
-    return result.rowCount > 0;
-  }
-
-  // Workout Tracker operations
-  async getWorkoutTrackerSessions(userId: string, date?: Date): Promise<WorkoutTrackerSession[]> {
-    let query = db.select().from(workoutTrackerSessions).where(eq(workoutTrackerSessions.userId, userId));
-    
-    if (date) {
-      const startOfDay = new Date(date);
-      startOfDay.setHours(0, 0, 0, 0);
-      const endOfDay = new Date(date);
-      endOfDay.setHours(23, 59, 59, 999);
-      
-      query = query.where(and(
-        eq(workoutTrackerSessions.userId, userId),
-        gte(workoutTrackerSessions.date, startOfDay),
-        lte(workoutTrackerSessions.date, endOfDay)
-      ));
-    }
-    
-    return await query.orderBy(desc(workoutTrackerSessions.date));
-  }
-
-  async createWorkoutTrackerSession(sessionData: InsertWorkoutTrackerSession): Promise<WorkoutTrackerSession> {
-    const [session] = await db.insert(workoutTrackerSessions).values(sessionData).returning();
-    return session;
-  }
-
-  async updateWorkoutTrackerSession(id: number, updates: Partial<InsertWorkoutTrackerSession>): Promise<WorkoutTrackerSession | undefined> {
-    const [session] = await db.update(workoutTrackerSessions)
-      .set(updates)
-      .where(eq(workoutTrackerSessions.id, id))
-      .returning();
-    return session;
-  }
-
-  async deleteWorkoutTrackerSession(id: number): Promise<boolean> {
-    const result = await db.delete(workoutTrackerSessions).where(eq(workoutTrackerSessions.id, id));
-    return result.rowCount > 0;
-  }
-
-  async getWorkoutTrackerStats(userId: string): Promise<{
-    totalWorkouts: number;
-    totalSets: number;
-    totalReps: number;
-  }> {
-    const sessions = await db.select().from(workoutTrackerSessions)
-      .where(eq(workoutTrackerSessions.userId, userId));
-    
-    let totalSets = 0;
-    let totalReps = 0;
-    
-    sessions.forEach(session => {
-      const exercises = session.exercises as any[];
-      exercises.forEach(exercise => {
-        if (exercise.sets) {
-          exercise.sets.forEach((set: any) => {
-            totalSets++;
-            totalReps += parseInt(set.reps) || 0;
-          });
-        }
-      });
-    });
-    
-    return {
-      totalWorkouts: sessions.length,
-      totalSets,
-      totalReps
-    };
-  }
-
-  // Weight Entry operations
-  async getWeightEntries(userId: string): Promise<WeightEntry[]> {
-    return await db.select().from(weightEntries)
-      .where(eq(weightEntries.userId, userId))
-      .orderBy(desc(weightEntries.date));
-  }
-
-  async createWeightEntry(entryData: InsertWeightEntry): Promise<WeightEntry> {
-    const [entry] = await db.insert(weightEntries).values(entryData).returning();
-    return entry;
-  }
-
-  async updateWeightEntry(id: number, updates: Partial<InsertWeightEntry>): Promise<WeightEntry | undefined> {
-    const [entry] = await db.update(weightEntries)
-      .set(updates)
-      .where(eq(weightEntries.id, id))
-      .returning();
-    return entry;
-  }
-
-  async deleteWeightEntry(id: number): Promise<boolean> {
-    const result = await db.delete(weightEntries).where(eq(weightEntries.id, id));
-    return result.rowCount > 0;
-  }
-
-  async getLatestWeightEntry(userId: string): Promise<WeightEntry | undefined> {
-    const [entry] = await db.select().from(weightEntries)
-      .where(eq(weightEntries.userId, userId))
-      .orderBy(desc(weightEntries.date))
-      .limit(1);
-    return entry;
-  }
-
-  // Admin operations
-  async getAllUsers(): Promise<User[]> {
-    return await db.select().from(users).orderBy(desc(users.createdAt));
-  }
-
-  async getUserStats(): Promise<{
-    totalUsers: number;
-    activeUsers: number;
-    usersByGoal: Record<string, number>;
-    recentLogins: User[];
-  }> {
-    const allUsers = await this.getAllUsers();
-    const now = new Date();
-    const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-    
-    const activeUsers = allUsers.filter(user => 
-      user.lastLoginAt && user.lastLoginAt > thirtyDaysAgo
-    );
-    
-    const usersByGoal: Record<string, number> = {};
-    allUsers.forEach(user => {
-      if (user.fitnessGoal) {
-        usersByGoal[user.fitnessGoal] = (usersByGoal[user.fitnessGoal] || 0) + 1;
-      }
-    });
-    
-    const recentLogins = allUsers
-      .filter(user => user.lastLoginAt)
-      .sort((a, b) => (b.lastLoginAt?.getTime() || 0) - (a.lastLoginAt?.getTime() || 0))
-      .slice(0, 10);
-    
-    return {
-      totalUsers: allUsers.length,
-      activeUsers: activeUsers.length,
-      usersByGoal,
-      recentLogins
-    };
-  }
-}
-
-export const storage = new DatabaseStorage();
+export const storage = new MemStorage();
