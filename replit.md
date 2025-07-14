@@ -115,6 +115,7 @@ FitTrack Pro is a comprehensive full-stack fitness platform built with React, Ex
 - Environment variable support for configuration
 
 ## Changelog
+- July 14, 2025. Fixed critical database schema mismatch issue - migrated from integer to string user IDs across all tables, implemented automatic ID generation for user registration, and resolved signup/authentication errors
 - July 12, 2025. Added comprehensive role-based authentication system with admin dashboard for user monitoring and fitness goal tracking
 - July 12, 2025. Completely removed blog feature from the application (routes, components, database schema, and storage)
 - June 30, 2025. Initial setup

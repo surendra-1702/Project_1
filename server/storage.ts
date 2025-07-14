@@ -8,11 +8,11 @@ import {
 
 export interface IStorage {
   // User operations
-  getUser(id: number): Promise<User | undefined>;
+  getUser(id: string): Promise<User | undefined>;
   getUserByEmail(email: string): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
-  updateUser(id: number, updates: Partial<InsertUser>): Promise<User | undefined>;
+  updateUser(id: string, updates: Partial<InsertUser>): Promise<User | undefined>;
 
   // Exercise operations
   getExercises(limit?: number, offset?: number): Promise<Exercise[]>;
@@ -24,40 +24,40 @@ export interface IStorage {
   searchExercises(query: string): Promise<Exercise[]>;
 
   // Workout Plan operations
-  getWorkoutPlans(userId: number): Promise<WorkoutPlan[]>;
+  getWorkoutPlans(userId: string): Promise<WorkoutPlan[]>;
   getWorkoutPlan(id: number): Promise<WorkoutPlan | undefined>;
   createWorkoutPlan(plan: InsertWorkoutPlan): Promise<WorkoutPlan>;
   updateWorkoutPlan(id: number, updates: Partial<InsertWorkoutPlan>): Promise<WorkoutPlan | undefined>;
   deleteWorkoutPlan(id: number): Promise<boolean>;
 
   // Workout Session operations
-  getWorkoutSessions(userId: number, date?: Date): Promise<WorkoutSession[]>;
+  getWorkoutSessions(userId: string, date?: Date): Promise<WorkoutSession[]>;
   createWorkoutSession(session: InsertWorkoutSession): Promise<WorkoutSession>;
   updateWorkoutSession(id: number, updates: Partial<InsertWorkoutSession>): Promise<WorkoutSession | undefined>;
 
   // Food Entry operations
-  getFoodEntries(userId: number, date?: Date): Promise<FoodEntry[]>;
+  getFoodEntries(userId: string, date?: Date): Promise<FoodEntry[]>;
   createFoodEntry(entry: InsertFoodEntry): Promise<FoodEntry>;
   updateFoodEntry(id: number, updates: Partial<InsertFoodEntry>): Promise<FoodEntry | undefined>;
   deleteFoodEntry(id: number): Promise<boolean>;
 
   // Workout Tracker operations
-  getWorkoutTrackerSessions(userId: number, date?: Date): Promise<WorkoutTrackerSession[]>;
+  getWorkoutTrackerSessions(userId: string, date?: Date): Promise<WorkoutTrackerSession[]>;
   createWorkoutTrackerSession(session: InsertWorkoutTrackerSession): Promise<WorkoutTrackerSession>;
   updateWorkoutTrackerSession(id: number, updates: Partial<InsertWorkoutTrackerSession>): Promise<WorkoutTrackerSession | undefined>;
   deleteWorkoutTrackerSession(id: number): Promise<boolean>;
-  getWorkoutTrackerStats(userId: number): Promise<{
+  getWorkoutTrackerStats(userId: string): Promise<{
     totalWorkouts: number;
     totalSets: number;
     totalReps: number;
   }>;
 
   // Weight Entry operations
-  getWeightEntries(userId: number): Promise<WeightEntry[]>;
+  getWeightEntries(userId: string): Promise<WeightEntry[]>;
   createWeightEntry(entry: InsertWeightEntry): Promise<WeightEntry>;
   updateWeightEntry(id: number, updates: Partial<InsertWeightEntry>): Promise<WeightEntry | undefined>;
   deleteWeightEntry(id: number): Promise<boolean>;
-  getLatestWeightEntry(userId: number): Promise<WeightEntry | undefined>;
+  getLatestWeightEntry(userId: string): Promise<WeightEntry | undefined>;
 
   // Admin operations
   getAllUsers(): Promise<User[]>;
@@ -72,7 +72,7 @@ export interface IStorage {
 
 export class DatabaseStorage implements IStorage {
   // User operations
-  async getUser(id: number): Promise<User | undefined> {
+  async getUser(id: string): Promise<User | undefined> {
     const { db } = await import('./db');
     const { eq } = await import('drizzle-orm');
     const [user] = await db.select().from(users).where(eq(users.id, id));
@@ -95,14 +95,17 @@ export class DatabaseStorage implements IStorage {
 
   async createUser(insertUser: InsertUser): Promise<User> {
     const { db } = await import('./db');
+    // Generate a unique ID for the user
+    const userId = `user_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`;
+    const userWithId = { ...insertUser, id: userId };
     const [user] = await db
       .insert(users)
-      .values(insertUser)
+      .values(userWithId)
       .returning();
     return user;
   }
 
-  async updateUser(id: number, updates: Partial<InsertUser>): Promise<User | undefined> {
+  async updateUser(id: string, updates: Partial<InsertUser>): Promise<User | undefined> {
     const { db } = await import('./db');
     const { eq } = await import('drizzle-orm');
     const [user] = await db

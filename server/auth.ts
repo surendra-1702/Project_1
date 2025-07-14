@@ -8,7 +8,7 @@ const SALT_ROUNDS = 12;
 
 interface AuthRequest extends Request {
   user?: {
-    id: number;
+    id: string;
     username: string;
     email: string;
     role: string;
@@ -23,7 +23,7 @@ export const verifyPassword = async (password: string, hashedPassword: string): 
   return await bcrypt.compare(password, hashedPassword);
 };
 
-export const generateToken = (userId: number, username: string, email: string, role: string): string => {
+export const generateToken = (userId: string, username: string, email: string, role: string): string => {
   return jwt.sign({ userId, username, email, role }, JWT_SECRET, { expiresIn: '7d' });
 };
 
