@@ -40,6 +40,23 @@ interface WorkoutPlanResponse {
 
 export class OpenAIService {
   async generateWorkoutPlan(request: WorkoutPlanRequest): Promise<WorkoutPlanResponse> {
+    // First try OpenAI API
+    try {
+      return await this.generateWithOpenAI(request);
+    } catch (error: any) {
+      console.error('OpenAI generation failed:', error.message);
+      
+      // If OpenAI fails due to quota or other issues, provide a fallback plan
+      if (error.message.includes('quota') || error.message.includes('billing')) {
+        console.log('Using fallback workout plan generation due to OpenAI quota limits');
+        return this.generateFallbackPlan(request);
+      }
+      
+      throw error;
+    }
+  }
+
+  private async generateWithOpenAI(request: WorkoutPlanRequest): Promise<WorkoutPlanResponse> {
     try {
       const prompt = this.buildWorkoutPlanPrompt(request);
 
@@ -61,10 +78,128 @@ export class OpenAIService {
 
       const result = JSON.parse(response.choices[0].message.content || '{}');
       return result as WorkoutPlanResponse;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error generating workout plan:', error);
-      throw new Error('Failed to generate workout plan. Please try again.');
+      
+      // Handle specific OpenAI errors
+      if (error.status === 429) {
+        throw new Error('OpenAI API quota exceeded. Please check your billing plan at https://platform.openai.com/account/billing');
+      } else if (error.status === 401) {
+        throw new Error('Invalid OpenAI API key. Please check your API configuration.');
+      } else if (error.status === 400) {
+        throw new Error('Invalid request to OpenAI. Please try different parameters.');
+      }
+      
+      throw new Error('Failed to generate workout plan. Please try again or contact support.');
     }
+  }
+
+  private generateFallbackPlan(request: WorkoutPlanRequest): WorkoutPlanResponse {
+    // Generate a basic but effective workout plan based on common fitness principles
+    const isBeginnerOrIntermediate = request.experienceLevel === 'beginner' || request.experienceLevel === 'intermediate';
+    const focusAreas = this.getFocusAreasForGoal(request.fitnessGoal);
+    
+    const weeklySchedule = [];
+    
+    for (let day = 1; day <= request.daysPerWeek; day++) {
+      const focus = focusAreas[day % focusAreas.length];
+      const exercises = this.getExercisesForFocus(focus, isBeginnerOrIntermediate);
+      
+      weeklySchedule.push({
+        day,
+        name: `Day ${day}: ${focus}`,
+        focus,
+        duration: request.sessionDuration,
+        exercises
+      });
+    }
+
+    return {
+      title: `${request.daysPerWeek}-Day ${request.fitnessGoal} Plan`,
+      description: `A structured ${request.daysPerWeek}-day workout plan designed for ${request.fitnessGoal.toLowerCase()} with ${request.experienceLevel} level exercises. Each session lasts approximately ${request.sessionDuration} minutes.`,
+      weeklySchedule,
+      tips: this.getTipsForGoal(request.fitnessGoal),
+      progressionNotes: `Start with lighter weights and focus on proper form. Increase weight by 5-10% when you can complete all sets with good form. Rest 48-72 hours between training the same muscle groups.`
+    };
+  }
+
+  private getFocusAreasForGoal(goal: string): string[] {
+    switch (goal.toLowerCase()) {
+      case 'weight loss':
+      case 'fat loss':
+        return ['Full Body Circuit', 'Cardio & Core', 'Upper Body Strength'];
+      case 'muscle gain':
+      case 'build muscle':
+        return ['Push (Chest/Shoulders/Triceps)', 'Pull (Back/Biceps)', 'Legs & Glutes'];
+      case 'strength':
+      case 'get stronger':
+        return ['Upper Body Strength', 'Lower Body Strength', 'Core & Stability'];
+      case 'endurance':
+        return ['Cardio Endurance', 'Muscular Endurance', 'Mixed Training'];
+      default:
+        return ['Full Body Strength', 'Cardio & Flexibility', 'Functional Training'];
+    }
+  }
+
+  private getExercisesForFocus(focus: string, isBeginnerOrIntermediate: boolean) {
+    const exerciseDatabase = {
+      'Full Body Circuit': [
+        { name: 'Bodyweight Squats', sets: '3', reps: '12-15', notes: 'Keep chest up, knees behind toes', restTime: '30-45 seconds' },
+        { name: 'Push-ups', sets: '3', reps: '8-12', notes: 'Modify on knees if needed', restTime: '30-45 seconds' },
+        { name: 'Plank Hold', sets: '3', reps: '30-60 seconds', notes: 'Keep body straight', restTime: '30 seconds' },
+        { name: 'Mountain Climbers', sets: '3', reps: '20 total', notes: 'Quick feet, strong core', restTime: '45 seconds' },
+        { name: 'Lunges', sets: '2', reps: '10 each leg', notes: 'Step far enough forward', restTime: '30 seconds' }
+      ],
+      'Push (Chest/Shoulders/Triceps)': [
+        { name: 'Bench Press', sets: '4', reps: isBeginnerOrIntermediate ? '8-10' : '6-8', notes: 'Control the weight down', restTime: '2-3 minutes' },
+        { name: 'Overhead Press', sets: '3', reps: '8-10', notes: 'Keep core tight', restTime: '2 minutes' },
+        { name: 'Incline Dumbbell Press', sets: '3', reps: '10-12', notes: 'Squeeze chest at top', restTime: '90 seconds' },
+        { name: 'Lateral Raises', sets: '3', reps: '12-15', notes: 'Light weight, control movement', restTime: '60 seconds' },
+        { name: 'Tricep Dips', sets: '3', reps: '8-12', notes: 'Lower slowly', restTime: '60 seconds' }
+      ],
+      'Pull (Back/Biceps)': [
+        { name: 'Pull-ups/Lat Pulldown', sets: '4', reps: isBeginnerOrIntermediate ? '6-8' : '8-10', notes: 'Full range of motion', restTime: '2-3 minutes' },
+        { name: 'Bent-over Rows', sets: '3', reps: '8-10', notes: 'Keep back straight', restTime: '2 minutes' },
+        { name: 'Face Pulls', sets: '3', reps: '12-15', notes: 'Squeeze shoulder blades', restTime: '90 seconds' },
+        { name: 'Bicep Curls', sets: '3', reps: '10-12', notes: 'Control the negative', restTime: '60 seconds' },
+        { name: 'Hammer Curls', sets: '2', reps: '12-15', notes: 'Keep elbows stable', restTime: '60 seconds' }
+      ],
+      'Legs & Glutes': [
+        { name: 'Squats', sets: '4', reps: isBeginnerOrIntermediate ? '10-12' : '8-10', notes: 'Full depth, chest up', restTime: '2-3 minutes' },
+        { name: 'Romanian Deadlifts', sets: '3', reps: '10-12', notes: 'Hinge at hips', restTime: '2 minutes' },
+        { name: 'Bulgarian Split Squats', sets: '3', reps: '10 each leg', notes: 'Focus on front leg', restTime: '90 seconds' },
+        { name: 'Hip Thrusts', sets: '3', reps: '12-15', notes: 'Squeeze glutes at top', restTime: '90 seconds' },
+        { name: 'Calf Raises', sets: '3', reps: '15-20', notes: 'Full range of motion', restTime: '60 seconds' }
+      ],
+      'Cardio & Core': [
+        { name: 'Jumping Jacks', sets: '3', reps: '30 seconds', notes: 'Keep pace steady', restTime: '30 seconds' },
+        { name: 'Burpees', sets: '3', reps: '8-10', notes: 'Full body movement', restTime: '60 seconds' },
+        { name: 'Russian Twists', sets: '3', reps: '20 total', notes: 'Engage core throughout', restTime: '45 seconds' },
+        { name: 'Dead Bug', sets: '3', reps: '10 each side', notes: 'Keep lower back pressed down', restTime: '30 seconds' },
+        { name: 'High Knees', sets: '3', reps: '30 seconds', notes: 'Drive knees up high', restTime: '30 seconds' }
+      ]
+    };
+
+    return exerciseDatabase[focus] || exerciseDatabase['Full Body Circuit'];
+  }
+
+  private getTipsForGoal(goal: string): string[] {
+    const generalTips = [
+      'Always warm up for 5-10 minutes before starting your workout',
+      'Focus on proper form over heavy weight',
+      'Stay hydrated throughout your workout',
+      'Get adequate rest between workout days'
+    ];
+
+    const goalSpecificTips = {
+      'weight loss': ['Combine with a caloric deficit diet', 'Include cardio 3-4 times per week'],
+      'muscle gain': ['Eat in a slight caloric surplus', 'Prioritize protein intake (0.8-1g per lb bodyweight)'],
+      'strength': ['Focus on progressive overload', 'Allow 2-3 minutes rest between heavy sets'],
+      'endurance': ['Gradually increase workout duration', 'Include both steady-state and interval training']
+    };
+
+    const specific = goalSpecificTips[goal.toLowerCase()] || [];
+    return [...generalTips, ...specific];
   }
 
   private buildWorkoutPlanPrompt(request: WorkoutPlanRequest): string {
