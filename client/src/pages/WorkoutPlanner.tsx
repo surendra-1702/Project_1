@@ -88,10 +88,11 @@ export default function WorkoutPlanner() {
   // Generate workout plan mutation
   const generatePlanMutation = useMutation({
     mutationFn: async (data: any) => {
-      return await apiRequest("/api/workout-plans/generate", {
+      const response = await apiRequest("/api/workout-plans/generate", {
         method: "POST",
         body: JSON.stringify(data)
       });
+      return await response.json();
     },
     onSuccess: (newPlan) => {
       toast({

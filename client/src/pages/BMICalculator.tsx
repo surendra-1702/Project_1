@@ -35,7 +35,10 @@ export default function BMICalculator() {
 
   const calculateBMIMutation = useMutation({
     mutationFn: async (data: any) => {
-      const response = await apiRequest('POST', '/api/bmi/calculate', data);
+      const response = await apiRequest('/api/bmi/calculate', {
+        method: 'POST',
+        body: JSON.stringify(data)
+      });
       return response.json();
     },
     onSuccess: (data) => {

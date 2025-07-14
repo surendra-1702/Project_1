@@ -49,7 +49,11 @@ export default function WeightTracker() {
 
   const createEntryMutation = useMutation({
     mutationFn: async (entryData: any) => {
-      return await apiRequest('POST', '/api/weight-entries', entryData);
+      const response = await apiRequest('/api/weight-entries', {
+        method: 'POST',
+        body: JSON.stringify(entryData)
+      });
+      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/weight-entries'] });
@@ -71,7 +75,11 @@ export default function WeightTracker() {
 
   const updateEntryMutation = useMutation({
     mutationFn: async ({ id, ...entryData }: any) => {
-      return await apiRequest('PUT', `/api/weight-entries/${id}`, entryData);
+      const response = await apiRequest(`/api/weight-entries/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(entryData)
+      });
+      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/weight-entries'] });
@@ -93,7 +101,9 @@ export default function WeightTracker() {
 
   const deleteEntryMutation = useMutation({
     mutationFn: async (entryId: number) => {
-      return await apiRequest('DELETE', `/api/weight-entries/${entryId}`);
+      return await apiRequest(`/api/weight-entries/${entryId}`, {
+        method: 'DELETE'
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/weight-entries'] });
