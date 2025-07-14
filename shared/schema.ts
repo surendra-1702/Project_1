@@ -2,13 +2,20 @@ import { pgTable, text, serial, integer, boolean, timestamp, real, jsonb } from 
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
+// Session storage table for connect-pg-simple
+export const sessions = pgTable("sessions", {
+  sid: text("sid").primaryKey(),
+  sess: jsonb("sess").notNull(),
+  expire: timestamp("expire").notNull(),
+});
+
 export const users = pgTable("users", {
-  id: serial("id").primaryKey(),
-  username: text("username").notNull().unique(),
+  id: text("id").primaryKey(), // Google ID as primary key
   email: text("email").notNull().unique(),
-  password: text("password").notNull(),
   firstName: text("first_name"),
   lastName: text("last_name"),
+  profileImageUrl: text("profile_image_url"),
+  username: text("username"), // Optional username
   age: integer("age"),
   height: real("height"), // in cm
   weight: real("weight"), // in kg
@@ -19,6 +26,7 @@ export const users = pgTable("users", {
   role: text("role").default("user").notNull(), // 'admin' | 'user'
   lastLoginAt: timestamp("last_login_at"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
 export const exercises = pgTable("exercises", {
@@ -34,7 +42,7 @@ export const exercises = pgTable("exercises", {
 
 export const workoutPlans = pgTable("workout_plans", {
   id: serial("id").primaryKey(),
-  userId: integer("user_id").references(() => users.id).notNull(),
+  userId: text("user_id").references(() => users.id).notNull(),
   title: text("title").notNull(),
   description: text("description"),
   goal: text("goal").notNull(),
@@ -48,7 +56,7 @@ export const workoutPlans = pgTable("workout_plans", {
 
 export const workoutSessions = pgTable("workout_sessions", {
   id: serial("id").primaryKey(),
-  userId: integer("user_id").references(() => users.id).notNull(),
+  userId: text("user_id").references(() => users.id).notNull(),
   planId: integer("plan_id").references(() => workoutPlans.id),
   date: timestamp("date").notNull(),
   exercises: jsonb("exercises").notNull(), // Array of exercises with sets/reps
@@ -59,7 +67,7 @@ export const workoutSessions = pgTable("workout_sessions", {
 
 export const foodEntries = pgTable("food_entries", {
   id: serial("id").primaryKey(),
-  userId: integer("user_id").references(() => users.id).notNull(),
+  userId: text("user_id").references(() => users.id).notNull(),
   date: timestamp("date").notNull(),
   meal: text("meal").notNull(), // 'breakfast' | 'lunch' | 'dinner' | 'snack'
   foodName: text("food_name").notNull(),
@@ -73,7 +81,7 @@ export const foodEntries = pgTable("food_entries", {
 // Workout Tracker - Individual workout sessions with multiple exercises
 export const workoutTrackerSessions = pgTable("workout_tracker_sessions", {
   id: serial("id").primaryKey(),
-  userId: integer("user_id").references(() => users.id).notNull(),
+  userId: text("user_id").references(() => users.id).notNull(),
   date: timestamp("date").defaultNow().notNull(),
   workoutName: text("workout_name").notNull(),
   exercises: jsonb("exercises").notNull(), // Array of exercises with name, sets, reps
@@ -85,7 +93,7 @@ export const workoutTrackerSessions = pgTable("workout_tracker_sessions", {
 // Weight Tracking for goal progress
 export const weightEntries = pgTable("weight_entries", {
   id: serial("id").primaryKey(),
-  userId: integer("user_id").references(() => users.id).notNull(),
+  userId: text("user_id").references(() => users.id).notNull(),
   weight: real("weight").notNull(), // in kg or lbs
   date: timestamp("date").defaultNow().notNull(),
   goalWeight: real("goal_weight"),
@@ -96,9 +104,12 @@ export const weightEntries = pgTable("weight_entries", {
 
 
 // Insert schemas
+// UpsertUser for Google OAuth (includes id from Google)
+export type UpsertUser = typeof users.$inferInsert;
+
 export const insertUserSchema = createInsertSchema(users).omit({
-  id: true,
   createdAt: true,
+  updatedAt: true,
 });
 
 export const insertExerciseSchema = createInsertSchema(exercises).omit({
