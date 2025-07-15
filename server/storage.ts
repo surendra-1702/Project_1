@@ -495,7 +495,7 @@ export class MemStorage implements IStorage {
     // Add admin user
     const adminUser = {
       username: 'admin',
-      email: 'admin@fittrackpro.com',
+      email: 'admin@sportzalfitness.com',
       password: '$2b$10$VH7RYhU41xfkINQ3ctKrFuu83obiSGHmm697O0C/BkRXt6UPl5Q46', // "admin123" hashed
       firstName: 'Admin',
       lastName: 'User',

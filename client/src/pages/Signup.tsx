@@ -44,7 +44,7 @@ export default function Signup() {
       await register(userData);
       toast({
         title: "Account created!",
-        description: "Welcome to FitTrack Pro. You can now start your fitness journey.",
+        description: "Welcome to Sportzal Fitness. You can now start your fitness journey.",
       });
       setLocation("/");
     } catch (error: any) {
@@ -82,7 +82,7 @@ export default function Signup() {
               <Dumbbell className="h-8 w-8 text-white" />
             </div>
           </div>
-          <h1 className="text-3xl font-bold text-gray-900">Join FitTrack Pro</h1>
+          <h1 className="text-3xl font-bold text-gray-900">Join Sportzal Fitness</h1>
           <p className="text-gray-600 mt-2">Create your account and start your fitness journey</p>
         </div>
 

@@ -1,8 +1,8 @@
-# FitTrack Pro - Full-Stack Fitness Application
+# Sportzal Fitness - Full-Stack Fitness Application
 
 ## Overview
 
-FitTrack Pro is a comprehensive full-stack fitness platform built with React, Express.js, and PostgreSQL. The application provides users with exercise demonstrations, BMI calculations, AI-powered workout planning, and calorie tracking capabilities. The system integrates with external APIs for exercise data and uses AI services for personalized workout recommendations.
+Sportzal Fitness is a comprehensive full-stack fitness platform built with React, Express.js, and PostgreSQL. The application provides users with exercise demonstrations, BMI calculations, AI-powered workout planning, and calorie tracking capabilities. The system integrates with external APIs for exercise data and uses AI services for personalized workout recommendations.
 
 ## System Architecture
 
@@ -115,6 +115,7 @@ FitTrack Pro is a comprehensive full-stack fitness platform built with React, Ex
 - Environment variable support for configuration
 
 ## Changelog
+- July 14, 2025. Updated application branding from "FitTrack Pro" to "Sportzal Fitness" across all user-facing interfaces, components, and documentation
 - July 14, 2025. Fixed critical database schema mismatch issue - migrated from integer to string user IDs across all tables, implemented automatic ID generation for user registration, and resolved signup/authentication errors
 - July 12, 2025. Added comprehensive role-based authentication system with admin dashboard for user monitoring and fitness goal tracking
 - July 12, 2025. Completely removed blog feature from the application (routes, components, database schema, and storage)

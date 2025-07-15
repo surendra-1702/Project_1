@@ -44,7 +44,7 @@ export default function Navigation() {
           <div className="flex items-center">
             <Link href="/">
               <span className="text-2xl font-bold text-primary cursor-pointer">
-                FitTrack Pro
+                Sportzal Fitness
               </span>
             </Link>
           </div>
