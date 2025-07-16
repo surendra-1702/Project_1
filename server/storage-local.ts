@@ -7,7 +7,15 @@ function createStorage() {
     // Try to use database storage if DATABASE_URL is available
     if (process.env.DATABASE_URL) {
       console.log('Using DatabaseStorage with connection:', process.env.DATABASE_URL.substring(0, 20) + '...');
-      return new DatabaseStorage();
+      const dbStorage = new DatabaseStorage();
+      
+      // Test the connection by attempting a simple query
+      dbStorage.getUser('test-connection').catch(error => {
+        console.error('Database connection test failed:', error.message);
+        console.log('This might be due to missing database schema. Run: npm run db:push');
+      });
+      
+      return dbStorage;
     } else {
       console.log('DATABASE_URL not found, using MemStorage for local development');
       return new MemStorage();

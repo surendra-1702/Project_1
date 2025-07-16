@@ -46,7 +46,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         token 
       });
     } catch (error: any) {
-      res.status(400).json({ message: error.message });
+      console.error('Registration error:', error);
+      res.status(400).json({ message: error.message || 'Registration failed' });
     }
   });
 

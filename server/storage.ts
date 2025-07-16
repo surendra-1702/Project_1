@@ -468,7 +468,7 @@ export class DatabaseStorage implements IStorage {
 }
 
 export class MemStorage implements IStorage {
-  private users: Map<number, User>;
+  private users: Map<string, User>;
   private exercises: Map<number, Exercise>;
   private workoutPlans: Map<number, WorkoutPlan>;
   private workoutSessions: Map<number, WorkoutSession>;
@@ -511,7 +511,7 @@ export class MemStorage implements IStorage {
       createdAt: new Date()
     };
 
-    const adminId = this.currentId++;
+    const adminId = `user_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`;
     this.users.set(adminId, { ...adminUser, id: adminId });
 
     // Add test user
@@ -533,7 +533,7 @@ export class MemStorage implements IStorage {
       createdAt: new Date()
     };
 
-    const testId = this.currentId++;
+    const testId = `user_${Date.now() + 1}_${Math.random().toString(36).substring(2, 15)}`;
     this.users.set(testId, { ...testUser, id: testId });
 
     // Add some sample exercises for immediate app functionality
@@ -601,7 +601,7 @@ export class MemStorage implements IStorage {
   }
 
   // User operations
-  async getUser(id: number): Promise<User | undefined> {
+  async getUser(id: string): Promise<User | undefined> {
     return this.users.get(id);
   }
 
@@ -614,7 +614,7 @@ export class MemStorage implements IStorage {
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
-    const id = this.currentId++;
+    const id = `user_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`;
     const user: User = { 
       ...insertUser, 
       id, 
@@ -624,7 +624,7 @@ export class MemStorage implements IStorage {
     return user;
   }
 
-  async updateUser(id: number, updates: Partial<InsertUser>): Promise<User | undefined> {
+  async updateUser(id: string, updates: Partial<InsertUser>): Promise<User | undefined> {
     const user = this.users.get(id);
     if (!user) return undefined;
     
@@ -679,7 +679,7 @@ export class MemStorage implements IStorage {
   }
 
   // Workout Plan operations
-  async getWorkoutPlans(userId: number): Promise<WorkoutPlan[]> {
+  async getWorkoutPlans(userId: string): Promise<WorkoutPlan[]> {
     return Array.from(this.workoutPlans.values()).filter(plan => plan.userId === userId);
   }
 
@@ -712,7 +712,7 @@ export class MemStorage implements IStorage {
   }
 
   // Workout Session operations
-  async getWorkoutSessions(userId: number, date?: Date): Promise<WorkoutSession[]> {
+  async getWorkoutSessions(userId: string, date?: Date): Promise<WorkoutSession[]> {
     let sessions = Array.from(this.workoutSessions.values()).filter(session => session.userId === userId);
     
     if (date) {
@@ -742,7 +742,7 @@ export class MemStorage implements IStorage {
   }
 
   // Food Entry operations
-  async getFoodEntries(userId: number, date?: Date): Promise<FoodEntry[]> {
+  async getFoodEntries(userId: string, date?: Date): Promise<FoodEntry[]> {
     let entries = Array.from(this.foodEntries.values()).filter(entry => entry.userId === userId);
     
     if (date) {
@@ -826,7 +826,7 @@ export class MemStorage implements IStorage {
   }
 
   // Workout Tracker Session operations
-  async getWorkoutTrackerSessions(userId: number, date?: Date): Promise<WorkoutTrackerSession[]> {
+  async getWorkoutTrackerSessions(userId: string, date?: Date): Promise<WorkoutTrackerSession[]> {
     const sessions = Array.from(this.workoutTrackerSessions.values())
       .filter(session => session.userId === userId);
     
@@ -865,7 +865,7 @@ export class MemStorage implements IStorage {
     return this.workoutTrackerSessions.delete(id);
   }
 
-  async getWorkoutTrackerStats(userId: number): Promise<{
+  async getWorkoutTrackerStats(userId: string): Promise<{
     totalWorkouts: number;
     totalSets: number;
     totalReps: number;
@@ -905,7 +905,7 @@ export class MemStorage implements IStorage {
   }
 
   // Weight Entry operations
-  async getWeightEntries(userId: number): Promise<WeightEntry[]> {
+  async getWeightEntries(userId: string): Promise<WeightEntry[]> {
     return Array.from(this.weightEntries.values())
       .filter(entry => entry.userId === userId)
       .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
@@ -936,7 +936,7 @@ export class MemStorage implements IStorage {
     return this.weightEntries.delete(id);
   }
 
-  async getLatestWeightEntry(userId: number): Promise<WeightEntry | undefined> {
+  async getLatestWeightEntry(userId: string): Promise<WeightEntry | undefined> {
     const entries = await this.getWeightEntries(userId);
     return entries.length > 0 ? entries[entries.length - 1] : undefined;
   }
