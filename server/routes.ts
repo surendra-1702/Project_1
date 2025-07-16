@@ -1,6 +1,6 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
-import { storage } from "./storage";
+import { storage } from "./storage-local";
 import { exerciseApiService } from "./services/exerciseApi";
 import { youtubeApiService } from "./services/youtubeApi";
 import { openaiService } from "./services/openaiService";
