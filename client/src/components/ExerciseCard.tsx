@@ -235,6 +235,11 @@ export default function ExerciseCard({ exercise, onAddToWorkout, onViewDetails }
                 console.log('GIF failed to load:', exercise.gifUrl);
                 const target = e.target as HTMLImageElement;
                 target.style.display = 'none';
+                // Hide loading indicator and show fallback
+                const loader = target.parentElement?.querySelector('#loading-indicator') as HTMLElement;
+                if (loader) {
+                  loader.innerHTML = '<div class="text-gray-500 text-sm text-center px-2">⚠️ GIF failed to load - showing demo</div>';
+                }
                 const fallback = target.nextElementSibling as HTMLElement;
                 if (fallback) {
                   fallback.style.display = 'block';
@@ -245,8 +250,8 @@ export default function ExerciseCard({ exercise, onAddToWorkout, onViewDetails }
                 console.log('GIF loaded successfully:', exercise.gifUrl);
                 // Hide loading indicator
                 const target = e.target as HTMLImageElement;
-                const loader = target.parentElement?.querySelector('.absolute.inset-0') as HTMLElement;
-                if (loader && loader.textContent?.includes('Loading')) {
+                const loader = target.parentElement?.querySelector('#loading-indicator') as HTMLElement;
+                if (loader) {
                   loader.style.display = 'none';
                 }
               }}
@@ -255,8 +260,8 @@ export default function ExerciseCard({ exercise, onAddToWorkout, onViewDetails }
               {getExerciseVisualization()}
             </div>
             {/* Loading indicator - will be hidden on successful load */}
-            <div className="absolute inset-0 flex items-center justify-center bg-gray-200 z-10">
-              <div className="text-gray-500 text-sm">📁 GIF placeholder - Add real GIF files to see animations</div>
+            <div className="absolute inset-0 flex items-center justify-center bg-gray-200 z-10" id="loading-indicator">
+              <div className="text-gray-500 text-sm text-center px-2">📁 Loading GIF...</div>
             </div>
           </div>
         ) : (
