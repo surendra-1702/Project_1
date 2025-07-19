@@ -25,17 +25,20 @@ export default function ExerciseCard({ exercise, onAddToWorkout, onViewDetails }
     if (!bodyPart || typeof bodyPart !== 'string') return 'bg-gray-100 text-gray-800';
     
     const colors = {
-      chest: 'bg-blue-100 text-blue-800',
-      back: 'bg-green-100 text-green-800',
-      shoulders: 'bg-purple-100 text-purple-800',
-      arms: 'bg-red-100 text-red-800',
-      'upper arms': 'bg-red-100 text-red-800',
-      abs: 'bg-yellow-100 text-yellow-800',
-      legs: 'bg-indigo-100 text-indigo-800',
-      'upper legs': 'bg-indigo-100 text-indigo-800',
-      'lower legs': 'bg-indigo-100 text-indigo-800',
-      cardio: 'bg-pink-100 text-pink-800',
-      waist: 'bg-yellow-100 text-yellow-800',
+      chest: 'bg-red-100 text-red-800',
+      back: 'bg-blue-100 text-blue-800',
+      'upper-back': 'bg-indigo-100 text-indigo-800',
+      'lower-back': 'bg-purple-100 text-purple-800',
+      shoulders: 'bg-yellow-100 text-yellow-800',
+      traps: 'bg-orange-100 text-orange-800',
+      legs: 'bg-green-100 text-green-800',
+      abs: 'bg-teal-100 text-teal-800',
+      biceps: 'bg-pink-100 text-pink-800',
+      triceps: 'bg-rose-100 text-rose-800',
+      arms: 'bg-violet-100 text-violet-800',
+      cardio: 'bg-red-100 text-red-800',
+      forearms: 'bg-gray-100 text-gray-800',
+      calves: 'bg-emerald-100 text-emerald-800',
     };
     return colors[bodyPart.toLowerCase() as keyof typeof colors] || 'bg-gray-100 text-gray-800';
   };
@@ -118,8 +121,9 @@ export default function ExerciseCard({ exercise, onAddToWorkout, onViewDetails }
               </svg>
             </div>
           );
-        case 'upper arms':
         case 'arms':
+        case 'biceps':
+        case 'triceps':
           return (
             <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-red-50 to-red-100">
               <svg width="100" height="100" viewBox="0 0 100 100" className="animate-pulse">
@@ -132,8 +136,8 @@ export default function ExerciseCard({ exercise, onAddToWorkout, onViewDetails }
               </svg>
             </div>
           );
-        case 'upper legs':
         case 'legs':
+        case 'calves':
           return (
             <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-indigo-50 to-indigo-100">
               <svg width="100" height="100" viewBox="0 0 100 100" className="animate-pulse">
@@ -142,6 +146,65 @@ export default function ExerciseCard({ exercise, onAddToWorkout, onViewDetails }
                 <rect x="35" y="35" width="30" height="10" fill="#6366f1" />
                 <rect x="45" y="48" width="5" height="30" fill="#6366f1" className="animate-bounce" />
                 <rect x="52" y="48" width="5" height="30" fill="#6366f1" className="animate-bounce" />
+              </svg>
+            </div>
+          );
+        case 'abs':
+          return (
+            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-teal-50 to-teal-100">
+              <svg width="100" height="100" viewBox="0 0 100 100" className="animate-pulse">
+                <circle cx="50" cy="20" r="8" fill="#14b8a6" />
+                <rect x="47" y="28" width="6" height="30" fill="#14b8a6" />
+                <rect x="40" y="35" width="20" height="15" fill="#14b8a6" />
+                <rect x="45" y="58" width="5" height="20" fill="#14b8a6" />
+                <rect x="52" y="58" width="5" height="20" fill="#14b8a6" />
+              </svg>
+            </div>
+          );
+        case 'shoulders':
+        case 'traps':
+          return (
+            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-yellow-50 to-yellow-100">
+              <svg width="100" height="100" viewBox="0 0 100 100" className="animate-pulse">
+                <circle cx="50" cy="20" r="8" fill="#eab308" />
+                <rect x="47" y="28" width="6" height="30" fill="#eab308" />
+                <rect x="30" y="30" width="40" height="8" fill="#eab308" />
+                <rect x="45" y="58" width="5" height="20" fill="#eab308" />
+                <rect x="52" y="58" width="5" height="20" fill="#eab308" />
+              </svg>
+            </div>
+          );
+        case 'upper-back':
+        case 'lower-back':
+          return (
+            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-indigo-50 to-indigo-100">
+              <svg width="100" height="100" viewBox="0 0 100 100" className="animate-pulse">
+                <circle cx="50" cy="20" r="8" fill="#6366f1" />
+                <rect x="47" y="28" width="6" height="30" fill="#6366f1" />
+                <rect x="25" y="35" width="50" height="20" fill="#6366f1" />
+                <rect x="45" y="58" width="5" height="20" fill="#6366f1" />
+                <rect x="52" y="58" width="5" height="20" fill="#6366f1" />
+              </svg>
+            </div>
+          );
+        case 'cardio':
+          return (
+            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-red-50 to-red-100">
+              <svg width="100" height="100" viewBox="0 0 100 100" className="animate-pulse">
+                <circle cx="50" cy="50" r="20" fill="#ef4444" className="animate-ping" />
+                <circle cx="50" cy="50" r="10" fill="#dc2626" />
+              </svg>
+            </div>
+          );
+        case 'forearms':
+          return (
+            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
+              <svg width="100" height="100" viewBox="0 0 100 100" className="animate-pulse">
+                <circle cx="50" cy="20" r="8" fill="#6b7280" />
+                <rect x="47" y="28" width="6" height="25" fill="#6b7280" />
+                <rect x="35" y="45" width="30" height="6" fill="#6b7280" className="animate-bounce" />
+                <rect x="45" y="58" width="5" height="20" fill="#6b7280" />
+                <rect x="52" y="58" width="5" height="20" fill="#6b7280" />
               </svg>
             </div>
           );

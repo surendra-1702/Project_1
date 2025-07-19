@@ -11,12 +11,20 @@ import ExerciseCard from '@/components/ExerciseCard';
 import { useToast } from '@/hooks/use-toast';
 
 const bodyParts = [
-  { name: 'chest', icon: '💪', gradient: 'bodypart-chest' },
-  { name: 'back', icon: '🛡️', gradient: 'bodypart-back' },
-  { name: 'shoulders', icon: '👤', gradient: 'bodypart-shoulders' },
-  { name: 'upper arms', icon: '💪', gradient: 'bodypart-arms' },
-  { name: 'waist', icon: '⬜', gradient: 'bodypart-abs' },
-  { name: 'upper legs', icon: '🏃', gradient: 'bodypart-legs' },
+  { name: 'chest', icon: '💪', gradient: 'bg-gradient-to-br from-red-500 to-red-700' },
+  { name: 'back', icon: '🛡️', gradient: 'bg-gradient-to-br from-blue-500 to-blue-700' },
+  { name: 'upper-back', icon: '⬆️', gradient: 'bg-gradient-to-br from-indigo-500 to-indigo-700' },
+  { name: 'lower-back', icon: '⬇️', gradient: 'bg-gradient-to-br from-purple-500 to-purple-700' },
+  { name: 'shoulders', icon: '👤', gradient: 'bg-gradient-to-br from-yellow-500 to-yellow-700' },
+  { name: 'traps', icon: '🔺', gradient: 'bg-gradient-to-br from-orange-500 to-orange-700' },
+  { name: 'legs', icon: '🏃', gradient: 'bg-gradient-to-br from-green-500 to-green-700' },
+  { name: 'abs', icon: '⬜', gradient: 'bg-gradient-to-br from-teal-500 to-teal-700' },
+  { name: 'biceps', icon: '💪', gradient: 'bg-gradient-to-br from-pink-500 to-pink-700' },
+  { name: 'triceps', icon: '🔻', gradient: 'bg-gradient-to-br from-rose-500 to-rose-700' },
+  { name: 'arms', icon: '🦾', gradient: 'bg-gradient-to-br from-violet-500 to-violet-700' },
+  { name: 'cardio', icon: '❤️', gradient: 'bg-gradient-to-br from-red-600 to-red-800' },
+  { name: 'forearms', icon: '✊', gradient: 'bg-gradient-to-br from-gray-500 to-gray-700' },
+  { name: 'calves', icon: '🦵', gradient: 'bg-gradient-to-br from-emerald-500 to-emerald-700' },
 ];
 
 interface Exercise {
@@ -30,49 +38,79 @@ interface Exercise {
   instructions?: string[] | null;
 }
 
-interface YouTubeVideo {
-  id: string;
-  title: string;
-  thumbnail: string;
-  channel: string;
-  duration: string;
+interface ExerciseGif {
+  filename: string;
+  name: string;
+  url: string;
 }
+
+
 
 export default function Exercises() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedBodyPart, setSelectedBodyPart] = useState('');
   const { toast } = useToast();
 
-  // Fetch exercises
-  const { data: exercises = [], isLoading: exercisesLoading } = useQuery({
-    queryKey: ['/api/exercises', { bodyPart: selectedBodyPart, search: searchQuery }],
+  // Fetch exercise GIFs based on selected body part or search
+  const { data: exerciseGifs = [], isLoading: exercisesLoading } = useQuery({
+    queryKey: ['/api/exercise-gifs', { bodyPart: selectedBodyPart, search: searchQuery }],
     queryFn: async () => {
-      let url = '/api/exercises';
+      let allGifs: ExerciseGif[] = [];
+      
       if (selectedBodyPart) {
-        url = `/api/exercises/bodypart/${selectedBodyPart}`;
+        // Fetch GIFs for specific body part
+        const response = await fetch(`/api/exercise-gifs/${selectedBodyPart}`);
+        if (response.ok) {
+          const gifs = await response.json();
+          allGifs = gifs.map((gif: ExerciseGif) => ({
+            ...gif,
+            bodyPart: selectedBodyPart
+          }));
+        }
       } else if (searchQuery) {
-        url = `/api/exercises/search?q=${encodeURIComponent(searchQuery)}`;
+        // Search across all body parts
+        const bodyPartNames = bodyParts.map(bp => bp.name);
+        const promises = bodyPartNames.map(async (bodyPart) => {
+          try {
+            const response = await fetch(`/api/exercise-gifs/${bodyPart}`);
+            if (response.ok) {
+              const gifs = await response.json();
+              return gifs
+                .filter((gif: ExerciseGif) => 
+                  gif.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                  bodyPart.toLowerCase().includes(searchQuery.toLowerCase())
+                )
+                .map((gif: ExerciseGif) => ({
+                  ...gif,
+                  bodyPart
+                }));
+            }
+          } catch (error) {
+            console.error(`Error fetching ${bodyPart} GIFs:`, error);
+          }
+          return [];
+        });
+        
+        const results = await Promise.all(promises);
+        allGifs = results.flat();
       }
       
-      const response = await fetch(url);
-      if (!response.ok) throw new Error('Failed to fetch exercises');
-      return response.json();
+      return allGifs;
     },
+    enabled: !!(selectedBodyPart || searchQuery),
   });
 
-  // Fetch YouTube videos based on search
-  const { data: youtubeVideos = [] } = useQuery({
-    queryKey: ['/api/youtube/search', { query: searchQuery || selectedBodyPart }],
-    queryFn: async () => {
-      if (!searchQuery && !selectedBodyPart) return [];
-      
-      const query = searchQuery || selectedBodyPart;
-      const response = await fetch(`/api/youtube/search?q=${encodeURIComponent(query)}`);
-      if (!response.ok) return [];
-      return response.json();
-    },
-    enabled: !!(searchQuery || selectedBodyPart),
-  });
+  // Convert GIFs to Exercise objects for the ExerciseCard component
+  const exercises: Exercise[] = exerciseGifs.map((gif, index) => ({
+    id: index + 1,
+    exerciseId: gif.filename.replace('.gif', ''),
+    name: gif.name,
+    bodyPart: (gif as any).bodyPart || '',
+    target: (gif as any).bodyPart || '',
+    equipment: 'bodyweight',
+    gifUrl: gif.url,
+    instructions: [`Perform ${gif.name} with proper form and controlled movements.`],
+  }));
 
   const handleSearch = () => {
     setSelectedBodyPart('');
@@ -144,19 +182,18 @@ export default function Exercises() {
           {/* Body Parts Filter */}
           <div className="mb-12">
             <h2 className="text-2xl font-semibold text-gray-900 mb-6 text-center">
-              Browse by Body Part
+              Browse by Muscle Group
             </h2>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-4">
               {bodyParts.map((part) => (
                 <Button
                   key={part.name}
                   onClick={() => handleBodyPartFilter(part.name)}
-                  className={`${part.gradient} text-white p-6 h-auto flex-col hover:scale-105 transition-transform shadow-lg`}
-                  variant={selectedBodyPart === part.name ? "default" : "secondary"}
+                  className={`${part.gradient} text-white p-4 h-auto flex-col hover:scale-105 transition-transform shadow-lg ${selectedBodyPart === part.name ? 'ring-4 ring-white ring-opacity-50' : ''}`}
                 >
-                  <div className="text-3xl mb-2">{part.icon}</div>
-                  <div className="font-semibold capitalize">
-                    {part.name.replace('upper ', '')}
+                  <div className="text-2xl mb-2">{part.icon}</div>
+                  <div className="font-semibold text-xs text-center">
+                    {part.name.replace('-', ' ')}
                   </div>
                 </Button>
               ))}
@@ -201,10 +238,15 @@ export default function Exercises() {
             <div className="text-center py-12">
               <div className="text-gray-500 mb-4">
                 {searchQuery || selectedBodyPart ? 
-                  'No exercises found matching your criteria' : 
-                  'Search for exercises or select a body part to get started'
+                  'No exercise GIFs found matching your criteria. Add GIF files to the exercise-gifs folders to see them here.' : 
+                  'Search for exercises or select a muscle group to view available exercise GIFs'
                 }
               </div>
+              {!searchQuery && !selectedBodyPart && (
+                <div className="text-sm text-gray-400 mt-4">
+                  💡 Tip: Add GIF files to the organized muscle group folders to build your exercise library
+                </div>
+              )}
             </div>
           ) : (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-12">
@@ -219,37 +261,31 @@ export default function Exercises() {
             </div>
           )}
 
-          {/* YouTube Video Recommendations */}
-          {youtubeVideos.length > 0 && (
-            <div className="mt-12">
-              <h3 className="text-2xl font-semibold text-gray-900 mb-6">Related YouTube Videos</h3>
-              <div className="grid md:grid-cols-3 gap-6">
-                {youtubeVideos.slice(0, 6).map((video: YouTubeVideo) => (
-                  <Card key={video.id} className="overflow-hidden border border-gray-100 hover:shadow-lg transition-shadow">
-                    <div className="aspect-video bg-gradient-to-br from-red-500 to-pink-600 relative">
-                      {video.thumbnail ? (
-                        <img
-                          src={video.thumbnail}
-                          alt={video.title}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <div className="text-6xl text-white opacity-90">▶</div>
-                        </div>
-                      )}
-                      {video.duration && (
-                        <div className="absolute bottom-2 right-2 bg-black bg-opacity-75 text-white px-2 py-1 rounded text-xs">
-                          {video.duration}
-                        </div>
-                      )}
+          {/* Exercise Stats */}
+          {exercises.length > 0 && (
+            <div className="mt-12 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-6">
+              <div className="text-center">
+                <h3 className="text-2xl font-semibold text-gray-900 mb-4">Exercise Library Stats</h3>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div className="bg-white rounded-lg p-4 shadow-sm">
+                    <div className="text-2xl font-bold text-blue-600">{exercises.length}</div>
+                    <div className="text-sm text-gray-600">Available Exercises</div>
+                  </div>
+                  <div className="bg-white rounded-lg p-4 shadow-sm">
+                    <div className="text-2xl font-bold text-green-600">
+                      {selectedBodyPart ? '1' : new Set(exercises.map(e => e.bodyPart)).size}
                     </div>
-                    <CardContent className="p-4">
-                      <h4 className="font-semibold text-sm mb-2 line-clamp-2">{video.title}</h4>
-                      <p className="text-gray-600 text-xs">{video.channel}</p>
-                    </CardContent>
-                  </Card>
-                ))}
+                    <div className="text-sm text-gray-600">Muscle Groups</div>
+                  </div>
+                  <div className="bg-white rounded-lg p-4 shadow-sm">
+                    <div className="text-2xl font-bold text-purple-600">100%</div>
+                    <div className="text-sm text-gray-600">Local Storage</div>
+                  </div>
+                  <div className="bg-white rounded-lg p-4 shadow-sm">
+                    <div className="text-2xl font-bold text-orange-600">GIF</div>
+                    <div className="text-sm text-gray-600">Demonstrations</div>
+                  </div>
+                </div>
               </div>
             </div>
           )}
