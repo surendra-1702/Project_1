@@ -1,0 +1,39 @@
+<svg width="400" height="300" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <animate id="bounce" attributeName="cy" values="150;120;150" dur="1s" repeatCount="indefinite"/>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="400" height="300" fill="#f3f4f6"/>
+  
+  <!-- Exercise figure -->
+  <g id="exerciseDemo">
+    <!-- Head -->
+    <circle cx="200" cy="80" r="25" fill="#3b82f6">
+      <animateTransform attributeName="transform" type="translate" values="0,0; 0,-10; 0,0" dur="1s" repeatCount="indefinite"/>
+    </circle>
+    
+    <!-- Body -->
+    <rect x="190" y="100" width="20" height="80" fill="#3b82f6" rx="10">
+      <animateTransform attributeName="transform" type="translate" values="0,0; 0,-5; 0,0" dur="1s" repeatCount="indefinite"/>
+    </rect>
+    
+    <!-- Arms -->
+    <rect x="160" y="120" width="80" height="12" fill="#ef4444" rx="6">
+      <animateTransform attributeName="transform" type="rotate" values="0 200 126; -10 200 126; 0 200 126" dur="1s" repeatCount="indefinite"/>
+    </rect>
+    
+    <!-- Legs -->
+    <rect x="185" y="180" width="12" height="60" fill="#3b82f6" rx="6">
+      <animateTransform attributeName="transform" type="translate" values="0,0; 0,-3; 0,0" dur="1s" repeatCount="indefinite"/>
+    </rect>
+    <rect x="203" y="180" width="12" height="60" fill="#3b82f6" rx="6">
+      <animateTransform attributeName="transform" type="translate" values="0,0; 0,-3; 0,0" dur="1s" repeatCount="indefinite"/>
+    </rect>
+  </g>
+  
+  <!-- Exercise name -->
+  <text x="200" y="270" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#374151">
+    Exercise Demo GIF
+  </text>
+</svg>

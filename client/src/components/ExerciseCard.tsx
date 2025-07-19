@@ -232,14 +232,31 @@ export default function ExerciseCard({ exercise, onAddToWorkout, onViewDetails }
               className="w-full h-full object-cover"
               onError={(e) => {
                 // Fallback to custom visualization if GIF fails to load
-                const target = e.target as HTMLElement;
+                console.log('GIF failed to load:', exercise.gifUrl);
+                const target = e.target as HTMLImageElement;
                 target.style.display = 'none';
                 const fallback = target.nextElementSibling as HTMLElement;
-                if (fallback) fallback.style.display = 'block';
+                if (fallback) {
+                  fallback.style.display = 'block';
+                  fallback.classList.remove('hidden');
+                }
+              }}
+              onLoad={(e) => {
+                console.log('GIF loaded successfully:', exercise.gifUrl);
+                // Hide loading indicator
+                const target = e.target as HTMLImageElement;
+                const loader = target.parentElement?.querySelector('.absolute.inset-0') as HTMLElement;
+                if (loader && loader.textContent?.includes('Loading')) {
+                  loader.style.display = 'none';
+                }
               }}
             />
             <div className="hidden w-full h-full">
               {getExerciseVisualization()}
+            </div>
+            {/* Loading indicator - will be hidden on successful load */}
+            <div className="absolute inset-0 flex items-center justify-center bg-gray-200 z-10">
+              <div className="text-gray-500 text-sm">📁 GIF placeholder - Add real GIF files to see animations</div>
             </div>
           </div>
         ) : (

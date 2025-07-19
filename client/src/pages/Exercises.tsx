@@ -243,8 +243,14 @@ export default function Exercises() {
                 }
               </div>
               {!searchQuery && !selectedBodyPart && (
-                <div className="text-sm text-gray-400 mt-4">
-                  💡 Tip: Add GIF files to the organized muscle group folders to build your exercise library
+                <div className="bg-blue-50 p-6 rounded-lg max-w-2xl mx-auto">
+                  <h3 className="font-semibold text-blue-900 mb-3">🏗️ How to Add Exercise GIFs</h3>
+                  <div className="text-sm text-blue-800 space-y-2">
+                    <p>• Upload GIF files to the muscle group folders in <code className="bg-blue-100 px-1 rounded">public/exercise-gifs/</code></p>
+                    <p>• Use naming format: <code className="bg-blue-100 px-1 rounded">exercise-name-variation.gif</code></p>
+                    <p>• Example: <code className="bg-blue-100 px-1 rounded">push-up-standard.gif</code> in the <code className="bg-blue-100 px-1 rounded">chest/</code> folder</p>
+                    <p>• Currently showing placeholder demonstrations until real GIFs are added</p>
+                  </div>
                 </div>
               )}
             </div>
