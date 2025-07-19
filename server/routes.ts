@@ -1,8 +1,9 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
+import fs from 'fs';
+import path from 'path';
 import { storage } from "./storage-local";
-import { exerciseApiService } from "./services/exerciseApi";
-import { youtubeApiService } from "./services/youtubeApi";
+// Removed external exercise API - using local exercise data
 import { openaiService } from "./services/openaiService";
 import { foodApiService } from "./services/foodApi";
 import { authenticateToken, requireAdmin, hashPassword, verifyPassword, generateToken, AuthRequest } from "./auth";
@@ -125,28 +126,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const limit = parseInt(req.query.limit as string) || 20;
       const offset = parseInt(req.query.offset as string) || 0;
       
-      // First try to get from local storage
-      let exercises = await storage.getExercises(limit, offset);
-      
-      // If no exercises in storage, fetch from API and store
-      if (exercises.length === 0) {
-        const apiExercises = await exerciseApiService.fetchExercises(limit, offset);
-        
-        for (const apiExercise of apiExercises) {
-          await storage.createExercise({
-            exerciseId: apiExercise.id,
-            name: apiExercise.name,
-            bodyPart: apiExercise.bodyPart,
-            target: apiExercise.target,
-            equipment: apiExercise.equipment,
-            gifUrl: apiExercise.gifUrl,
-            instructions: apiExercise.instructions
-          });
-        }
-        
-        exercises = await storage.getExercises(limit, offset);
-      }
-      
+      const exercises = await storage.getExercises(limit, offset);
       res.json(exercises);
     } catch (error: any) {
       res.status(500).json({ message: error.message });
@@ -160,49 +140,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.json([]);
       }
       
-      // First search in local storage
-      let exercises = await storage.searchExercises(query);
-      
-      // If no results in local storage, fetch from API
-      if (exercises.length === 0) {
-        try {
-          // Since the API doesn't have a direct search, we'll fetch all exercises and filter
-          const apiExercises = await exerciseApiService.fetchExercises(50, 0);
-          const filteredExercises = apiExercises.filter(exercise => 
-            (exercise.name && exercise.name.toLowerCase().includes(query.toLowerCase())) ||
-            (exercise.bodyPart && exercise.bodyPart.toLowerCase().includes(query.toLowerCase())) ||
-            (exercise.target && exercise.target.toLowerCase().includes(query.toLowerCase())) ||
-            (exercise.equipment && exercise.equipment.toLowerCase().includes(query.toLowerCase()))
-          );
-          
-          // Store filtered exercises in local storage
-          for (const apiExercise of filteredExercises) {
-            await storage.createExercise({
-              exerciseId: apiExercise.id,
-              name: apiExercise.name,
-              bodyPart: apiExercise.bodyPart,
-              target: apiExercise.target,
-              equipment: apiExercise.equipment,
-              gifUrl: apiExercise.gifUrl,
-              instructions: apiExercise.instructions
-            });
-          }
-          
-          exercises = filteredExercises.map((ex, index) => ({
-            id: index + 1,
-            exerciseId: ex.id,
-            name: ex.name,
-            bodyPart: ex.bodyPart,
-            target: ex.target,
-            equipment: ex.equipment,
-            gifUrl: ex.gifUrl,
-            instructions: ex.instructions
-          }));
-        } catch (apiError) {
-          console.error('API search failed:', apiError);
-        }
-      }
-      
+      const exercises = await storage.searchExercises(query);
       res.json(exercises);
     } catch (error: any) {
       res.status(500).json({ message: error.message });
@@ -211,7 +149,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/exercises/bodyparts", async (req, res) => {
     try {
-      const bodyParts = await exerciseApiService.fetchBodyParts();
+      // Return static list of muscle groups that match our GIF folder structure
+      const bodyParts = [
+        'chest', 'back', 'upper-back', 'lower-back', 'shoulders', 'traps',
+        'legs', 'abs', 'biceps', 'triceps', 'arms', 'cardio', 'forearms', 'calves'
+      ];
       res.json(bodyParts);
     } catch (error: any) {
       res.status(500).json({ message: error.message });
@@ -221,37 +163,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/exercises/bodypart/:name", async (req, res) => {
     try {
       const bodyPart = req.params.name;
-      let exercises = await storage.getExercisesByBodyPart(bodyPart);
-      
-      // If no exercises for this body part, fetch from API
-      if (exercises.length === 0) {
-        try {
-          const apiExercises = await exerciseApiService.fetchExercisesByBodyPart(bodyPart, 20, 0);
-          
-          for (const apiExercise of apiExercises) {
-            await storage.createExercise({
-              exerciseId: apiExercise.id,
-              name: apiExercise.name,
-              bodyPart: apiExercise.bodyPart,
-              target: apiExercise.target,
-              equipment: apiExercise.equipment,
-              gifUrl: apiExercise.gifUrl,
-              instructions: apiExercise.instructions
-            });
-          }
-          
-          exercises = await storage.getExercisesByBodyPart(bodyPart);
-        } catch (apiError) {
-          console.error(`API fetch failed for body part ${bodyPart}:`, apiError);
-          // Return empty array if API fails - user needs to provide API keys
-          res.json([]);
-          return;
-        }
-      }
-      
+      const exercises = await storage.getExercisesByBodyPart(bodyPart);
       res.json(exercises);
     } catch (error: any) {
-      console.error(`Error fetching exercises for body part ${bodyPart}:`, error.message);
       res.status(500).json({ message: error.message });
     }
   });
@@ -291,7 +205,46 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // ============= YOUTUBE ROUTES =============
+  // ============= LOCAL EXERCISE GIF ROUTES =============
+  
+  app.get("/api/exercise-gifs/:muscleGroup", async (req, res) => {
+    try {
+      const { muscleGroup } = req.params;
+      
+      // Validate muscle group
+      const validGroups = [
+        'chest', 'back', 'upper-back', 'lower-back', 'shoulders', 'traps',
+        'legs', 'abs', 'biceps', 'triceps', 'arms', 'cardio', 'forearms', 'calves'
+      ];
+      
+      if (!validGroups.includes(muscleGroup)) {
+        return res.status(400).json({ error: 'Invalid muscle group' });
+      }
+      
+      // List available GIF files in the muscle group folder
+      
+      const gifFolderPath = path.join(process.cwd(), 'public', 'exercise-gifs', muscleGroup);
+      
+      try {
+        const files = fs.readdirSync(gifFolderPath)
+          .filter((file: string) => file.endsWith('.gif'))
+          .map((file: string) => ({
+            filename: file,
+            name: file.replace('.gif', '').replace(/-/g, ' '),
+            url: `/exercise-gifs/${muscleGroup}/${file}`
+          }));
+        
+        res.json(files);
+      } catch (fsError) {
+        // If folder doesn't exist or is empty, return empty array
+        res.json([]);
+      }
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // ============= YOUTUBE ROUTES (kept for workout videos) =============
   
   app.get("/api/youtube/search", async (req, res) => {
     try {
@@ -300,54 +253,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Search query is required" });
       }
       
-      try {
-        const videos = await youtubeApiService.searchVideos(query);
-        res.json(videos);
-      } catch (apiError) {
-        console.error('YouTube API failed:', apiError);
-        // Return empty array if YouTube API fails - user needs to provide API keys
-        res.json([]);
-      }
+      // Return empty array since we're not using YouTube API anymore
+      res.json([]);
     } catch (error: any) {
       res.status(500).json({ message: error.message });
-    }
-  });
-
-  app.get("/api/youtube/channel/:id", async (req, res) => {
-    try {
-      const channelId = req.params.id;
-      const channelInfo = await youtubeApiService.getChannelInfo(channelId);
-      res.json(channelInfo);
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
-    }
-  });
-
-  // ============= EXERCISE GIF PROXY =============
-  
-  app.get("/api/exercise-gif/:exerciseId", async (req, res) => {
-    try {
-      const { exerciseId } = req.params;
-      const gifUrl = `https://cdn-exercisedb.vercel.app/api/v1/images/${exerciseId}.gif`;
-      
-      const response = await fetch(gifUrl);
-      if (!response.ok) {
-        return res.status(404).json({ error: 'GIF not found' });
-      }
-      
-      // Set appropriate headers for GIF content
-      res.set({
-        'Content-Type': 'image/gif',
-        'Cache-Control': 'public, max-age=86400', // Cache for 24 hours
-        'Access-Control-Allow-Origin': '*'
-      });
-      
-      // Pipe the GIF data directly to the response
-      const buffer = await response.arrayBuffer();
-      res.send(Buffer.from(buffer));
-    } catch (error: any) {
-      console.error('GIF proxy error:', error.message);
-      res.status(500).json({ error: 'Failed to fetch GIF' });
     }
   });
 

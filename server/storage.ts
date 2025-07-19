@@ -596,7 +596,7 @@ export class MemStorage implements IStorage {
 
     sampleExercises.forEach(exercise => {
       const id = this.currentId++;
-      this.exercises.set(id, { ...exercise, id });
+      this.exercises.set(id, { ...exercise, id, createdAt: new Date() });
     });
   }
 
