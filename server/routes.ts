@@ -98,7 +98,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.put("/api/users/:id", authenticateToken, async (req: AuthRequest, res) => {
     try {
-      const userId = parseInt(req.params.id);
+      const userId = req.params.id;
       
       // Ensure user can only update their own profile
       if (req.user!.id !== userId) {
