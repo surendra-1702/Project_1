@@ -32,6 +32,7 @@ export const exercises = pgTable("exercises", {
   equipment: text("equipment").notNull(),
   gifUrl: text("gif_url"),
   instructions: text("instructions").array(),
+  createdAt: timestamp("created_at").defaultNow(),
 });
 
 export const workoutPlans = pgTable("workout_plans", {
