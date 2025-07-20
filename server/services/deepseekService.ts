@@ -3,7 +3,7 @@ import OpenAI from "openai";
 // Using DeepSeek R1 model instead of OpenAI GPT-4o for workout plan generation
 const deepseek = new OpenAI({ 
   apiKey: process.env.DEEPSEEK_API_KEY,
-  baseURL: "https://api.deepseek.com"
+  baseURL: "https://api.deepseek.com/v1"
 });
 
 interface WorkoutPlanRequest {
@@ -62,7 +62,7 @@ export class DeepSeekService {
       const prompt = this.buildWorkoutPlanPrompt(request);
 
       const response = await deepseek.chat.completions.create({
-        model: "deepseek-reasoner",
+        model: "deepseek-chat",
         messages: [
           {
             role: "system",
@@ -259,7 +259,7 @@ Include 4-6 exercises per day with proper warm-up recommendations. Focus on comp
   async generateNutritionAdvice(bmi: number, goal: string, calories: number): Promise<string> {
     try {
       const response = await deepseek.chat.completions.create({
-        model: "deepseek-reasoner", 
+        model: "deepseek-chat", 
         messages: [
           {
             role: "system",
