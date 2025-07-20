@@ -11,6 +11,49 @@ import { foodApiService } from "./services/foodApi";
 import { authenticateToken, requireAdmin, hashPassword, verifyPassword, generateToken, AuthRequest } from "./auth";
 import { insertUserSchema, insertWorkoutPlanSchema, insertWorkoutSessionSchema, insertFoodEntrySchema, insertWorkoutTrackerSessionSchema, insertWeightEntrySchema } from "@shared/schema";
 
+// Basic workout generation for fallback
+function generateBasicWorkouts(experienceLevel: string, fitnessGoal: string, daysPerWeek: number) {
+  const workouts = [];
+  
+  if (fitnessGoal.includes('muscle') || fitnessGoal.includes('strength')) {
+    // Strength/muscle building workouts
+    for (let i = 1; i <= daysPerWeek; i++) {
+      workouts.push({
+        day: i,
+        name: `Day ${i} - ${i % 2 === 1 ? 'Upper Body' : 'Lower Body'}`,
+        exercises: i % 2 === 1 ? [
+          { name: 'Push-ups', sets: experienceLevel === 'beginner' ? 3 : 4, reps: '8-12' },
+          { name: 'Pull-ups/Rows', sets: 3, reps: '6-10' },
+          { name: 'Shoulder Press', sets: 3, reps: '8-12' },
+          { name: 'Chest Press', sets: 3, reps: '8-12' }
+        ] : [
+          { name: 'Squats', sets: experienceLevel === 'beginner' ? 3 : 4, reps: '10-15' },
+          { name: 'Deadlifts', sets: 3, reps: '6-10' },
+          { name: 'Lunges', sets: 3, reps: '10-12 each leg' },
+          { name: 'Calf Raises', sets: 3, reps: '15-20' }
+        ]
+      });
+    }
+  } else {
+    // General fitness/weight loss workouts
+    for (let i = 1; i <= daysPerWeek; i++) {
+      workouts.push({
+        day: i,
+        name: `Day ${i} - Full Body`,
+        exercises: [
+          { name: 'Jumping Jacks', sets: 3, reps: '30 seconds' },
+          { name: 'Bodyweight Squats', sets: 3, reps: '15-20' },
+          { name: 'Push-ups', sets: 3, reps: '8-15' },
+          { name: 'Mountain Climbers', sets: 3, reps: '20 seconds' },
+          { name: 'Plank', sets: 3, reps: '30-60 seconds' }
+        ]
+      });
+    }
+  }
+  
+  return workouts;
+}
+
 export async function registerRoutes(app: Express): Promise<Server> {
   
   // ============= AUTH ROUTES =============
@@ -354,7 +397,45 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       res.json(savedPlan);
     } catch (error: any) {
-      res.status(500).json({ message: error.message });
+      console.error("Error generating workout plan:", error);
+      console.log('Falling back to local workout plan generation');
+      
+      try {
+        // Extract variables for fallback plan generation
+        const { height, weight, age, gender, activityLevel, fitnessGoal, experienceLevel, daysPerWeek, sessionDuration } = req.body;
+        
+        // Generate a basic fallback workout plan
+        const fallbackPlan = {
+          title: `${experienceLevel.charAt(0).toUpperCase() + experienceLevel.slice(1)} ${fitnessGoal.charAt(0).toUpperCase() + fitnessGoal.slice(1)} Plan`,
+          description: `A ${daysPerWeek}-day workout plan designed for ${experienceLevel} level focusing on ${fitnessGoal}`,
+          workouts: generateBasicWorkouts(experienceLevel, fitnessGoal, daysPerWeek),
+          tips: [
+            "Start with proper warm-up (5-10 minutes)",
+            "Focus on form over weight",
+            "Rest 48-72 hours between training same muscle groups",
+            "Stay hydrated throughout your workout",
+            "Track your progress and gradually increase intensity"
+          ],
+          progressionNotes: "Increase weights by 5-10% when you can complete all sets with perfect form."
+        };
+        
+        const savedPlan = await storage.createWorkoutPlan({
+          userId: req.user!.id,
+          title: fallbackPlan.title,
+          description: fallbackPlan.description,
+          goal: fitnessGoal,
+          experienceLevel,
+          daysPerWeek,
+          sessionDuration,
+          planData: fallbackPlan,
+          isActive: true
+        });
+        
+        res.json(savedPlan);
+      } catch (fallbackError) {
+        console.error("Fallback generation failed:", fallbackError);
+        res.status(500).json({ message: "Failed to generate workout plan. Please try again later." });
+      }
     }
   });
 

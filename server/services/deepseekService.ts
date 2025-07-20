@@ -47,13 +47,9 @@ export class DeepSeekService {
     } catch (error: any) {
       console.error('DeepSeek generation failed:', error.message);
       
-      // If DeepSeek fails due to quota or other issues, provide a fallback plan
-      if (error.message.includes('quota') || error.message.includes('billing')) {
-        console.log('Using fallback workout plan generation due to DeepSeek quota limits');
-        return this.generateFallbackPlan(request);
-      }
-      
-      throw error;
+      // Always use fallback plan when DeepSeek API fails
+      console.log('Using fallback workout plan generation due to DeepSeek API issues');
+      return this.generateFallbackPlan(request);
     }
   }
 
