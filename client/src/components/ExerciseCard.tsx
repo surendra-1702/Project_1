@@ -284,11 +284,6 @@ export default function ExerciseCard({ exercise, onAddToWorkout, onViewDetails }
               {exercise.bodyPart}
             </Badge>
           )}
-          {exercise.target && (
-            <Badge className={getTargetColor(exercise.target)}>
-              {exercise.target}
-            </Badge>
-          )}
         </div>
         
         {exercise.instructions && exercise.instructions.length > 0 && (
