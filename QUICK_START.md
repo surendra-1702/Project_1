@@ -29,8 +29,11 @@ npm run db:push && npm run dev
 
 ```env
 DATABASE_URL="postgresql://username:password@host/database"
-JWT_SECRET="generate-with-openssl-rand-base64-32"
+JWT_SECRET="hhUuWsnzQgBZnNxSgtFw5zOI4KUm4ZrVhEuu6V1Rmw0="
+NODE_ENV="development"
 ```
+
+**Note:** No OpenAI API key needed! The system uses DeepSeek with intelligent fallback.
 
 ## ✅ Verify It's Working
 

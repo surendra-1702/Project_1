@@ -1,10 +1,11 @@
 import OpenAI from "openai";
 
 // Using DeepSeek R1 model instead of OpenAI GPT-4o for workout plan generation
-const deepseek = new OpenAI({ 
+// Only initialize if API key is provided to avoid initialization errors
+const deepseek = process.env.DEEPSEEK_API_KEY ? new OpenAI({ 
   apiKey: process.env.DEEPSEEK_API_KEY,
   baseURL: "https://api.deepseek.com/v1"
-});
+}) : null;
 
 interface WorkoutPlanRequest {
   age: number;
@@ -54,6 +55,11 @@ export class DeepSeekService {
   }
 
   private async generateWithDeepSeek(request: WorkoutPlanRequest): Promise<WorkoutPlanResponse> {
+    // Check if DeepSeek client is available
+    if (!deepseek) {
+      throw new Error('DeepSeek API client not initialized - API key missing');
+    }
+    
     try {
       const prompt = this.buildWorkoutPlanPrompt(request);
 

@@ -65,8 +65,8 @@ Create a `.env` file in the root directory:
 DATABASE_URL="postgresql://username:password@localhost:5432/sportzal_fitness"
 # Or for Neon: DATABASE_URL="postgresql://username:password@host/database?sslmode=require"
 
-# Authentication
-JWT_SECRET="your-super-secret-jwt-key-here-min-32-chars"
+# Authentication  
+JWT_SECRET="hhUuWsnzQgBZnNxSgtFw5zOI4KUm4ZrVhEuu6V1Rmw0="
 
 # AI Services (Optional - fallback system works without this)
 DEEPSEEK_API_KEY="sk-your-deepseek-api-key-here"
