@@ -297,15 +297,7 @@ export default function ExerciseCard({ exercise, onAddToWorkout, onViewDetails }
           </p>
         )}
         
-        <div className="flex justify-between items-center">
-          <Button
-            variant="ghost"
-            onClick={() => onViewDetails?.(exercise)}
-            className="text-primary hover:text-primary/80"
-          >
-            View Details
-          </Button>
-          
+        <div className="flex justify-end">
           <Button
             size="sm"
             onClick={() => onAddToWorkout?.(exercise)}
