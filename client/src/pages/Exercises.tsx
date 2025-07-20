@@ -13,8 +13,6 @@ import { useToast } from '@/hooks/use-toast';
 const bodyParts = [
   { name: 'chest', icon: '💪', gradient: 'bg-gradient-to-br from-red-500 to-red-700' },
   { name: 'back', icon: '🛡️', gradient: 'bg-gradient-to-br from-blue-500 to-blue-700' },
-  { name: 'upper-back', icon: '⬆️', gradient: 'bg-gradient-to-br from-indigo-500 to-indigo-700' },
-  { name: 'lower-back', icon: '⬇️', gradient: 'bg-gradient-to-br from-purple-500 to-purple-700' },
   { name: 'shoulders', icon: '👤', gradient: 'bg-gradient-to-br from-yellow-500 to-yellow-700' },
   { name: 'traps', icon: '🔺', gradient: 'bg-gradient-to-br from-orange-500 to-orange-700' },
   { name: 'legs', icon: '🏃', gradient: 'bg-gradient-to-br from-green-500 to-green-700' },
@@ -24,7 +22,6 @@ const bodyParts = [
   { name: 'arms', icon: '🦾', gradient: 'bg-gradient-to-br from-violet-500 to-violet-700' },
   { name: 'cardio', icon: '❤️', gradient: 'bg-gradient-to-br from-red-600 to-red-800' },
   { name: 'forearms', icon: '✊', gradient: 'bg-gradient-to-br from-gray-500 to-gray-700' },
-  { name: 'calves', icon: '🦵', gradient: 'bg-gradient-to-br from-emerald-500 to-emerald-700' },
 ];
 
 interface Exercise {

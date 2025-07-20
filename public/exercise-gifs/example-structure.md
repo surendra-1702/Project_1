@@ -5,8 +5,6 @@
 ### Successfully Created Folders:
 ✅ **chest** - Chest exercises (pectorals, bench press, push-ups)
 ✅ **back** - General back exercises  
-✅ **upper-back** - Upper back specific (rhomboids, upper traps)
-✅ **lower-back** - Lower back specific (erector spinae)
 ✅ **shoulders** - Shoulder exercises (deltoids, shoulder press)
 ✅ **traps** - Trapezius muscle exercises (shrugs, upright rows)
 ✅ **legs** - General leg exercises (squats, lunges, leg press)
@@ -16,7 +14,6 @@
 ✅ **arms** - General arm exercises or compound movements
 ✅ **cardio** - Cardiovascular exercises (running, cycling, HIIT)
 ✅ **forearms** - Forearm specific exercises (wrist curls, grip)
-✅ **calves** - Calf muscle exercises (calf raises, calf press)
 
 ## API Endpoints Created
 
@@ -24,7 +21,7 @@
 ```
 GET /api/exercises/bodyparts
 ```
-Returns: Array of all 14 muscle group folder names
+Returns: Array of all 11 muscle group folder names
 
 ### Get GIFs for Specific Muscle Group  
 ```
@@ -72,10 +69,12 @@ Use descriptive, hyphenated names:
 **✅ Search and filtering operational**
 
 ### Current Test Files:
-- **chest/**: 3 exercise files (push-up variations)
+- **chest/**: Multiple exercise files (push-up and press variations)
+- **back/**: Multiple exercise files (pulldown and row variations)
 - **abs/**: 3 exercise files (plank and crunch variations) 
 - **legs/**: 1 exercise file (squat-bodyweight.gif)
 - **biceps/**: 2 exercise files (curl variations)
+- **triceps/**: Multiple exercise files (extension and press variations)
 - **cardio/**: 2 exercise files (burpee, jumping-jacks)
 
 The system now works perfectly! You can:

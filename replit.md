@@ -37,7 +37,7 @@ Sportzal Fitness is a comprehensive full-stack fitness platform built with React
 
 ### Exercise Management
 - Local exercise GIF system with organized muscle group folders
-- 14 muscle group categories: chest, back, upper-back, lower-back, shoulders, traps, legs, abs, biceps, triceps, arms, cardio, forearms, calves
+- 11 muscle group categories: chest, back, shoulders, traps, legs, abs, biceps, triceps, arms, cardio, forearms
 - Local exercise data stored in PostgreSQL without external API dependencies
 - Direct GIF file access through organized folder structure
 
@@ -113,7 +113,8 @@ Sportzal Fitness is a comprehensive full-stack fitness platform built with React
 - Environment variable support for configuration
 
 ## Changelog
-- July 16, 2025. Removed external exercise API dependencies and implemented local exercise GIF system with organized muscle group folders (chest, back, upper-back, lower-back, shoulders, traps, legs, abs, biceps, triceps, arms, cardio, forearms, calves) - system now uses local GIF files with dedicated API endpoints
+- July 19, 2025. Removed upper-back, lower-back, and calves muscle group categories - reduced from 14 to 11 organized muscle group folders for simplified exercise organization
+- July 16, 2025. Removed external exercise API dependencies and implemented local exercise GIF system with organized muscle group folders - system now uses local GIF files with dedicated API endpoints
 - July 16, 2025. Fixed critical MemStorage ID type consistency issues - updated all MemStorage methods to use string IDs matching database schema, resolved local development registration failures
 - July 14, 2025. Updated application branding from "FitTrack Pro" to "Sportzal Fitness" across all user-facing interfaces, components, and documentation
 - July 14, 2025. Fixed critical database schema mismatch issue - migrated from integer to string user IDs across all tables, implemented automatic ID generation for user registration, and resolved signup/authentication errors

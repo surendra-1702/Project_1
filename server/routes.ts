@@ -151,8 +151,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       // Return static list of muscle groups that match our GIF folder structure
       const bodyParts = [
-        'chest', 'back', 'upper-back', 'lower-back', 'shoulders', 'traps',
-        'legs', 'abs', 'biceps', 'triceps', 'arms', 'cardio', 'forearms', 'calves'
+        'chest', 'back', 'shoulders', 'traps',
+        'legs', 'abs', 'biceps', 'triceps', 'arms', 'cardio', 'forearms'
       ];
       res.json(bodyParts);
     } catch (error: any) {
@@ -213,8 +213,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Validate muscle group
       const validGroups = [
-        'chest', 'back', 'upper-back', 'lower-back', 'shoulders', 'traps',
-        'legs', 'abs', 'biceps', 'triceps', 'arms', 'cardio', 'forearms', 'calves'
+        'chest', 'back', 'shoulders', 'traps',
+        'legs', 'abs', 'biceps', 'triceps', 'arms', 'cardio', 'forearms'
       ];
       
       if (!validGroups.includes(muscleGroup)) {
