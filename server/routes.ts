@@ -56,6 +56,19 @@ function generateBasicWorkouts(experienceLevel: string, fitnessGoal: string, day
 
 export async function registerRoutes(app: Express): Promise<Server> {
   
+  // ============= HEALTH CHECK =============
+  app.get("/api/health", (req, res) => {
+    res.json({ 
+      status: "ok", 
+      timestamp: new Date().toISOString(),
+      version: "1.0.0",
+      services: {
+        database: process.env.DATABASE_URL ? "connected" : "not configured",
+        deepseek: process.env.DEEPSEEK_API_KEY ? "configured" : "fallback mode"
+      }
+    });
+  });
+  
   // ============= AUTH ROUTES =============
   
   app.post("/api/auth/register", async (req, res) => {
