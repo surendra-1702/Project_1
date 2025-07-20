@@ -4,7 +4,9 @@ import fs from 'fs';
 import path from 'path';
 import { storage } from "./storage-local";
 // Removed external exercise API - using local exercise data
-import { openaiService } from "./services/openaiService";
+import { DeepSeekService } from "./services/deepseekService";
+
+const deepseekService = new DeepSeekService();
 import { foodApiService } from "./services/foodApi";
 import { authenticateToken, requireAdmin, hashPassword, verifyPassword, generateToken, AuthRequest } from "./auth";
 import { insertUserSchema, insertWorkoutPlanSchema, insertWorkoutSessionSchema, insertFoodEntrySchema, insertWorkoutTrackerSessionSchema, insertWeightEntrySchema } from "@shared/schema";
@@ -332,7 +334,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const heightInMeters = height / 100;
       const bmi = weight / (heightInMeters * heightInMeters);
 
-      const workoutPlan = await openaiService.generateWorkoutPlan({
+      const workoutPlan = await deepseekService.generateWorkoutPlan({
         age, gender, height, weight, bmi,
         fitnessGoal, experienceLevel, daysPerWeek, sessionDuration, activityLevel
       });

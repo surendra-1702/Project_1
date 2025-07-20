@@ -42,7 +42,7 @@ Sportzal Fitness is a comprehensive full-stack fitness platform built with React
 - Direct GIF file access through organized folder structure
 
 ### AI-Powered Workout Planning
-- OpenAI GPT-4o integration for personalized workout plan generation
+- DeepSeek R1 integration for personalized workout plan generation
 - User profile-based recommendations (BMI, fitness goals, experience level)
 - Structured workout plans with exercises, sets, reps, and progression notes
 - Active workout plan management and tracking
@@ -72,7 +72,7 @@ Sportzal Fitness is a comprehensive full-stack fitness platform built with React
 6. JSON responses returned to client with proper error handling
 
 ### External API Integration
-- **OpenAI API**: AI-powered workout plan generation
+- **DeepSeek API**: AI-powered workout plan generation
 - **Neon Database**: Serverless PostgreSQL hosting
 - **Local GIF System**: Exercise demonstrations from organized folder structure
 
@@ -88,7 +88,7 @@ Sportzal Fitness is a comprehensive full-stack fitness platform built with React
 - **Development**: TypeScript, Vite, tsx for development server
 
 ### API Keys Required
-- `OPENAI_API_KEY`: For AI workout plan generation
+- `DEEPSEEK_API_KEY`: For AI workout plan generation
 - `DATABASE_URL`: PostgreSQL connection string
 - `JWT_SECRET`: For JWT token signing
 
@@ -113,6 +113,7 @@ Sportzal Fitness is a comprehensive full-stack fitness platform built with React
 - Environment variable support for configuration
 
 ## Changelog
+- July 19, 2025. Replaced OpenAI GPT-4o with DeepSeek R1 model for AI-powered workout plan generation - updated service configuration and API endpoints
 - July 19, 2025. Removed upper-back, lower-back, and calves muscle group categories - reduced from 14 to 11 organized muscle group folders for simplified exercise organization
 - July 16, 2025. Removed external exercise API dependencies and implemented local exercise GIF system with organized muscle group folders - system now uses local GIF files with dedicated API endpoints
 - July 16, 2025. Fixed critical MemStorage ID type consistency issues - updated all MemStorage methods to use string IDs matching database schema, resolved local development registration failures

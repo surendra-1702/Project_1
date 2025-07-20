@@ -1,8 +1,9 @@
 import OpenAI from "openai";
 
-// the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
-const openai = new OpenAI({ 
-  apiKey: process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY_ENV_VAR || "default_key" 
+// Using DeepSeek R1 model instead of OpenAI GPT-4o for workout plan generation
+const deepseek = new OpenAI({ 
+  apiKey: process.env.DEEPSEEK_API_KEY,
+  baseURL: "https://api.deepseek.com"
 });
 
 interface WorkoutPlanRequest {
@@ -38,17 +39,17 @@ interface WorkoutPlanResponse {
   progressionNotes: string;
 }
 
-export class OpenAIService {
+export class DeepSeekService {
   async generateWorkoutPlan(request: WorkoutPlanRequest): Promise<WorkoutPlanResponse> {
-    // First try OpenAI API
+    // First try DeepSeek API
     try {
-      return await this.generateWithOpenAI(request);
+      return await this.generateWithDeepSeek(request);
     } catch (error: any) {
-      console.error('OpenAI generation failed:', error.message);
+      console.error('DeepSeek generation failed:', error.message);
       
-      // If OpenAI fails due to quota or other issues, provide a fallback plan
+      // If DeepSeek fails due to quota or other issues, provide a fallback plan
       if (error.message.includes('quota') || error.message.includes('billing')) {
-        console.log('Using fallback workout plan generation due to OpenAI quota limits');
+        console.log('Using fallback workout plan generation due to DeepSeek quota limits');
         return this.generateFallbackPlan(request);
       }
       
@@ -56,12 +57,12 @@ export class OpenAIService {
     }
   }
 
-  private async generateWithOpenAI(request: WorkoutPlanRequest): Promise<WorkoutPlanResponse> {
+  private async generateWithDeepSeek(request: WorkoutPlanRequest): Promise<WorkoutPlanResponse> {
     try {
       const prompt = this.buildWorkoutPlanPrompt(request);
 
-      const response = await openai.chat.completions.create({
-        model: "gpt-4o",
+      const response = await deepseek.chat.completions.create({
+        model: "deepseek-reasoner",
         messages: [
           {
             role: "system",
@@ -72,25 +73,35 @@ export class OpenAIService {
             content: prompt
           }
         ],
-        response_format: { type: "json_object" },
         temperature: 0.7
       });
 
-      const result = JSON.parse(response.choices[0].message.content || '{}');
-      return result as WorkoutPlanResponse;
-    } catch (error: any) {
-      console.error('Error generating workout plan:', error);
+      const content = response.choices[0].message.content || '{}';
       
-      // Handle specific OpenAI errors
-      if (error.status === 429) {
-        throw new Error('OpenAI API quota exceeded. Please check your billing plan at https://platform.openai.com/account/billing');
-      } else if (error.status === 401) {
-        throw new Error('Invalid OpenAI API key. Please check your API configuration.');
-      } else if (error.status === 400) {
-        throw new Error('Invalid request to OpenAI. Please try different parameters.');
+      // DeepSeek R1 might return reasoning traces, extract just the JSON
+      let jsonContent = content;
+      if (content.includes('```json')) {
+        const jsonMatch = content.match(/```json\s*([\s\S]*?)\s*```/);
+        if (jsonMatch) {
+          jsonContent = jsonMatch[1];
+        }
       }
       
-      throw new Error('Failed to generate workout plan. Please try again or contact support.');
+      const result = JSON.parse(jsonContent);
+      return result as WorkoutPlanResponse;
+    } catch (error: any) {
+      console.error('Error generating workout plan with DeepSeek:', error);
+      
+      // Handle specific DeepSeek errors
+      if (error.status === 429) {
+        throw new Error('DeepSeek API quota exceeded. Please check your billing plan at https://platform.deepseek.com/usage');
+      } else if (error.status === 401) {
+        throw new Error('Invalid DeepSeek API key. Please check your API configuration.');
+      } else if (error.status === 400) {
+        throw new Error('Invalid request to DeepSeek. Please try different parameters.');
+      }
+      
+      throw new Error('Failed to generate workout plan with DeepSeek. Please try again or contact support.');
     }
   }
 
@@ -247,8 +258,8 @@ Include 4-6 exercises per day with proper warm-up recommendations. Focus on comp
 
   async generateNutritionAdvice(bmi: number, goal: string, calories: number): Promise<string> {
     try {
-      const response = await openai.chat.completions.create({
-        model: "gpt-4o", 
+      const response = await deepseek.chat.completions.create({
+        model: "deepseek-reasoner", 
         messages: [
           {
             role: "system",
@@ -270,4 +281,4 @@ Include 4-6 exercises per day with proper warm-up recommendations. Focus on comp
   }
 }
 
-export const openaiService = new OpenAIService();
+export const deepseekService = new DeepSeekService();
