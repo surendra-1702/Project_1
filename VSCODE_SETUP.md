@@ -34,7 +34,7 @@ JWT_SECRET="hhUuWsnzQgBZnNxSgtFw5zOI4KUm4ZrVhEuu6V1Rmw0="
 2. **Type**: "Tasks: Run Task"
 3. **Select**: "Start Development Server"
 
-### Method 2: Using the Integrated Terminal
+### Method 2: Using the Integrated Terminal (Windows-Specific)
 1. **Open Terminal**: `Ctrl+`` (backtick) or `Terminal > New Terminal`
 2. **Run**:
 ```bash
@@ -42,8 +42,12 @@ JWT_SECRET="hhUuWsnzQgBZnNxSgtFw5zOI4KUm4ZrVhEuu6V1Rmw0="
 npm install
 npm run db:push
 
-# Start the server
-npm run dev
+# Start the server (Windows methods)
+start-dev.bat
+# OR
+npx cross-env NODE_ENV=development tsx server/index.ts
+# OR
+node run-windows.js
 ```
 
 ### Method 3: Using the Debug Panel
