@@ -144,13 +144,34 @@ rm -rf .tsbuildinfo
 
 ### Windows Users
 
-**Node.js Path Issues:**
+**ESM URL Scheme Error:**
+```
+Error [ERR_UNSUPPORTED_ESM_URL_SCHEME]: Only URLs with a scheme in: file, data, and node are supported
+```
+
+**Solutions:**
 ```bash
-# Use full paths if needed
+# Option 1: Use the Windows batch file
+start-windows.bat
+
+# Option 2: Use PowerShell script
+powershell -ExecutionPolicy Bypass -File start-windows.ps1
+
+# Option 3: Use npx directly
 npx tsx server/index.ts
 
-# Or install tsx globally
+# Option 4: Install tsx globally
 npm install -g tsx
+tsx server/index.ts
+```
+
+**PowerShell Execution Policy Issues:**
+```powershell
+# If PowerShell blocks the script, run this first:
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+
+# Then run the script:
+./start-windows.ps1
 ```
 
 **PostgreSQL Connection:**

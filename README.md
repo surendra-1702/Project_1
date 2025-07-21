@@ -83,6 +83,19 @@ npm run db:push
 
 ### 6. Start the Application
 
+**For Windows users:**
+```bash
+# Use the Windows-specific startup script
+start-windows.bat
+
+# Or PowerShell script
+powershell -ExecutionPolicy Bypass -File start-windows.ps1
+
+# Or directly with npx
+npx tsx server/index.ts
+```
+
+**For macOS/Linux users:**
 ```bash
 npm run dev
 ```

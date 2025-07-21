@@ -19,7 +19,15 @@ cp .env.example .env
 
 3. **Initialize and start**:
 ```bash
-npm run db:push && npm run dev
+# Create database tables
+npm run db:push
+
+# Start the application
+# Windows users:
+start-windows.bat
+
+# macOS/Linux users:
+npm run dev
 ```
 
 4. **Access the app**: http://localhost:5000
