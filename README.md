@@ -83,16 +83,19 @@ npm run db:push
 
 ### 6. Start the Application
 
-**For Windows users:**
+**For Windows users (recommended order):**
 ```bash
-# Use the Windows-specific startup script
-start-windows.bat
+# Method 1: Enhanced batch file with multiple fallbacks
+start-dev.bat
 
-# Or PowerShell script
+# Method 2: Node.js script with automatic fallbacks
+node run-windows.js
+
+# Method 3: PowerShell script
 powershell -ExecutionPolicy Bypass -File start-windows.ps1
 
-# Or directly with npx
-npx tsx server/index.ts
+# Method 4: Cross-env approach
+npx cross-env NODE_ENV=development tsx server/index.ts
 ```
 
 **For macOS/Linux users:**

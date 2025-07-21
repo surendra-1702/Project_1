@@ -149,18 +149,24 @@ rm -rf .tsbuildinfo
 Error [ERR_UNSUPPORTED_ESM_URL_SCHEME]: Only URLs with a scheme in: file, data, and node are supported
 ```
 
-**Solutions:**
+**Solutions (Try in order):**
 ```bash
-# Option 1: Use the Windows batch file
-start-windows.bat
+# Option 1: Use the enhanced Windows batch file
+start-dev.bat
 
-# Option 2: Use PowerShell script
+# Option 2: Use the Node.js startup script
+node run-windows.js
+
+# Option 3: Use PowerShell script
 powershell -ExecutionPolicy Bypass -File start-windows.ps1
 
-# Option 3: Use npx directly
-npx tsx server/index.ts
+# Option 4: Use node with tsx loader
+node --loader tsx/esm server/index.ts
 
-# Option 4: Install tsx globally
+# Option 5: Use cross-env
+npx cross-env NODE_ENV=development tsx server/index.ts
+
+# Option 6: Install tsx globally
 npm install -g tsx
 tsx server/index.ts
 ```
