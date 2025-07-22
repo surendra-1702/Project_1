@@ -113,6 +113,8 @@ Sportzal Fitness is a comprehensive full-stack fitness platform built with React
 - Environment variable support for configuration
 
 ## Changelog
+- July 20, 2025. **Final deployment preparation completed** - Created comprehensive local setup documentation (README.md, SETUP.md, LOCAL_DEVELOPMENT.md, QUICK_START.md, DEPLOYMENT_CHECKLIST.md), database initialization scripts, validation tools, health check endpoints, and provided secure JWT secret key for immediate local deployment
+- July 20, 2025. **DeepSeek R1 integration with intelligent fallback system** - Successfully migrated from OpenAI GPT-4o to DeepSeek R1 with robust error handling and local workout plan generation when API fails
 - July 20, 2025. Prepared complete local development setup with comprehensive documentation, validation scripts, and deployment checklist - project is now ready for GitHub distribution and local development
 - July 19, 2025. Replaced OpenAI GPT-4o with DeepSeek R1 model for AI-powered workout plan generation - updated service configuration and API endpoints
 - July 19, 2025. Removed upper-back, lower-back, and calves muscle group categories - reduced from 14 to 11 organized muscle group folders for simplified exercise organization
