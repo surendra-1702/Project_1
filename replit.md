@@ -113,6 +113,7 @@ Sportzal Fitness is a comprehensive full-stack fitness platform built with React
 - Environment variable support for configuration
 
 ## Changelog
+- July 22, 2025. Created comprehensive Windows setup solutions for ESM URL scheme errors - added multiple startup methods including CommonJS entry point, simple batch files, and complete step-by-step Windows installation guide
 - July 20, 2025. Fixed OpenAI API key initialization error in DeepSeek service - now properly handles missing API keys and only initializes when available
 - July 20, 2025. Prepared complete local development setup with comprehensive documentation, validation scripts, and deployment checklist - project is now ready for GitHub distribution and local development
 - July 19, 2025. Replaced OpenAI GPT-4o with DeepSeek R1 model for AI-powered workout plan generation - updated service configuration and API endpoints
