@@ -151,22 +151,22 @@ Error [ERR_UNSUPPORTED_ESM_URL_SCHEME]: Only URLs with a scheme in: file, data, 
 
 **Solutions (Try in order):**
 ```bash
-# Option 1: Simple Windows batch file (BEST for ESM issues)
-run-simple.bat
+# Option 1: Ultra simple Windows startup (BEST)
+run-ultra-simple.bat
 
 # Option 2: Windows CommonJS entry point
-node server/index-windows.js
+node server/index-windows.cjs
 
-# Option 3: Use ts-node instead of tsx
+# Option 3: Direct ts-node (most compatible)
 npx ts-node server/index.ts
 
-# Option 4: Enhanced Windows batch file
-start-dev.bat
-
-# Option 5: Build and run production version
+# Option 4: Build and run production version
 npm run build && npm start
 
-# Option 6: Use cross-env
+# Option 5: Enhanced Windows batch file
+start-dev.bat
+
+# Option 6: Use cross-env with tsx
 npx cross-env NODE_ENV=development tsx server/index.ts
 ```
 

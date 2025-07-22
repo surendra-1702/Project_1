@@ -21,7 +21,7 @@ echo 🌐 Access at: http://localhost:5000
 echo 👤 Login: admin@sportzalfitness.com / admin123
 echo.
 
-REM Use the Windows-compatible entry point
-node server/index-windows.js
+REM Use the Windows-compatible CommonJS entry point
+node server/index-windows.cjs
 
 pause

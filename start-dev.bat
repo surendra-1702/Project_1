@@ -56,7 +56,7 @@ echo.
 
 REM Try method 1: Windows-compatible CommonJS entry point
 echo Method 1: Using Windows CommonJS entry...
-node server/index-windows.js
+node server/index-windows.cjs
 if not errorlevel 1 goto :end
 
 REM Try method 2: ts-node directly

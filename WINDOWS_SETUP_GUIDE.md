@@ -95,8 +95,8 @@ npm run db:push
 
 Try these methods in order until one works:
 
-### Method 1: Simple Batch File (Best for Windows)
-1. **Double-click** `run-simple.bat` in your project folder
+### Method 1: Ultra Simple Batch File (Best for Windows)
+1. **Double-click** `run-ultra-simple.bat` in your project folder
 2. A command window will open and start the server
 
 ### Method 2: VS Code Terminal
@@ -104,20 +104,20 @@ Try these methods in order until one works:
 2. **Press** `Ctrl + `` to open terminal
 3. **Run**:
    ```
-   run-simple.bat
+   run-ultra-simple.bat
    ```
 
 ### Method 3: Alternative Commands
 If the batch file doesn't work, try these in VS Code terminal:
 ```bash
-# Option A
-node server/index-windows.js
+# Option A (CommonJS approach)
+node server/index-windows.cjs
 
-# Option B
+# Option B (ts-node approach)
 npx ts-node server/index.ts
 
-# Option C
-start-dev.bat
+# Option C (build and run)
+npm run build && npm start
 ```
 
 ## Step 8: Access the Application

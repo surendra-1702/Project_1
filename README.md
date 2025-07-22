@@ -85,17 +85,17 @@ npm run db:push
 
 **For Windows users (recommended order):**
 ```bash
-# Method 1: Simple Windows startup (Best for ESM issues)
-run-simple.bat
+# Method 1: Ultra simple startup (Best compatibility)
+run-ultra-simple.bat
 
-# Method 2: Enhanced batch file with multiple fallbacks  
-start-dev.bat
+# Method 2: CommonJS entry point
+node server/index-windows.cjs
 
-# Method 3: Direct CommonJS entry point
-node server/index-windows.js
-
-# Method 4: ts-node approach
+# Method 3: Direct ts-node approach
 npx ts-node server/index.ts
+
+# Method 4: Build and run
+npm run build && npm start
 ```
 
 **For macOS/Linux users:**
