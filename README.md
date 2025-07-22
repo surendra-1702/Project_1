@@ -65,8 +65,8 @@ Create a `.env` file in the root directory:
 DATABASE_URL="postgresql://username:password@localhost:5432/sportzal_fitness"
 # Or for Neon: DATABASE_URL="postgresql://username:password@host/database?sslmode=require"
 
-# Authentication  
-JWT_SECRET="hhUuWsnzQgBZnNxSgtFw5zOI4KUm4ZrVhEuu6V1Rmw0="
+# Authentication
+JWT_SECRET="your-super-secret-jwt-key-here-min-32-chars"
 
 # AI Services (Optional - fallback system works without this)
 DEEPSEEK_API_KEY="sk-your-deepseek-api-key-here"
@@ -83,22 +83,6 @@ npm run db:push
 
 ### 6. Start the Application
 
-**For Windows users (recommended order):**
-```bash
-# Method 1: Ultra simple startup (Best compatibility)
-run-ultra-simple.bat
-
-# Method 2: CommonJS entry point
-node server/index-windows.cjs
-
-# Method 3: Direct ts-node approach
-npx ts-node server/index.ts
-
-# Method 4: Build and run
-npm run build && npm start
-```
-
-**For macOS/Linux users:**
 ```bash
 npm run dev
 ```

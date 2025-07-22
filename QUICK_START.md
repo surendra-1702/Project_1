@@ -19,15 +19,7 @@ cp .env.example .env
 
 3. **Initialize and start**:
 ```bash
-# Create database tables
-npm run db:push
-
-# Start the application
-# Windows users:
-start-windows.bat
-
-# macOS/Linux users:
-npm run dev
+npm run db:push && npm run dev
 ```
 
 4. **Access the app**: http://localhost:5000
@@ -37,11 +29,8 @@ npm run dev
 
 ```env
 DATABASE_URL="postgresql://username:password@host/database"
-JWT_SECRET="hhUuWsnzQgBZnNxSgtFw5zOI4KUm4ZrVhEuu6V1Rmw0="
-NODE_ENV="development"
+JWT_SECRET="generate-with-openssl-rand-base64-32"
 ```
-
-**Note:** No OpenAI API key needed! The system uses DeepSeek with intelligent fallback.
 
 ## ✅ Verify It's Working
 
