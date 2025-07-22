@@ -54,17 +54,17 @@ echo 🌐 Server will be available at: http://localhost:5000
 echo 👤 Admin login: admin@sportzalfitness.com / admin123
 echo.
 
-REM Try method 1: node with tsx loader
-echo Method 1: Using tsx loader...
-node --loader tsx/esm server/index.ts
+REM Try method 1: Windows-compatible CommonJS entry point
+echo Method 1: Using Windows CommonJS entry...
+node server/index-windows.js
 if not errorlevel 1 goto :end
 
-REM Try method 2: npx tsx
-echo Method 2: Using npx tsx...
-npx tsx server/index.ts
+REM Try method 2: ts-node directly
+echo Method 2: Using ts-node...
+npx ts-node server/index.ts
 if not errorlevel 1 goto :end
 
-REM Try method 3: cross-env
+REM Try method 3: cross-env with tsx
 echo Method 3: Using cross-env...
 npx cross-env NODE_ENV=development tsx server/index.ts
 if not errorlevel 1 goto :end
@@ -72,6 +72,11 @@ if not errorlevel 1 goto :end
 REM Try method 4: node.js script
 echo Method 4: Using Node.js script...
 node run-windows.js
+if not errorlevel 1 goto :end
+
+REM Try method 5: Build and run
+echo Method 5: Building and running...
+npm run build 2>nul && npm start
 if not errorlevel 1 goto :end
 
 echo ❌ All methods failed. Check TROUBLESHOOTING.md
