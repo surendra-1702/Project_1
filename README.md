@@ -83,8 +83,14 @@ npm run db:push
 
 ### 6. Start the Application
 
+**Linux/macOS:**
 ```bash
 npm run dev
+```
+
+**Windows:**
+```cmd
+npx cross-env NODE_ENV=development tsx server/index.ts
 ```
 
 The application will be available at:

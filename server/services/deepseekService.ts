@@ -1,10 +1,11 @@
 import OpenAI from "openai";
 
 // Using DeepSeek R1 model instead of OpenAI GPT-4o for workout plan generation
-const deepseek = new OpenAI({ 
+// Only initialize client if API key is available to prevent errors
+const deepseek = process.env.DEEPSEEK_API_KEY ? new OpenAI({ 
   apiKey: process.env.DEEPSEEK_API_KEY,
   baseURL: "https://api.deepseek.com/v1"
-});
+}) : null;
 
 interface WorkoutPlanRequest {
   age: number;
@@ -54,6 +55,10 @@ export class DeepSeekService {
   }
 
   private async generateWithDeepSeek(request: WorkoutPlanRequest): Promise<WorkoutPlanResponse> {
+    if (!deepseek) {
+      throw new Error('DeepSeek API key not configured');
+    }
+    
     try {
       const prompt = this.buildWorkoutPlanPrompt(request);
 
@@ -149,7 +154,7 @@ export class DeepSeekService {
   }
 
   private getExercisesForFocus(focus: string, isBeginnerOrIntermediate: boolean) {
-    const exerciseDatabase = {
+    const exerciseDatabase: Record<string, any[]> = {
       'Full Body Circuit': [
         { name: 'Bodyweight Squats', sets: '3', reps: '12-15', notes: 'Keep chest up, knees behind toes', restTime: '30-45 seconds' },
         { name: 'Push-ups', sets: '3', reps: '8-12', notes: 'Modify on knees if needed', restTime: '30-45 seconds' },
@@ -198,7 +203,7 @@ export class DeepSeekService {
       'Get adequate rest between workout days'
     ];
 
-    const goalSpecificTips = {
+    const goalSpecificTips: Record<string, string[]> = {
       'weight loss': ['Combine with a caloric deficit diet', 'Include cardio 3-4 times per week'],
       'muscle gain': ['Eat in a slight caloric surplus', 'Prioritize protein intake (0.8-1g per lb bodyweight)'],
       'strength': ['Focus on progressive overload', 'Allow 2-3 minutes rest between heavy sets'],
@@ -253,6 +258,10 @@ Include 4-6 exercises per day with proper warm-up recommendations. Focus on comp
   }
 
   async generateNutritionAdvice(bmi: number, goal: string, calories: number): Promise<string> {
+    if (!deepseek) {
+      return 'Consult with a registered dietitian for personalized nutrition guidance.';
+    }
+    
     try {
       const response = await deepseek.chat.completions.create({
         model: "deepseek-chat", 
