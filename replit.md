@@ -68,11 +68,11 @@ Sportzal Fitness is a comprehensive full-stack fitness platform built with React
 2. Express.js server handles routing and business logic
 3. Authentication middleware validates JWT tokens
 4. Database operations performed through Drizzle ORM
-5. External API calls made to ExerciseDB, YouTube, and OpenAI
+5. Optional external API calls to DeepSeek for enhanced workout planning
 6. JSON responses returned to client with proper error handling
 
 ### External API Integration
-- **DeepSeek API**: AI-powered workout plan generation
+- **DeepSeek API**: AI-powered workout plan generation (optional)
 - **Neon Database**: Serverless PostgreSQL hosting
 - **Local GIF System**: Exercise demonstrations from organized folder structure
 
@@ -87,10 +87,10 @@ Sportzal Fitness is a comprehensive full-stack fitness platform built with React
 - **External APIs**: axios for HTTP requests
 - **Development**: TypeScript, Vite, tsx for development server
 
-### API Keys Required
-- `DEEPSEEK_API_KEY`: For AI workout plan generation
-- `DATABASE_URL`: PostgreSQL connection string
-- `JWT_SECRET`: For JWT token signing
+### Configuration Required
+- `DATABASE_URL`: PostgreSQL connection string (required)
+- `JWT_SECRET`: For JWT token signing (required)
+- `DEEPSEEK_API_KEY`: For AI workout plan generation (optional - fallback system available)
 
 ## Deployment Strategy
 
@@ -113,10 +113,11 @@ Sportzal Fitness is a comprehensive full-stack fitness platform built with React
 - Environment variable support for configuration
 
 ## Changelog
+- July 23, 2025. **Removed all external API dependencies** - Eliminated unnecessary API requirements, system now works entirely with optional DeepSeek R1 and intelligent fallback system for Windows compatibility
 - July 20, 2025. **Final deployment preparation completed** - Created comprehensive local setup documentation (README.md, SETUP.md, LOCAL_DEVELOPMENT.md, QUICK_START.md, DEPLOYMENT_CHECKLIST.md), database initialization scripts, validation tools, health check endpoints, and provided secure JWT secret key for immediate local deployment
-- July 20, 2025. **DeepSeek R1 integration with intelligent fallback system** - Successfully migrated from OpenAI GPT-4o to DeepSeek R1 with robust error handling and local workout plan generation when API fails
+- July 20, 2025. **DeepSeek R1 integration with intelligent fallback system** - Successfully integrated DeepSeek R1 with robust error handling and local workout plan generation when API fails
 - July 20, 2025. Prepared complete local development setup with comprehensive documentation, validation scripts, and deployment checklist - project is now ready for GitHub distribution and local development
-- July 19, 2025. Replaced OpenAI GPT-4o with DeepSeek R1 model for AI-powered workout plan generation - updated service configuration and API endpoints
+- July 19, 2025. Integrated DeepSeek R1 model for AI-powered workout plan generation with intelligent fallback system
 - July 19, 2025. Removed upper-back, lower-back, and calves muscle group categories - reduced from 14 to 11 organized muscle group folders for simplified exercise organization
 - July 16, 2025. Removed external exercise API dependencies and implemented local exercise GIF system with organized muscle group folders - system now uses local GIF files with dedicated API endpoints
 - July 16, 2025. Fixed critical MemStorage ID type consistency issues - updated all MemStorage methods to use string IDs matching database schema, resolved local development registration failures

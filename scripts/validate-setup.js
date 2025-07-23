@@ -19,7 +19,7 @@ async function validateSetup() {
   // 1. Environment Variables
   console.log('📋 Checking environment variables...');
   const requiredEnvVars = ['DATABASE_URL', 'JWT_SECRET'];
-  const optionalEnvVars = ['DEEPSEEK_API_KEY', 'OPENAI_API_KEY'];
+  const optionalEnvVars = ['DEEPSEEK_API_KEY'];
   
   requiredEnvVars.forEach(envVar => {
     if (process.env[envVar]) {

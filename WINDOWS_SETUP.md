@@ -104,10 +104,10 @@ npx cross-env NODE_ENV=development tsx server/index.ts
 2. Check DATABASE_URL is uncommented and properly formatted
 3. Restart the application after editing `.env`
 
-### Problem: OpenAI API Key Error
-**Error**: `OPENAI_API_KEY environment variable is missing`
+### Problem: Missing API Keys
+**Error**: API key environment variables missing
 
-**Solution**: This is now fixed! The app works without API keys using the intelligent fallback system.
+**Solution**: The app works perfectly without external API keys using the intelligent fallback system for workout plan generation.
 
 ### Problem: Port 5000 in Use
 **Error**: `EADDRINUSE` or port already in use
