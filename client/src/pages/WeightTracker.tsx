@@ -207,18 +207,18 @@ export default function WeightTracker() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-6xl">
-      <div className="flex items-center justify-between mb-8">
+    <div className="container mx-auto px-4 py-6 sm:py-8 max-w-6xl">
+      <div className="flex flex-wrap items-start justify-between gap-4 mb-6 sm:mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Weight Tracker</h1>
-          <p className="text-gray-600 dark:text-gray-400">Track your weight progress and achieve your goals</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-1 sm:mb-2">Weight Tracker</h1>
+          <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">Track your weight progress and achieve your goals</p>
         </div>
         <Button 
           onClick={() => {
             resetForm();
             setIsFormOpen(true);
           }}
-          className="flex items-center gap-2"
+          className="flex items-center gap-2 shrink-0"
         >
           <Plus className="h-4 w-4" />
           Add Weight Entry
@@ -227,7 +227,7 @@ export default function WeightTracker() {
 
       {/* Progress Overview */}
       {progressMetrics && (
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
           <Card>
             <CardContent className="flex items-center p-6">
               <div className="flex items-center justify-center w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-lg mr-4">
@@ -443,8 +443,8 @@ export default function WeightTracker() {
                   >
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-2">
-                          <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
+                        <div className="flex flex-wrap items-center gap-2 mb-2">
+                          <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white">
                             {entry.weight} kg
                           </h3>
                           <Badge variant="secondary" className="flex items-center gap-1">

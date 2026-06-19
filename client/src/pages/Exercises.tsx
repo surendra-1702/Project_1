@@ -143,17 +143,17 @@ export default function Exercises() {
     <div className="min-h-screen bg-gray-50">
       <Navigation />
       
-      <section className="py-16 bg-white">
+      <section className="py-10 sm:py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">Exercise Library</h1>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <div className="text-center mb-8 sm:mb-12">
+            <h1 className="text-2xl sm:text-4xl font-bold text-gray-900 mb-3 sm:mb-4">Exercise Library</h1>
+            <p className="text-base sm:text-xl text-gray-600 max-w-3xl mx-auto">
               Discover thousands of exercises with step-by-step GIF demonstrations and detailed instructions
             </p>
           </div>
 
           {/* Search */}
-          <div className="mb-12">
+          <div className="mb-8 sm:mb-12">
             <div className="max-w-2xl mx-auto">
               <div className="relative">
                 <Input
@@ -177,18 +177,18 @@ export default function Exercises() {
           </div>
 
           {/* Body Parts Filter */}
-          <div className="mb-12">
-            <h2 className="text-2xl font-semibold text-gray-900 mb-6 text-center">
+          <div className="mb-8 sm:mb-12">
+            <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-4 sm:mb-6 text-center">
               Browse by Muscle Group
             </h2>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-4">
+            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-7 gap-2 sm:gap-4">
               {bodyParts.map((part) => (
                 <Button
                   key={part.name}
                   onClick={() => handleBodyPartFilter(part.name)}
-                  className={`${part.gradient} text-white p-4 h-auto flex-col hover:scale-105 transition-transform shadow-lg ${selectedBodyPart === part.name ? 'ring-4 ring-white ring-opacity-50' : ''}`}
+                  className={`${part.gradient} text-white p-2 sm:p-4 h-auto flex-col hover:scale-105 transition-transform shadow-lg ${selectedBodyPart === part.name ? 'ring-4 ring-white ring-opacity-50' : ''}`}
                 >
-                  <div className="text-2xl mb-2">{part.icon}</div>
+                  <div className="text-xl sm:text-2xl mb-1 sm:mb-2">{part.icon}</div>
                   <div className="font-semibold text-xs text-center">
                     {part.name.replace('-', ' ')}
                   </div>
@@ -252,7 +252,7 @@ export default function Exercises() {
               )}
             </div>
           ) : (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-12">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 mb-8 sm:mb-12">
               {exercises.map((exercise: Exercise) => (
                 <ExerciseCard
                   key={exercise.id}

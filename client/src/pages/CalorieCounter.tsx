@@ -348,29 +348,30 @@ export default function CalorieCounter() {
     <div className="min-h-screen bg-gray-50">
       <Navigation />
       
-      <section className="py-16 bg-gray-50">
+      <section className="py-8 sm:py-16 bg-gray-50">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">Smart Calorie Counter</h1>
-            <p className="text-xl text-gray-600">Track your daily nutrition with automatic food lookup</p>
+          <div className="text-center mb-6 sm:mb-12">
+            <h1 className="text-2xl sm:text-4xl font-bold text-gray-900 mb-2 sm:mb-4">Smart Calorie Counter</h1>
+            <p className="text-base sm:text-xl text-gray-600">Track your daily nutrition with automatic food lookup</p>
           </div>
 
           {/* Date Navigation */}
-          <div className="flex items-center justify-center gap-4 mb-8">
+          <div className="flex items-center justify-center gap-2 sm:gap-4 mb-6 sm:mb-8">
             <Button variant="outline" size="sm" onClick={() => setSelectedDate(subDays(selectedDate, 1))}>
-              <Calendar className="w-4 h-4 mr-2" />
-              Previous
+              <Calendar className="w-4 h-4 sm:mr-2" />
+              <span className="hidden sm:inline">Previous</span>
             </Button>
-            <div className="text-lg font-semibold">
-              {format(selectedDate, 'EEEE, MMMM d, yyyy')}
+            <div className="text-sm sm:text-lg font-semibold text-center">
+              <span className="hidden sm:inline">{format(selectedDate, 'EEEE, MMMM d, yyyy')}</span>
+              <span className="sm:hidden">{format(selectedDate, 'MMM d, yyyy')}</span>
             </div>
             <Button variant="outline" size="sm" onClick={() => setSelectedDate(addDays(selectedDate, 1))}>
-              Next
-              <Calendar className="w-4 h-4 ml-2" />
+              <span className="hidden sm:inline">Next</span>
+              <Calendar className="w-4 h-4 sm:ml-2" />
             </Button>
           </div>
 
-          <div className="grid lg:grid-cols-3 gap-8">
+          <div className="grid lg:grid-cols-3 gap-6 sm:gap-8">
             {/* Daily Overview */}
             <div className="lg:col-span-1">
               <Card className="sticky top-24">

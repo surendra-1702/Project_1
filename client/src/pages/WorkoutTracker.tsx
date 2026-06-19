@@ -241,18 +241,18 @@ export default function WorkoutTracker() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-6xl">
-      <div className="flex items-center justify-between mb-8">
+    <div className="container mx-auto px-4 py-6 sm:py-8 max-w-6xl">
+      <div className="flex flex-wrap items-start justify-between gap-4 mb-6 sm:mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Workout Tracker</h1>
-          <p className="text-gray-600 dark:text-gray-400">Log your workouts and track your fitness progress</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-1 sm:mb-2">Workout Tracker</h1>
+          <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">Log your workouts and track your fitness progress</p>
         </div>
         <Button 
           onClick={() => {
             resetForm();
             setIsFormOpen(true);
           }}
-          className="flex items-center gap-2"
+          className="flex items-center gap-2 shrink-0"
         >
           <Dumbbell className="h-4 w-4" />
           Log Workout
@@ -351,8 +351,8 @@ export default function WorkoutTracker() {
               {/* Add Exercise Section */}
               <div className="border rounded-lg p-4 space-y-4">
                 <h3 className="text-lg font-semibold">Add Exercise</h3>
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                  <div className="space-y-2">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
+                  <div className="space-y-2 col-span-2 md:col-span-1">
                     <Label htmlFor="exerciseName">Exercise Name</Label>
                     <Input
                       id="exerciseName"
@@ -485,8 +485,8 @@ export default function WorkoutTracker() {
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-2">
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                      <div className="flex flex-wrap items-center gap-2 mb-2">
+                        <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">
                           {session.workoutName || session.exerciseName || 'Workout Session'}
                         </h3>
                         <Badge variant="secondary" className="flex items-center gap-1">

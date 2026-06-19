@@ -94,16 +94,16 @@ export default function BMICalculator() {
     <div className="min-h-screen bg-gray-50">
       <Navigation />
       
-      <section className="py-16 bg-gray-50">
+      <section className="py-8 sm:py-16 bg-gray-50">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">BMI Calculator & Recommendations</h1>
-            <p className="text-xl text-gray-600">Get personalized health insights and calorie recommendations based on your BMI</p>
+          <div className="text-center mb-8 sm:mb-12">
+            <h1 className="text-2xl sm:text-4xl font-bold text-gray-900 mb-3 sm:mb-4">BMI Calculator & Recommendations</h1>
+            <p className="text-base sm:text-xl text-gray-600">Get personalized health insights and calorie recommendations based on your BMI</p>
           </div>
 
           <Card className="bg-white rounded-2xl shadow-xl">
-            <CardContent className="p-8">
-              <div className="grid lg:grid-cols-2 gap-8">
+            <CardContent className="p-4 sm:p-8">
+              <div className="grid lg:grid-cols-2 gap-6 sm:gap-8">
                 {/* Input Form */}
                 <div>
                   <h3 className="text-xl font-semibold mb-6 flex items-center">

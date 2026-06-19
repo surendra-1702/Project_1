@@ -169,7 +169,7 @@ export default function WorkoutPlanner() {
     return (
       <div className="min-h-screen bg-gray-50">
         <Navigation />
-        <div className="max-w-6xl mx-auto px-4 py-8">
+        <div className="max-w-6xl mx-auto px-4 py-6 sm:py-8">
           <div className="mb-6">
             <Button
               variant="ghost"
@@ -180,12 +180,12 @@ export default function WorkoutPlanner() {
               Back to Plans
             </Button>
             
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
               <div>
-                <h1 className="text-3xl font-bold text-gray-900">{selectedPlan.planData.title}</h1>
-                <p className="text-gray-600 mt-2">{selectedPlan.planData.description}</p>
+                <h1 className="text-xl sm:text-3xl font-bold text-gray-900">{selectedPlan.planData.title}</h1>
+                <p className="text-gray-600 mt-1 sm:mt-2 text-sm sm:text-base">{selectedPlan.planData.description}</p>
               </div>
-              <Badge variant="default" className="text-sm">
+              <Badge variant="default" className="text-sm self-start sm:self-auto">
                 <Star className="h-4 w-4 mr-1" />
                 AI Generated
               </Badge>
@@ -193,7 +193,7 @@ export default function WorkoutPlanner() {
           </div>
 
           {/* Plan Overview */}
-          <div className="grid md:grid-cols-4 gap-4 mb-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
             <Card>
               <CardContent className="p-4 text-center">
                 <Calendar className="h-8 w-8 text-blue-600 mx-auto mb-2" />
@@ -236,23 +236,23 @@ export default function WorkoutPlanner() {
               <div className="space-y-6">
                 {selectedPlan.planData.weeklySchedule.map((day, index) => (
                   <div key={index} className="border rounded-lg p-6">
-                    <div className="flex items-center justify-between mb-4">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-2">
                       <div>
-                        <h3 className="text-lg font-semibold">{day.name}</h3>
-                        <p className="text-gray-600">{day.focus}</p>
+                        <h3 className="text-base sm:text-lg font-semibold">{day.name}</h3>
+                        <p className="text-gray-600 text-sm">{day.focus}</p>
                       </div>
-                      <Badge variant="outline">{day.duration} min</Badge>
+                      <Badge variant="outline" className="self-start sm:self-auto">{day.duration} min</Badge>
                     </div>
                     
                     <div className="space-y-3">
                       {day.exercises.map((exercise, exerciseIndex) => (
-                        <div key={exerciseIndex} className="bg-gray-50 rounded-lg p-4">
-                          <div className="flex items-center justify-between mb-2">
-                            <h4 className="font-medium">{exercise.name}</h4>
-                            <div className="flex gap-2 text-sm text-gray-600">
-                              <span>{exercise.sets}</span>
+                        <div key={exerciseIndex} className="bg-gray-50 rounded-lg p-3 sm:p-4">
+                          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2 gap-1">
+                            <h4 className="font-medium text-sm sm:text-base">{exercise.name}</h4>
+                            <div className="flex flex-wrap gap-1 sm:gap-2 text-xs sm:text-sm text-gray-600">
+                              <span>{exercise.sets} sets</span>
                               <span>•</span>
-                              <span>{exercise.reps}</span>
+                              <span>{exercise.reps} reps</span>
                               <span>•</span>
                               <span>{exercise.restTime}</span>
                             </div>
@@ -311,30 +311,30 @@ export default function WorkoutPlanner() {
     <div className="min-h-screen bg-gray-50">
       <Navigation />
       
-      <div className="max-w-6xl mx-auto px-4 py-8">
+      <div className="max-w-6xl mx-auto px-4 py-6 sm:py-8">
         {/* Header */}
-        <div className="text-center mb-12">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-purple-100 rounded-full mb-4">
-            <Bot className="h-8 w-8 text-purple-600" />
+        <div className="text-center mb-8 sm:mb-12">
+          <div className="inline-flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 bg-purple-100 rounded-full mb-4">
+            <Bot className="h-7 w-7 sm:h-8 sm:w-8 text-purple-600" />
           </div>
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">AI Workout Planner</h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+          <h1 className="text-2xl sm:text-4xl font-bold text-gray-900 mb-3 sm:mb-4">AI Workout Planner</h1>
+          <p className="text-base sm:text-xl text-gray-600 max-w-2xl mx-auto">
             Get personalized workout plans powered by artificial intelligence, tailored to your goals and fitness level.
           </p>
         </div>
 
         {/* Existing Plans */}
         {workoutPlans && workoutPlans.length > 0 && (
-          <div className="mb-12">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold text-gray-900">Your Workout Plans</h2>
+          <div className="mb-8 sm:mb-12">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Your Workout Plans</h2>
               <Button onClick={() => setShowForm(true)} className="flex items-center gap-2">
                 <Bot className="h-4 w-4" />
                 Generate New Plan
               </Button>
             </div>
             
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
               {workoutPlans.map((plan: WorkoutPlan) => (
                 <Card key={plan.id} className="hover:shadow-lg transition-shadow cursor-pointer">
                   <CardHeader>

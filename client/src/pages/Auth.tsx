@@ -149,15 +149,15 @@ export default function Auth() {
     <div className="min-h-screen bg-gray-50">
       <Navigation />
       
-      <section className="py-16 bg-gray-50">
+      <section className="py-8 sm:py-16 bg-gray-50">
         <div className="max-w-md mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Join Sportzal Fitness</h1>
+          <div className="text-center mb-6 sm:mb-8">
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Join Sportzal Fitness</h1>
             <p className="text-gray-600">Start your fitness journey today</p>
           </div>
 
           <Card className="shadow-xl">
-            <CardContent className="p-8">
+            <CardContent className="p-4 sm:p-8">
               <Tabs defaultValue="signin" className="w-full">
                 <TabsList className="grid w-full grid-cols-2">
                   <TabsTrigger value="signin">Sign In</TabsTrigger>
@@ -361,7 +361,7 @@ export default function Auth() {
                     <div className="space-y-4">
                       <h3 className="text-sm font-medium text-gray-900">Fitness Profile (Optional)</h3>
                       
-                      <div className="grid grid-cols-3 gap-2">
+                      <div className="grid grid-cols-3 gap-2 sm:gap-3">
                         <div className="space-y-2">
                           <Label htmlFor="signup-age" className="text-xs">Age</Label>
                           <Input
