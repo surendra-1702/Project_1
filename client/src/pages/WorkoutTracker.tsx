@@ -11,6 +11,8 @@ import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
 import { Activity, Dumbbell, Calendar, Trash2, Edit, Target, Timer, Flame } from 'lucide-react';
 import { format } from 'date-fns';
+import Navigation from '@/components/Navigation';
+import Footer from '@/components/Footer';
 
 interface Exercise {
   name: string;
@@ -241,7 +243,9 @@ export default function WorkoutTracker() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-6 sm:py-8 max-w-6xl">
+    <div className="min-h-screen bg-gray-50">
+      <Navigation />
+      <div className="container mx-auto px-4 py-6 sm:py-8 max-w-6xl">
       <div className="flex flex-wrap items-start justify-between gap-4 mb-6 sm:mb-8">
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-1 sm:mb-2">Workout Tracker</h1>
@@ -261,40 +265,34 @@ export default function WorkoutTracker() {
 
       {/* Stats Cards */}
       {stats && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-3 gap-3 sm:gap-6 mb-6 sm:mb-8">
           <Card>
-            <CardContent className="flex items-center p-6">
-              <div className="flex items-center justify-center w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-lg mr-4">
-                <Activity className="h-6 w-6 text-blue-600 dark:text-blue-300" />
+            <CardContent className="flex flex-col items-center justify-center p-3 sm:p-5 text-center">
+              <div className="flex items-center justify-center w-9 h-9 sm:w-12 sm:h-12 bg-blue-100 dark:bg-blue-900 rounded-lg mb-2">
+                <Activity className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600 dark:text-blue-300" />
               </div>
-              <div>
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Workouts</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.totalWorkouts}</p>
-              </div>
+              <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Workouts</p>
+              <p className="text-base sm:text-2xl font-bold text-gray-900 dark:text-white">{stats.totalWorkouts}</p>
             </CardContent>
           </Card>
 
           <Card>
-            <CardContent className="flex items-center p-6">
-              <div className="flex items-center justify-center w-12 h-12 bg-green-100 dark:bg-green-900 rounded-lg mr-4">
-                <Target className="h-6 w-6 text-green-600 dark:text-green-300" />
+            <CardContent className="flex flex-col items-center justify-center p-3 sm:p-5 text-center">
+              <div className="flex items-center justify-center w-9 h-9 sm:w-12 sm:h-12 bg-green-100 dark:bg-green-900 rounded-lg mb-2">
+                <Target className="h-5 w-5 sm:h-6 sm:w-6 text-green-600 dark:text-green-300" />
               </div>
-              <div>
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Sets</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.totalSets}</p>
-              </div>
+              <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Sets</p>
+              <p className="text-base sm:text-2xl font-bold text-gray-900 dark:text-white">{stats.totalSets}</p>
             </CardContent>
           </Card>
 
           <Card>
-            <CardContent className="flex items-center p-6">
-              <div className="flex items-center justify-center w-12 h-12 bg-purple-100 dark:bg-purple-900 rounded-lg mr-4">
-                <Dumbbell className="h-6 w-6 text-purple-600 dark:text-purple-300" />
+            <CardContent className="flex flex-col items-center justify-center p-3 sm:p-5 text-center">
+              <div className="flex items-center justify-center w-9 h-9 sm:w-12 sm:h-12 bg-purple-100 dark:bg-purple-900 rounded-lg mb-2">
+                <Dumbbell className="h-5 w-5 sm:h-6 sm:w-6 text-purple-600 dark:text-purple-300" />
               </div>
-              <div>
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Reps</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.totalReps}</p>
-              </div>
+              <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Reps</p>
+              <p className="text-base sm:text-2xl font-bold text-gray-900 dark:text-white">{stats.totalReps}</p>
             </CardContent>
           </Card>
         </div>
@@ -564,6 +562,8 @@ export default function WorkoutTracker() {
           )}
         </CardContent>
       </Card>
+      </div>
+      <Footer />
     </div>
   );
 }

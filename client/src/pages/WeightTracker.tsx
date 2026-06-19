@@ -12,6 +12,8 @@ import { useAuth } from '@/hooks/useAuth';
 import { Weight, TrendingUp, TrendingDown, Target, Calendar, Plus, Trash2, Edit } from 'lucide-react';
 import { format, differenceInDays } from 'date-fns';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import Navigation from '@/components/Navigation';
+import Footer from '@/components/Footer';
 
 interface WeightEntry {
   id: number;
@@ -207,7 +209,9 @@ export default function WeightTracker() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-6 sm:py-8 max-w-6xl">
+    <div className="min-h-screen bg-gray-50">
+      <Navigation />
+      <div className="container mx-auto px-4 py-6 sm:py-8 max-w-6xl">
       <div className="flex flex-wrap items-start justify-between gap-4 mb-6 sm:mb-8">
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-1 sm:mb-2">Weight Tracker</h1>
@@ -227,67 +231,59 @@ export default function WeightTracker() {
 
       {/* Progress Overview */}
       {progressMetrics && (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6 mb-6 sm:mb-8">
           <Card>
-            <CardContent className="flex items-center p-6">
-              <div className="flex items-center justify-center w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-lg mr-4">
-                <Weight className="h-6 w-6 text-blue-600 dark:text-blue-300" />
+            <CardContent className="flex flex-col items-center justify-center p-3 sm:p-5 text-center">
+              <div className="flex items-center justify-center w-9 h-9 sm:w-12 sm:h-12 bg-blue-100 dark:bg-blue-900 rounded-lg mb-2">
+                <Weight className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600 dark:text-blue-300" />
               </div>
-              <div>
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Current Weight</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">{progressMetrics.currentWeight} kg</p>
-              </div>
+              <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Current</p>
+              <p className="text-base sm:text-xl font-bold text-gray-900 dark:text-white">{progressMetrics.currentWeight} kg</p>
             </CardContent>
           </Card>
 
           <Card>
-            <CardContent className="flex items-center p-6">
-              <div className={`flex items-center justify-center w-12 h-12 rounded-lg mr-4 ${
+            <CardContent className="flex flex-col items-center justify-center p-3 sm:p-5 text-center">
+              <div className={`flex items-center justify-center w-9 h-9 sm:w-12 sm:h-12 rounded-lg mb-2 ${
                 progressMetrics.totalChange >= 0 
                   ? 'bg-green-100 dark:bg-green-900' 
                   : 'bg-red-100 dark:bg-red-900'
               }`}>
                 {progressMetrics.totalChange >= 0 ? (
-                  <TrendingUp className="h-6 w-6 text-green-600 dark:text-green-300" />
+                  <TrendingUp className="h-5 w-5 sm:h-6 sm:w-6 text-green-600 dark:text-green-300" />
                 ) : (
-                  <TrendingDown className="h-6 w-6 text-red-600 dark:text-red-300" />
+                  <TrendingDown className="h-5 w-5 sm:h-6 sm:w-6 text-red-600 dark:text-red-300" />
                 )}
               </div>
-              <div>
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Change</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                  {progressMetrics.totalChange > 0 ? '+' : ''}{progressMetrics.totalChange.toFixed(1)} kg
-                </p>
-              </div>
+              <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Change</p>
+              <p className="text-base sm:text-xl font-bold text-gray-900 dark:text-white">
+                {progressMetrics.totalChange > 0 ? '+' : ''}{progressMetrics.totalChange.toFixed(1)} kg
+              </p>
             </CardContent>
           </Card>
 
           {progressMetrics.goalWeight && (
             <Card>
-              <CardContent className="flex items-center p-6">
-                <div className="flex items-center justify-center w-12 h-12 bg-purple-100 dark:bg-purple-900 rounded-lg mr-4">
-                  <Target className="h-6 w-6 text-purple-600 dark:text-purple-300" />
+              <CardContent className="flex flex-col items-center justify-center p-3 sm:p-5 text-center">
+                <div className="flex items-center justify-center w-9 h-9 sm:w-12 sm:h-12 bg-purple-100 dark:bg-purple-900 rounded-lg mb-2">
+                  <Target className="h-5 w-5 sm:h-6 sm:w-6 text-purple-600 dark:text-purple-300" />
                 </div>
-                <div>
-                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Goal Weight</p>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-white">{progressMetrics.goalWeight} kg</p>
-                </div>
+                <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Goal</p>
+                <p className="text-base sm:text-xl font-bold text-gray-900 dark:text-white">{progressMetrics.goalWeight} kg</p>
               </CardContent>
             </Card>
           )}
 
           {progressMetrics.remainingToGoal !== null && (
             <Card>
-              <CardContent className="flex items-center p-6">
-                <div className="flex items-center justify-center w-12 h-12 bg-orange-100 dark:bg-orange-900 rounded-lg mr-4">
-                  <Target className="h-6 w-6 text-orange-600 dark:text-orange-300" />
+              <CardContent className="flex flex-col items-center justify-center p-3 sm:p-5 text-center">
+                <div className="flex items-center justify-center w-9 h-9 sm:w-12 sm:h-12 bg-orange-100 dark:bg-orange-900 rounded-lg mb-2">
+                  <Target className="h-5 w-5 sm:h-6 sm:w-6 text-orange-600 dark:text-orange-300" />
                 </div>
-                <div>
-                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400">To Goal</p>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                    {Math.abs(progressMetrics.remainingToGoal).toFixed(1)} kg
-                  </p>
-                </div>
+                <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">To Goal</p>
+                <p className="text-base sm:text-xl font-bold text-gray-900 dark:text-white">
+                  {Math.abs(progressMetrics.remainingToGoal).toFixed(1)} kg
+                </p>
               </CardContent>
             </Card>
           )}
@@ -490,6 +486,8 @@ export default function WeightTracker() {
           )}
         </CardContent>
       </Card>
+      </div>
+      <Footer />
     </div>
   );
 }

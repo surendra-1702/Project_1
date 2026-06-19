@@ -44,44 +44,44 @@ export default function Home() {
 
         {/* Feature highlights */}
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-10 sm:pb-16">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 text-center">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 text-center">
             <Card className="bg-white bg-opacity-10 backdrop-blur-sm border-none text-white">
-              <CardContent className="p-6">
-                <div className="text-3xl mb-3">
-                  <Dumbbell className="h-8 w-8 text-amber-400 mx-auto" />
+              <CardContent className="p-3 sm:p-5">
+                <div className="mb-2 sm:mb-3">
+                  <Dumbbell className="h-6 w-6 sm:h-8 sm:w-8 text-amber-400 mx-auto" />
                 </div>
-                <h3 className="font-semibold mb-2">1000+ Exercises</h3>
-                <p className="text-sm text-blue-100">GIF demonstrations for all muscle groups</p>
+                <h3 className="text-xs sm:text-sm font-semibold mb-1">1000+ Exercises</h3>
+                <p className="text-xs text-blue-100 hidden sm:block">GIF demonstrations for all muscle groups</p>
               </CardContent>
             </Card>
             
             <Card className="bg-white bg-opacity-10 backdrop-blur-sm border-none text-white">
-              <CardContent className="p-6">
-                <div className="text-3xl mb-3">
-                  <Bot className="h-8 w-8 text-amber-400 mx-auto" />
+              <CardContent className="p-3 sm:p-5">
+                <div className="mb-2 sm:mb-3">
+                  <Bot className="h-6 w-6 sm:h-8 sm:w-8 text-amber-400 mx-auto" />
                 </div>
-                <h3 className="font-semibold mb-2">AI-Powered Plans</h3>
-                <p className="text-sm text-blue-100">Personalized workouts based on your goals</p>
+                <h3 className="text-xs sm:text-sm font-semibold mb-1">AI-Powered Plans</h3>
+                <p className="text-xs text-blue-100 hidden sm:block">Personalized workouts based on your goals</p>
               </CardContent>
             </Card>
             
             <Card className="bg-white bg-opacity-10 backdrop-blur-sm border-none text-white">
-              <CardContent className="p-6">
-                <div className="text-3xl mb-3">
-                  <TrendingUp className="h-8 w-8 text-amber-400 mx-auto" />
+              <CardContent className="p-3 sm:p-5">
+                <div className="mb-2 sm:mb-3">
+                  <TrendingUp className="h-6 w-6 sm:h-8 sm:w-8 text-amber-400 mx-auto" />
                 </div>
-                <h3 className="font-semibold mb-2">Progress Tracking</h3>
-                <p className="text-sm text-blue-100">Monitor your fitness journey in real-time</p>
+                <h3 className="text-xs sm:text-sm font-semibold mb-1">Progress Tracking</h3>
+                <p className="text-xs text-blue-100 hidden sm:block">Monitor your fitness journey in real-time</p>
               </CardContent>
             </Card>
             
             <Card className="bg-white bg-opacity-10 backdrop-blur-sm border-none text-white">
-              <CardContent className="p-6">
-                <div className="text-3xl mb-3">
-                  <TrendingUp className="h-8 w-8 text-amber-400 mx-auto" />
+              <CardContent className="p-3 sm:p-5">
+                <div className="mb-2 sm:mb-3">
+                  <TrendingUp className="h-6 w-6 sm:h-8 sm:w-8 text-amber-400 mx-auto" />
                 </div>
-                <h3 className="font-semibold mb-2">Calorie Counter</h3>
-                <p className="text-sm text-blue-100">Track your daily nutrition and calorie intake</p>
+                <h3 className="text-xs sm:text-sm font-semibold mb-1">Calorie Counter</h3>
+                <p className="text-xs text-blue-100 hidden sm:block">Track your daily nutrition and calorie intake</p>
               </CardContent>
             </Card>
           </div>
