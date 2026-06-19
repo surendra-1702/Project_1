@@ -1,0 +1,197 @@
+You are an expert React, CSS, and responsive UI engineer. Audit the entire application and make it fully responsive on mobile devices (320px, 375px, 390px, 414px, 768px) while preserving the desktop experience.
+
+GLOBAL RESPONSIVE REQUIREMENTS
+
+* Eliminate ALL horizontal scrolling across the application.
+* Set max-width: 100% on images, cards, charts, forms, containers, and media elements.
+* Ensure no component exceeds viewport width.
+* Fix all overflow-x issues.
+* Apply box-sizing: border-box globally.
+* Use responsive flexbox/grid layouts.
+* Add proper spacing, padding, and margins for mobile screens.
+* Ensure all text wraps correctly and never overflows containers.
+* Make all buttons touch-friendly (minimum height 44px).
+* Make all input fields, dropdowns, and textareas responsive.
+* Test responsiveness on Android and iPhone screen sizes.
+* Maintain smooth vertical scrolling.
+* Remove any unnecessary horizontal scrollbars from all pages.
+
+1. EXERCISE LIBRARY PAGE
+
+Issues:
+
+* Stats section is overflowing.
+* Bottom section of Exercise GIFs page is overflowing.
+* Layout breaks on mobile.
+
+Tasks:
+
+* Fix overflow in stats section.
+* Fix overflow in exercise GIF card layouts.
+* Make exercise cards stack properly on smaller screens.
+* Ensure GIFs scale responsively.
+* Ensure all sections fit within viewport width.
+* Improve mobile spacing and readability.
+* Make the entire Exercise Library page fully responsive.
+
+2. HAMBURGER MENU / MOBILE NAVIGATION
+
+Issues:
+
+* Hamburger menu is not responsive.
+* App features do not display properly when menu is opened.
+
+Tasks:
+
+* Rebuild mobile navigation for screens below 768px.
+* Ensure hamburger menu opens and closes correctly.
+* Ensure all navigation items are visible and clickable.
+* Prevent menu overflow.
+* Add smooth open/close animations.
+* Make menu fully touch-friendly.
+* Ensure menu overlays correctly without breaking page layout.
+* Verify all app feature links work correctly on mobile devices.
+
+3. BMI CALCULATOR PAGE
+
+Issues:
+
+* Text is overflowing.
+* Placeholders are overflowing.
+* Input fields overflow on mobile devices.
+
+Tasks:
+
+* Make BMI Calculator fully responsive.
+* Ensure headings wrap properly.
+* Make all input fields full-width on mobile.
+* Fix placeholder overflow issues.
+* Stack form elements vertically.
+* Improve spacing between fields.
+* Ensure result cards render properly on small screens.
+* Remove horizontal scrolling completely.
+
+4. WORKOUT PLANNER PAGE
+
+Issues:
+
+* Overflow issues.
+* Horizontal scrolling exists.
+
+Tasks:
+
+* Remove all horizontal scrolling.
+* Make planner layout responsive.
+* Stack content vertically on smaller screens.
+* Ensure all cards resize correctly.
+* Make forms and planner controls responsive.
+* Fix any container width issues.
+* Ensure all content remains visible without zooming.
+
+5. CALORIE TRACKER FUNCTIONAL BUG
+
+Issue:
+
+* Daily calorie goal only works around 2000 calories.
+* Values above or below 2000 are not handled correctly.
+
+Tasks:
+
+* Debug calorie goal calculation logic.
+* Allow any realistic calorie target value.
+* Verify values such as:
+
+  * 1200
+  * 1500
+  * 1800
+  * 2200
+  * 2500
+  * 3000
+  * 3500
+  * 4000
+* Ensure progress calculations update dynamically.
+* Ensure percentage calculations remain accurate.
+
+6. CALORIE TRACKER RESPONSIVENESS
+
+Issues:
+
+* Overflow.
+* Horizontal scrolling.
+* Layout breaks on mobile.
+
+Tasks:
+
+* Make Calorie Tracker fully responsive.
+* Stack dashboard cards vertically.
+* Ensure charts resize automatically.
+* Ensure all inputs, buttons, and progress indicators fit mobile screens.
+* Remove all overflow issues.
+* Improve spacing and readability.
+
+7. WORKOUT TRACKER PAGE
+
+Issues:
+
+* Not responsive on mobile.
+* Input fields do not align properly.
+
+Tasks:
+
+* Make Workout Tracker fully responsive.
+* Ensure all input fields appear correctly while vertically scrolling.
+* Stack forms vertically on mobile.
+* Fix card widths.
+* Ensure workout entries render cleanly on smaller screens.
+* Remove horizontal scrolling.
+* Improve mobile usability.
+
+8. WEIGHT TRACKING PAGE
+
+Issues:
+
+* Weight tracking graph is not responsive.
+* Components do not align correctly on mobile.
+
+Tasks:
+
+* Make weight tracking chart fully responsive.
+* Resize chart dynamically based on viewport width.
+* Stack all components vertically.
+* Ensure graph never overflows its container.
+* Ensure statistics cards remain readable on small screens.
+* Improve spacing and alignment throughout the page.
+
+9. EMAIL SUBSCRIPTION / EMAIL ENTRY SECTION
+
+Issues:
+
+* Email input section looks odd.
+* Placeholder alignment issues.
+* Not responsive.
+
+Tasks:
+
+* Redesign email subscription section for mobile devices.
+* Make email input full-width.
+* Fix placeholder alignment.
+* Ensure submit button aligns correctly.
+* Improve spacing, padding, and typography.
+* Ensure section looks professional on mobile screens.
+
+FINAL RESPONSIVE AUDIT
+
+After implementing all fixes:
+
+* Scan the entire application for any remaining overflow-x issues.
+* Remove every horizontal scrollbar.
+* Verify responsiveness on:
+
+  * 320px
+  * 375px
+  * 390px
+  * 414px
+  * 768px
+* Ensure every page is mobile-first and fully responsive.
+* Preserve existing functionality while improving responsiveness.
+* Provide a summary of all files modified and all issues fixed.

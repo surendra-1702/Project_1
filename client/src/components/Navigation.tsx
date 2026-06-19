@@ -121,7 +121,7 @@ export default function Navigation() {
                   <Menu className="h-6 w-6" />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="right" className="w-[320px]">
+              <SheetContent side="right" className="w-[min(320px,85vw)]">
                 <div className="flex flex-col space-y-2 mt-8">
                   <div className="mb-4">
                     <h2 className="text-lg font-semibold text-gray-900 px-3">Navigation</h2>

@@ -273,8 +273,8 @@ export default function ExerciseCard({ exercise, onAddToWorkout, onViewDetails }
         </div>
       </div>
       
-      <CardContent className="p-6">
-        <h3 className="font-semibold text-lg mb-2 line-clamp-2">
+      <CardContent className="p-3 sm:p-6">
+        <h3 className="font-semibold text-base sm:text-lg mb-2 line-clamp-2">
           {exercise.name || 'Unknown Exercise'}
         </h3>
         

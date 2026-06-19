@@ -55,6 +55,13 @@ export default function CalorieCounter() {
   
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [dailyCalorieGoal, setDailyCalorieGoal] = useState(user?.dailyCalorieGoal || 2000);
+
+  useEffect(() => {
+    if (user?.dailyCalorieGoal) {
+      setDailyCalorieGoal(user.dailyCalorieGoal);
+    }
+  }, [user?.dailyCalorieGoal]);
+
   const [showGoalDialog, setShowGoalDialog] = useState(false);
   const [showFoodDialog, setShowFoodDialog] = useState(false);
   
@@ -313,7 +320,7 @@ export default function CalorieCounter() {
     return groups;
   }, {});
 
-  const currentGoal = user?.dailyCalorieGoal || dailyCalorieGoal;
+  const currentGoal = dailyCalorieGoal || user?.dailyCalorieGoal || 2000;
   const caloriesRemaining = currentGoal - dailyTotals.calories;
   const caloriesProgress = Math.min((dailyTotals.calories / currentGoal) * 100, 100);
 
@@ -656,14 +663,15 @@ export default function CalorieCounter() {
                     {mealGroups[key]?.length > 0 ? (
                       <div className="space-y-3">
                         {mealGroups[key].map((entry: FoodEntry) => (
-                          <div key={entry.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                            <div className="flex-1">
-                              <div className="font-medium">{entry.foodName}</div>
-                              <div className="text-sm text-gray-600">
-                                {entry.serving} • {entry.calories} calories
-                                {entry.protein && ` • ${entry.protein}g protein`}
-                                {entry.carbs && ` • ${entry.carbs}g carbs`}
-                                {entry.fat && ` • ${entry.fat}g fat`}
+                          <div key={entry.id} className="flex items-start justify-between gap-2 p-3 bg-gray-50 rounded-lg">
+                            <div className="flex-1 min-w-0">
+                              <div className="font-medium truncate">{entry.foodName}</div>
+                              <div className="text-sm text-gray-600 flex flex-wrap gap-x-2">
+                                <span>{entry.serving}</span>
+                                <span>{entry.calories} cal</span>
+                                {entry.protein ? <span>{entry.protein}g protein</span> : null}
+                                {entry.carbs ? <span>{entry.carbs}g carbs</span> : null}
+                                {entry.fat ? <span>{entry.fat}g fat</span> : null}
                               </div>
                             </div>
                             <Button

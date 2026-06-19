@@ -226,10 +226,10 @@ export default function BMICalculator() {
                                 style={{ left: getBMIPosition(result.bmi) }}
                               ></div>
                             </div>
-                            <div className="flex justify-between text-xs text-gray-600 mt-1">
-                              <span>Underweight</span>
+                            <div className="flex justify-between text-[10px] sm:text-xs text-gray-600 mt-1">
+                              <span>Under</span>
                               <span>Normal</span>
-                              <span>Overweight</span>
+                              <span>Over</span>
                               <span>Obese</span>
                             </div>
                           </div>
@@ -239,51 +239,51 @@ export default function BMICalculator() {
                       {/* Calorie Recommendations */}
                       <div className="space-y-4">
                         <Card className="bg-red-50 border-red-200">
-                          <CardContent className="p-4">
-                            <div className="flex items-center justify-between">
-                              <div>
-                                <h4 className="font-semibold text-red-800">Weight Loss</h4>
-                                <p className="text-sm text-red-600">Lose 0.5-1 kg/week</p>
+                          <CardContent className="p-3 sm:p-4">
+                            <div className="flex items-center justify-between gap-2">
+                              <div className="min-w-0">
+                                <h4 className="font-semibold text-red-800 text-sm sm:text-base">Weight Loss</h4>
+                                <p className="text-xs sm:text-sm text-red-600">Lose 0.5-1 kg/week</p>
                               </div>
-                              <div className="text-right">
-                                <div className="text-2xl font-bold text-red-700">
+                              <div className="text-right shrink-0">
+                                <div className="text-xl sm:text-2xl font-bold text-red-700">
                                   {result.recommendations.weightLoss.toLocaleString()}
                                 </div>
-                                <div className="text-sm text-red-600">calories/day</div>
+                                <div className="text-xs sm:text-sm text-red-600">cal/day</div>
                               </div>
                             </div>
                           </CardContent>
                         </Card>
 
                         <Card className="bg-green-50 border-green-200">
-                          <CardContent className="p-4">
-                            <div className="flex items-center justify-between">
-                              <div>
-                                <h4 className="font-semibold text-green-800">Maintain Weight</h4>
-                                <p className="text-sm text-green-600">Current weight maintenance</p>
+                          <CardContent className="p-3 sm:p-4">
+                            <div className="flex items-center justify-between gap-2">
+                              <div className="min-w-0">
+                                <h4 className="font-semibold text-green-800 text-sm sm:text-base">Maintain Weight</h4>
+                                <p className="text-xs sm:text-sm text-green-600">Current maintenance</p>
                               </div>
-                              <div className="text-right">
-                                <div className="text-2xl font-bold text-green-700">
+                              <div className="text-right shrink-0">
+                                <div className="text-xl sm:text-2xl font-bold text-green-700">
                                   {result.recommendations.maintenance.toLocaleString()}
                                 </div>
-                                <div className="text-sm text-green-600">calories/day</div>
+                                <div className="text-xs sm:text-sm text-green-600">cal/day</div>
                               </div>
                             </div>
                           </CardContent>
                         </Card>
 
                         <Card className="bg-blue-50 border-blue-200">
-                          <CardContent className="p-4">
-                            <div className="flex items-center justify-between">
-                              <div>
-                                <h4 className="font-semibold text-blue-800">Weight Gain</h4>
-                                <p className="text-sm text-blue-600">Gain 0.25-0.5 kg/week</p>
+                          <CardContent className="p-3 sm:p-4">
+                            <div className="flex items-center justify-between gap-2">
+                              <div className="min-w-0">
+                                <h4 className="font-semibold text-blue-800 text-sm sm:text-base">Weight Gain</h4>
+                                <p className="text-xs sm:text-sm text-blue-600">Gain 0.25-0.5 kg/week</p>
                               </div>
-                              <div className="text-right">
-                                <div className="text-2xl font-bold text-blue-700">
+                              <div className="text-right shrink-0">
+                                <div className="text-xl sm:text-2xl font-bold text-blue-700">
                                   {result.recommendations.weightGain.toLocaleString()}
                                 </div>
-                                <div className="text-sm text-blue-600">calories/day</div>
+                                <div className="text-xs sm:text-sm text-blue-600">cal/day</div>
                               </div>
                             </div>
                           </CardContent>
