@@ -3,8 +3,8 @@ import { createServer, type Server } from "http";
 import fs from 'fs';
 import path from 'path';
 import { storage } from "./storage-local";
-// Removed external exercise API - using local exercise data
 import { DeepSeekService } from "./services/deepseekService";
+import { sendWelcomeEmail } from "./services/emailService";
 
 const deepseekService = new DeepSeekService();
 import { foodApiService } from "./services/foodApi";
@@ -97,6 +97,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Generate JWT token
       const token = generateToken(user.id, user.username, user.email, user.role || 'user');
 
+      // Send welcome email (non-blocking — registration succeeds even if email fails)
+      sendWelcomeEmail({
+        email: user.email,
+        firstName: user.firstName || undefined,
+        username: user.username,
+      }).catch((err) => console.error('[Email] Unexpected error in welcome email:', err));
+
       // Don't send password in response
       const { password, ...userWithoutPassword } = user;
       
@@ -114,7 +121,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { email, password } = req.body;
       
-      const user = await storage.getUserByEmail(email);
+      // Input validation
+      if (!email || typeof email !== 'string' || !email.includes('@')) {
+        return res.status(400).json({ message: "Valid email is required" });
+      }
+      if (!password || typeof password !== 'string' || password.length < 1) {
+        return res.status(400).json({ message: "Password is required" });
+      }
+
+      const user = await storage.getUserByEmail(email.toLowerCase().trim());
       if (!user) {
         return res.status(401).json({ message: "Invalid email or password" });
       }

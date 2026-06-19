@@ -8,7 +8,6 @@ import { Search, Loader2 } from 'lucide-react';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import ExerciseCard from '@/components/ExerciseCard';
-import { useToast } from '@/hooks/use-toast';
 
 const bodyParts = [
   { name: 'chest', icon: '💪', gradient: 'bg-gradient-to-br from-red-500 to-red-700' },
@@ -46,7 +45,6 @@ interface ExerciseGif {
 export default function Exercises() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedBodyPart, setSelectedBodyPart] = useState('');
-  const { toast } = useToast();
 
   // Fetch exercise GIFs based on selected body part or search
   const { data: exerciseGifs = [], isLoading: exercisesLoading } = useQuery({
@@ -123,20 +121,6 @@ export default function Exercises() {
   const handleBodyPartFilter = (bodyPart: string) => {
     setSelectedBodyPart(bodyPart);
     setSearchQuery('');
-  };
-
-  const handleAddToWorkout = (exercise: Exercise) => {
-    toast({
-      title: "Exercise Added",
-      description: `${exercise.name} has been added to your workout plan`,
-    });
-  };
-
-  const handleViewDetails = (exercise: Exercise) => {
-    toast({
-      title: "Exercise Details",
-      description: `Viewing details for ${exercise.name}`,
-    });
   };
 
   return (
@@ -234,22 +218,10 @@ export default function Exercises() {
           ) : exercises.length === 0 ? (
             <div className="text-center py-12">
               <div className="text-gray-500 mb-4">
-                {searchQuery || selectedBodyPart ? 
-                  'No exercise GIFs found matching your criteria. Add GIF files to the exercise-gifs folders to see them here.' : 
-                  'Search for exercises or select a muscle group to view available exercise GIFs'
-                }
+                {searchQuery || selectedBodyPart
+                  ? 'No exercises found matching your criteria. Try a different search or muscle group.'
+                  : 'Search for exercises or select a muscle group above to get started.'}
               </div>
-              {!searchQuery && !selectedBodyPart && (
-                <div className="bg-blue-50 p-6 rounded-lg max-w-2xl mx-auto">
-                  <h3 className="font-semibold text-blue-900 mb-3">🏗️ How to Add Exercise GIFs</h3>
-                  <div className="text-sm text-blue-800 space-y-2">
-                    <p>• Upload GIF files to the muscle group folders in <code className="bg-blue-100 px-1 rounded">public/exercise-gifs/</code></p>
-                    <p>• Use naming format: <code className="bg-blue-100 px-1 rounded">exercise-name-variation.gif</code></p>
-                    <p>• Example: <code className="bg-blue-100 px-1 rounded">push-up-standard.gif</code> in the <code className="bg-blue-100 px-1 rounded">chest/</code> folder</p>
-                    <p>• Currently showing placeholder demonstrations until real GIFs are added</p>
-                  </div>
-                </div>
-              )}
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 mb-8 sm:mb-12">
@@ -257,8 +229,6 @@ export default function Exercises() {
                 <ExerciseCard
                   key={exercise.id}
                   exercise={exercise}
-                  onAddToWorkout={handleAddToWorkout}
-                  onViewDetails={handleViewDetails}
                 />
               ))}
             </div>

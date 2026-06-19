@@ -1,0 +1,156 @@
+You are a senior React, Node.js, deployment, and system architecture engineer. Implement the following changes throughout the application while preserving existing functionality.
+
+1. EXERCISE GIFS PAGE CLEANUP
+
+Tasks:
+
+* Remove the "Add to Plan" button from all exercise GIF cards.
+* Remove any associated functionality related to the Add to Plan feature.
+* Remove the entire "How to Add GIFs" section located at the bottom of the Exercise GIFs page.
+* Remove any unused components, imports, hooks, state variables, and API calls related to these features.
+* Ensure page layout remains clean and responsive after removal.
+
+2. ADMIN DASHBOARD NAVIGATION FIX
+
+Issue:
+
+* Users cannot navigate back to the homepage after entering the Admin Dashboard.
+
+Tasks:
+
+* Add a visible "Back to Home" button in the Admin Dashboard header.
+* Add a Home icon and proper navigation routing.
+* Ensure navigation works correctly using React Router.
+* Verify navigation works on desktop and mobile devices.
+* Prevent navigation dead ends anywhere in the application.
+* Ensure browser back button also functions correctly.
+
+3. SIGNUP WELCOME EMAIL SYSTEM
+
+Requirement:
+
+When a new user signs up, automatically send a welcome email.
+
+Tasks:
+
+* Implement automatic email sending after successful registration.
+* Use a production-ready email service such as:
+
+  * Resend (preferred)
+  * SendGrid
+  * Nodemailer with SMTP
+* Store credentials securely using environment variables.
+* Create a professional welcome email template.
+
+Email Content:
+
+Subject:
+Welcome to [App Name]
+
+Body:
+
+* Thank user for joining.
+* Briefly explain app features.
+* Encourage them to start tracking workouts, calories, BMI, and progress.
+* Include branding and clean formatting.
+* Ensure email works on Gmail, Outlook, and mobile email clients.
+
+Requirements:
+
+* Prevent duplicate emails.
+* Handle email delivery failures gracefully.
+* Registration should still succeed even if email sending temporarily fails.
+* Add proper logging.
+
+4. VERCEL DEPLOYMENT READINESS
+
+Make the entire project production-ready for deployment on Vercel.
+
+Tasks:
+
+* Fix all build errors.
+* Fix all TypeScript errors if present.
+* Remove unused dependencies.
+* Ensure environment variables are properly configured.
+* Ensure routes work correctly after deployment.
+* Fix client-side routing issues.
+* Create or update:
+
+  * vercel.json
+  * environment configuration
+  * build scripts
+* Verify successful production build.
+* Ensure application deploys without warnings or errors.
+
+5. MULTI-USER SCALABILITY AND STABILITY
+
+Optimize the application so it can safely handle multiple concurrent users.
+
+Tasks:
+
+Frontend:
+
+* Prevent unnecessary re-renders.
+* Optimize React state management.
+* Implement lazy loading where appropriate.
+* Optimize large component rendering.
+
+Backend:
+
+* Ensure API endpoints are stateless.
+* Improve request handling.
+* Add proper error handling.
+* Prevent server crashes from invalid requests.
+* Validate all user inputs.
+* Prevent memory leaks.
+
+Database:
+
+* Optimize queries.
+* Add indexing where necessary.
+* Prevent duplicate records.
+* Ensure concurrent user operations do not cause data corruption.
+
+Security:
+
+* Validate inputs.
+* Sanitize user data.
+* Protect sensitive routes.
+* Secure environment variables.
+
+Performance:
+
+* Enable code splitting.
+* Optimize bundle size.
+* Compress responses where applicable.
+* Optimize API response times.
+
+Reliability:
+
+* Ensure one user's actions cannot affect another user's data.
+* Prevent application crashes during simultaneous usage.
+* Handle high numbers of concurrent requests gracefully.
+
+6. FINAL QUALITY ASSURANCE
+
+Perform a complete application audit and verify:
+
+* Homepage works correctly.
+* Admin Dashboard navigation works.
+* Signup email works.
+* Exercise GIF page works after cleanup.
+* Mobile responsiveness remains intact.
+* No horizontal scrolling exists.
+* No broken routes exist.
+* No console errors exist.
+* Vercel deployment succeeds.
+* Application remains stable with multiple active users.
+
+At completion provide:
+
+* List of files modified.
+* Features removed.
+* Features added.
+* Deployment changes made.
+* Scalability improvements implemented.
+* Any remaining recommendations.

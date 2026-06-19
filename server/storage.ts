@@ -692,7 +692,9 @@ export class MemStorage implements IStorage {
     const plan: WorkoutPlan = { 
       ...insertPlan, 
       id, 
-      createdAt: new Date() 
+      createdAt: new Date(),
+      description: insertPlan.description ?? null,
+      isActive: insertPlan.isActive ?? null,
     };
     this.workoutPlans.set(id, plan);
     return plan;
@@ -727,7 +729,14 @@ export class MemStorage implements IStorage {
 
   async createWorkoutSession(insertSession: InsertWorkoutSession): Promise<WorkoutSession> {
     const id = this.currentId++;
-    const session: WorkoutSession = { ...insertSession, id };
+    const session: WorkoutSession = { 
+      ...insertSession, 
+      id,
+      duration: insertSession.duration ?? null,
+      notes: insertSession.notes ?? null,
+      planId: insertSession.planId ?? null,
+      completed: insertSession.completed ?? null,
+    };
     this.workoutSessions.set(id, session);
     return session;
   }
@@ -757,7 +766,13 @@ export class MemStorage implements IStorage {
 
   async createFoodEntry(insertEntry: InsertFoodEntry): Promise<FoodEntry> {
     const id = this.currentId++;
-    const entry: FoodEntry = { ...insertEntry, id };
+    const entry: FoodEntry = { 
+      ...insertEntry, 
+      id,
+      protein: insertEntry.protein ?? null,
+      carbs: insertEntry.carbs ?? null,
+      fat: insertEntry.fat ?? null,
+    };
     this.foodEntries.set(id, entry);
     return entry;
   }
@@ -845,7 +860,9 @@ export class MemStorage implements IStorage {
     const session: WorkoutTrackerSession = { 
       ...insertSession, 
       id,
-      createdAt: new Date()
+      createdAt: new Date(),
+      totalDuration: insertSession.totalDuration ?? null,
+      notes: insertSession.notes ?? null,
     };
     this.workoutTrackerSessions.set(id, session);
     return session;
@@ -880,14 +897,10 @@ export class MemStorage implements IStorage {
       // Handle both old format (single exercise) and new format (multiple exercises)
       if (session.exercises && Array.isArray(session.exercises)) {
         // New format with multiple exercises
-        session.exercises.forEach((exercise: any) => {
-          sessionSets += exercise.sets;
-          sessionReps += exercise.sets * exercise.reps;
+        (session.exercises as any[]).forEach((exercise: any) => {
+          sessionSets += exercise.sets ?? 0;
+          sessionReps += (exercise.sets ?? 0) * (exercise.reps ?? exercise.repsPerSet ?? 0);
         });
-      } else if (session.sets && session.repsPerSet) {
-        // Old format with single exercise
-        sessionSets = session.sets;
-        sessionReps = session.sets * session.repsPerSet;
       }
       
       return {
@@ -916,7 +929,9 @@ export class MemStorage implements IStorage {
     const entry: WeightEntry = { 
       ...insertEntry, 
       id,
-      createdAt: new Date()
+      createdAt: new Date(),
+      notes: insertEntry.notes ?? null,
+      goalWeight: insertEntry.goalWeight ?? null,
     };
     this.weightEntries.set(id, entry);
     return entry;

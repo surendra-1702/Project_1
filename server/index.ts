@@ -4,8 +4,19 @@ import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 
 const app = express();
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+
+// Body size limits to prevent abuse
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: false, limit: '10mb' }));
+
+// Security headers
+app.use((_req: Request, res: Response, next: NextFunction) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'SAMEORIGIN');
+  res.setHeader('X-XSS-Protection', '1; mode=block');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  next();
+});
 
 app.use((req, res, next) => {
   const start = Date.now();
@@ -44,8 +55,30 @@ app.use((req, res, next) => {
     const status = err.status || err.statusCode || 500;
     const message = err.message || "Internal Server Error";
 
-    res.status(status).json({ message });
-    throw err;
+    // Log detailed error server-side, but don't expose internals in production
+    if (process.env.NODE_ENV !== 'production') {
+      console.error('[Error]', err);
+    } else {
+      console.error(`[Error] ${status} - ${message}`);
+    }
+
+    if (!res.headersSent) {
+      res.status(status).json({ 
+        message: status >= 500 && process.env.NODE_ENV === 'production' 
+          ? 'Internal Server Error' 
+          : message 
+      });
+    }
+  });
+
+  // Handle unhandled promise rejections to prevent crashes
+  process.on('unhandledRejection', (reason) => {
+    console.error('[UnhandledRejection]', reason);
+  });
+
+  process.on('uncaughtException', (err) => {
+    console.error('[UncaughtException]', err);
+    // Don't exit — allow the server to continue serving other requests
   });
 
   // Serve static files from public directory (including exercise-gifs)

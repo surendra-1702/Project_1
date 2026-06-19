@@ -14,7 +14,7 @@ export const isAuthenticated = (): boolean => {
   return !!getAuthToken();
 };
 
-export const getAuthHeaders = () => {
+export const getAuthHeaders = (): Record<string, string> => {
   const token = getAuthToken();
-  return token ? { 'Authorization': `Bearer ${token}` } : {};
+  return token ? { Authorization: `Bearer ${token}` } : {};
 };

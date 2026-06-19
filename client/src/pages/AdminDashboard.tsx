@@ -1,7 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
+import { Link } from "wouter";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Users, UserCheck, TrendingUp, Clock } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Users, UserCheck, TrendingUp, Clock, Home, ArrowLeft } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 
 interface AdminStats {
@@ -56,8 +58,14 @@ export default function AdminDashboard() {
           <CardHeader>
             <CardTitle className="text-red-500">Access Denied</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-4">
             <p>You don't have permission to access the admin dashboard.</p>
+            <Link href="/">
+              <Button className="w-full">
+                <Home className="h-4 w-4 mr-2" />
+                Back to Home
+              </Button>
+            </Link>
           </CardContent>
         </Card>
       </div>
@@ -67,7 +75,16 @@ export default function AdminDashboard() {
   if (statsLoading || usersLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="text-lg">Loading admin dashboard...</div>
+        <div className="text-center space-y-4">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+          <div className="text-lg text-gray-600">Loading admin dashboard...</div>
+          <Link href="/">
+            <Button variant="outline" size="sm">
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to Home
+            </Button>
+          </Link>
+        </div>
       </div>
     );
   }
@@ -96,10 +113,18 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold">Admin Dashboard</h1>
-        <Badge variant="outline">Admin View</Badge>
+    <div className="container mx-auto p-4 sm:p-6 space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <Link href="/">
+            <Button variant="outline" size="sm">
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to Home
+            </Button>
+          </Link>
+          <h1 className="text-2xl sm:text-3xl font-bold">Admin Dashboard</h1>
+        </div>
+        <Badge variant="outline" className="self-start sm:self-auto">Admin View</Badge>
       </div>
 
       {/* Stats Overview */}

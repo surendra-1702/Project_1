@@ -1,0 +1,3 @@
+- [Email service setup](email-service.md) — nodemailer installed; graceful no-op when SMTP env vars absent; registration sends non-blocking welcome email.
+- [Production build verification](build-notes.md) — `npm run build` uses esbuild+Vite (not tsc); pre-existing TS errors don't block the build; always run build to confirm deployability.
+- [Storage null-safety pattern](storage-null-safety.md) — MemStorage create methods must use `?? null` for optional fields to satisfy schema types (spread leaves optionals as `undefined`, schema expects `null`).
