@@ -1,0 +1,226 @@
+23:07:38.260 Running build in Washington, D.C., USA (East) – iad1
+23:07:38.261 Build machine configuration: 2 cores, 8 GB
+23:07:38.376 Cloning github.com/surendra-1702/Project_1 (Branch: main, Commit: e4c98bf)
+23:07:40.422 Cloning completed: 2.046s
+23:07:40.512 Restored build cache from previous deployment (E3ABwkvik68CZkSqfJ3dJhHmQDoz)
+23:07:40.728 Running "vercel build"
+23:07:40.749 Vercel CLI 54.18.2
+23:07:42.152 Running "install" command: `npm install --include=dev`...
+23:07:47.061 
+23:07:47.061 up to date, audited 530 packages in 5s
+23:07:47.062 
+23:07:47.062 68 packages are looking for funding
+23:07:47.062   run `npm fund` for details
+23:07:47.100 
+23:07:47.101 28 vulnerabilities (3 low, 12 moderate, 12 high, 1 critical)
+23:07:47.101 
+23:07:47.102 To address issues that do not require attention, run:
+23:07:47.102   npm audit fix
+23:07:47.102 
+23:07:47.103 To address all issues (including breaking changes), run:
+23:07:47.103   npm audit fix --force
+23:07:47.103 
+23:07:47.104 Run `npm audit` for details.
+23:07:48.870 
+23:07:48.870 up to date, audited 530 packages in 2s
+23:07:48.871 
+23:07:48.871 68 packages are looking for funding
+23:07:48.872   run `npm fund` for details
+23:07:48.930 
+23:07:48.931 28 vulnerabilities (3 low, 12 moderate, 12 high, 1 critical)
+23:07:48.931 
+23:07:48.932 To address issues that do not require attention, run:
+23:07:48.932   npm audit fix
+23:07:48.932 
+23:07:48.932 To address all issues (including breaking changes), run:
+23:07:48.933   npm audit fix --force
+23:07:48.933 
+23:07:48.933 Run `npm audit` for details.
+23:07:49.037 
+23:07:49.037 > rest-express@1.0.0 build
+23:07:49.038 > vite build && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist
+23:07:49.038 
+23:07:49.280 vite v5.4.19 building for production...
+23:07:49.397 transforming...
+23:07:49.724 Browserslist: browsers data (caniuse-lite) is 20 months old. Please run:
+23:07:49.724   npx update-browserslist-db@latest
+23:07:49.724   Why you should do it regularly: https://github.com/browserslist/update-db#readme
+23:07:56.346 ✓ 2833 modules transformed.
+23:07:56.925 rendering chunks...
+23:07:56.941 computing gzip size...
+23:07:56.969 ../dist/public/index.html                   0.91 kB │ gzip:   0.51 kB
+23:07:56.969 ../dist/public/assets/index-70JGE-AA.css   82.23 kB │ gzip:  13.96 kB
+23:07:56.970 ../dist/public/assets/index-p8-taGGl.js   876.18 kB │ gzip: 248.63 kB
+23:07:56.970 
+23:07:56.970 (!) Some chunks are larger than 500 kB after minification. Consider:
+23:07:56.970 - Using dynamic import() to code-split the application
+23:07:56.970 - Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+23:07:56.971 - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+23:07:56.971 ✓ built in 7.60s
+23:07:57.054 
+23:07:57.055   dist/index.js  88.7kb
+23:07:57.055 
+23:07:57.055 ⚡ Done in 16ms
+23:07:57.110 Installing dependencies...
+23:07:57.941 
+23:07:57.941 up to date in 760ms
+23:07:57.942 
+23:07:57.942 68 packages are looking for funding
+23:07:57.942   run `npm fund` for details
+23:07:58.191 Using TypeScript 5.6.3 (local user-provided)
+23:08:05.051 server/routes.ts(84,64): error TS2345: Argument of type 'string | null | undefined' is not assignable to parameter of type 'string'.
+23:08:05.052   Type 'undefined' is not assignable to type 'string'.
+23:08:05.052 server/routes.ts(98,44): error TS2345: Argument of type 'string | null' is not assignable to parameter of type 'string'.
+23:08:05.053   Type 'null' is not assignable to type 'string'.
+23:08:05.053 server/routes.ts(104,9): error TS2322: Type 'string | null' is not assignable to type 'string'.
+23:08:05.053   Type 'null' is not assignable to type 'string'.
+23:08:05.054 server/routes.ts(143,43): error TS2353: Object literal may only specify known properties, and 'lastLoginAt' does not exist in type 'Partial<{ email: string; password: string; username?: string | null | undefined; firstName?: string | null | undefined; lastName?: string | null | undefined; profileImageUrl?: string | null | undefined; ... 7 more ...; role?: string | undefined; }>'.
+23:08:05.054 server/routes.ts(145,44): error TS2345: Argument of type 'string | null' is not assignable to parameter of type 'string'.
+23:08:05.054   Type 'null' is not assignable to type 'string'.
+23:08:05.054 server/routes.ts(472,51): error TS2345: Argument of type 'string' is not assignable to parameter of type 'never'.
+23:08:05.055 server/routes.ts(546,57): error TS2345: Argument of type 'string' is not assignable to parameter of type 'never'.
+23:08:05.055 server/routes.ts(669,52): error TS2345: Argument of type 'string' is not assignable to parameter of type 'never'.
+23:08:05.055 server/routes.ts(727,64): error TS2345: Argument of type 'string' is not assignable to parameter of type 'never'.
+23:08:05.055 server/routes.ts(767,58): error TS2345: Argument of type 'string' is not assignable to parameter of type 'never'.
+23:08:05.055 server/routes.ts(793,54): error TS2345: Argument of type 'string' is not assignable to parameter of type 'never'.
+23:08:05.056 server/routes.ts(802,62): error TS2345: Argument of type 'string' is not assignable to parameter of type 'never'.
+23:08:05.056 
+23:08:05.151 server/storage-local.ts(24,81): error TS18046: 'error' is of type 'unknown'.
+23:08:05.152 
+23:08:05.176 server/auth.ts(1,17): error TS7016: Could not find a declaration file for module 'jsonwebtoken'. '/vercel/path0/node_modules/jsonwebtoken/index.js' implicitly has an 'any' type.
+23:08:05.176   Try `npm i --save-dev @types/jsonwebtoken` if it exists or add a new declaration (.d.ts) file containing `declare module 'jsonwebtoken';`
+23:08:05.176 server/auth.ts(2,20): error TS7016: Could not find a declaration file for module 'bcrypt'. '/vercel/path0/node_modules/bcrypt/bcrypt.js' implicitly has an 'any' type.
+23:08:05.176   Try `npm i --save-dev @types/bcrypt` if it exists or add a new declaration (.d.ts) file containing `declare module 'bcrypt';`
+23:08:05.176 server/auth.ts(60,7): error TS2322: Type 'string | null' is not assignable to type 'string'.
+23:08:05.177   Type 'null' is not assignable to type 'string'.
+23:08:05.177 
+23:08:05.928 server/storage.ts(173,9): error TS2416: Property 'getWorkoutPlans' in type 'DatabaseStorage' is not assignable to the same property in base type 'IStorage'.
+23:08:05.928   Type '(userId: number) => Promise<{ id: number; createdAt: Date; userId: string; title: string; description: string | null; goal: string; experienceLevel: string; daysPerWeek: number; sessionDuration: number; planData: unknown; isActive: boolean | null; }[]>' is not assignable to type '(userId: string) => Promise<{ id: number; createdAt: Date; userId: string; title: string; description: string | null; goal: string; experienceLevel: string; daysPerWeek: number; sessionDuration: number; planData: unknown; isActive: boolean | null; }[]>'.
+23:08:05.928     Types of parameters 'userId' and 'userId' are incompatible.
+23:08:05.930       Type 'string' is not assignable to type 'number'.
+23:08:05.930 server/storage.ts(176,55): error TS2769: No overload matches this call.
+23:08:05.931   Overload 1 of 3, '(left: PgColumn<{ name: "user_id"; tableName: "workout_plans"; dataType: "string"; columnType: "PgText"; data: string; driverParam: string; notNull: true; hasDefault: false; isPrimaryKey: false; isAutoincrement: false; ... 4 more ...; generated: undefined; }, {}, {}>, right: string | SQLWrapper): SQL<...>', gave the following error.
+23:08:05.931     Argument of type 'number' is not assignable to parameter of type 'string | SQLWrapper'.
+23:08:05.931   Overload 2 of 3, '(left: Aliased<number>, right: number | SQLWrapper): SQL<unknown>', gave the following error.
+23:08:05.936     Argument of type 'PgColumn<{ name: "user_id"; tableName: "workout_plans"; dataType: "string"; columnType: "PgText"; data: string; driverParam: string; notNull: true; hasDefault: false; isPrimaryKey: false; isAutoincrement: false; ... 4 more ...; generated: undefined; }, {}, {}>' is not assignable to parameter of type 'Aliased<number>'.
+23:08:05.936       Type 'PgColumn<{ name: "user_id"; tableName: "workout_plans"; dataType: "string"; columnType: "PgText"; data: string; driverParam: string; notNull: true; hasDefault: false; isPrimaryKey: false; isAutoincrement: false; ... 4 more ...; generated: undefined; }, {}, {}>' is missing the following properties from type 'Aliased<number>': sql, fieldAlias
+23:08:05.936   Overload 3 of 3, '(left: never, right: unknown): SQL<unknown>', gave the following error.
+23:08:05.936     Argument of type 'PgColumn<{ name: "user_id"; tableName: "workout_plans"; dataType: "string"; columnType: "PgText"; data: string; driverParam: string; notNull: true; hasDefault: false; isPrimaryKey: false; isAutoincrement: false; ... 4 more ...; generated: undefined; }, {}, {}>' is not assignable to parameter of type 'never'.
+23:08:05.936 server/storage.ts(210,12): error TS18047: 'result.rowCount' is possibly 'null'.
+23:08:05.937 server/storage.ts(214,9): error TS2416: Property 'getWorkoutSessions' in type 'DatabaseStorage' is not assignable to the same property in base type 'IStorage'.
+23:08:05.937   Type '(userId: number, date?: Date | undefined) => Promise<{ id: number; date: Date; exercises: unknown; userId: string; planId: number | null; completed: boolean | null; duration: number | null; notes: string | null; }[]>' is not assignable to type '(userId: string, date?: Date | undefined) => Promise<{ id: number; date: Date; exercises: unknown; userId: string; planId: number | null; completed: boolean | null; duration: number | null; notes: string | null; }[]>'.
+23:08:05.937     Types of parameters 'userId' and 'userId' are incompatible.
+23:08:05.937       Type 'string' is not assignable to type 'number'.
+23:08:05.937 server/storage.ts(218,26): error TS2769: No overload matches this call.
+23:08:05.937   Overload 1 of 3, '(left: PgColumn<{ name: "user_id"; tableName: "workout_sessions"; dataType: "string"; columnType: "PgText"; data: string; driverParam: string; notNull: true; hasDefault: false; isPrimaryKey: false; isAutoincrement: false; ... 4 more ...; generated: undefined; }, {}, {}>, right: string | SQLWrapper): SQL<...>', gave the following error.
+23:08:05.938     Argument of type 'number' is not assignable to parameter of type 'string | SQLWrapper'.
+23:08:05.938   Overload 2 of 3, '(left: Aliased<number>, right: number | SQLWrapper): SQL<unknown>', gave the following error.
+23:08:05.938     Argument of type 'PgColumn<{ name: "user_id"; tableName: "workout_sessions"; dataType: "string"; columnType: "PgText"; data: string; driverParam: string; notNull: true; hasDefault: false; isPrimaryKey: false; isAutoincrement: false; ... 4 more ...; generated: undefined; }, {}, {}>' is not assignable to parameter of type 'Aliased<number>'.
+23:08:05.938       Type 'PgColumn<{ name: "user_id"; tableName: "workout_sessions"; dataType: "string"; columnType: "PgText"; data: string; driverParam: string; notNull: true; hasDefault: false; isPrimaryKey: false; isAutoincrement: false; ... 4 more ...; generated: undefined; }, {}, {}>' is missing the following properties from type 'Aliased<number>': sql, fieldAlias
+23:08:05.938   Overload 3 of 3, '(left: never, right: unknown): SQL<unknown>', gave the following error.
+23:08:05.941     Argument of type 'PgColumn<{ name: "user_id"; tableName: "workout_sessions"; dataType: "string"; columnType: "PgText"; data: string; driverParam: string; notNull: true; hasDefault: false; isPrimaryKey: false; isAutoincrement: false; ... 4 more ...; generated: undefined; }, {}, {}>' is not assignable to parameter of type 'never'.
+23:08:05.941 server/storage.ts(226,7): error TS2322: Type 'SQL<unknown> | undefined' is not assignable to type 'SQL<unknown>'.
+23:08:05.941   Type 'undefined' is not assignable to type 'SQL<unknown>'.
+23:08:05.941 server/storage.ts(227,9): error TS2769: No overload matches this call.
+23:08:05.941   Overload 1 of 3, '(left: PgColumn<{ name: "user_id"; tableName: "workout_sessions"; dataType: "string"; columnType: "PgText"; data: string; driverParam: string; notNull: true; hasDefault: false; isPrimaryKey: false; isAutoincrement: false; ... 4 more ...; generated: undefined; }, {}, {}>, right: string | SQLWrapper): SQL<...>', gave the following error.
+23:08:05.942     Argument of type 'number' is not assignable to parameter of type 'string | SQLWrapper'.
+23:08:05.942   Overload 2 of 3, '(left: Aliased<number>, right: number | SQLWrapper): SQL<unknown>', gave the following error.
+23:08:05.942     Argument of type 'PgColumn<{ name: "user_id"; tableName: "workout_sessions"; dataType: "string"; columnType: "PgText"; data: string; driverParam: string; notNull: true; hasDefault: false; isPrimaryKey: false; isAutoincrement: false; ... 4 more ...; generated: undefined; }, {}, {}>' is not assignable to parameter of type 'Aliased<number>'.
+23:08:05.942       Type 'PgColumn<{ name: "user_id"; tableName: "workout_sessions"; dataType: "string"; columnType: "PgText"; data: string; driverParam: string; notNull: true; hasDefault: false; isPrimaryKey: false; isAutoincrement: false; ... 4 more ...; generated: undefined; }, {}, {}>' is missing the following properties from type 'Aliased<number>': sql, fieldAlias
+23:08:05.942   Overload 3 of 3, '(left: never, right: unknown): SQL<unknown>', gave the following error.
+23:08:05.943     Argument of type 'PgColumn<{ name: "user_id"; tableName: "workout_sessions"; dataType: "string"; columnType: "PgText"; data: string; driverParam: string; notNull: true; hasDefault: false; isPrimaryKey: false; isAutoincrement: false; ... 4 more ...; generated: undefined; }, {}, {}>' is not assignable to parameter of type 'never'.
+23:08:05.943 server/storage.ts(257,9): error TS2416: Property 'getFoodEntries' in type 'DatabaseStorage' is not assignable to the same property in base type 'IStorage'.
+23:08:05.943   Type '(userId: number, date?: Date | undefined) => Promise<{ id: number; date: Date; userId: string; meal: string; foodName: string; serving: string; calories: number; protein: number | null; carbs: number | null; fat: number | null; }[]>' is not assignable to type '(userId: string, date?: Date | undefined) => Promise<{ id: number; date: Date; userId: string; meal: string; foodName: string; serving: string; calories: number; protein: number | null; carbs: number | null; fat: number | null; }[]>'.
+23:08:05.943     Types of parameters 'userId' and 'userId' are incompatible.
+23:08:05.948       Type 'string' is not assignable to type 'number'.
+23:08:05.948 server/storage.ts(261,26): error TS2769: No overload matches this call.
+23:08:05.949   Overload 1 of 3, '(left: PgColumn<{ name: "user_id"; tableName: "food_entries"; dataType: "string"; columnType: "PgText"; data: string; driverParam: string; notNull: true; hasDefault: false; isPrimaryKey: false; isAutoincrement: false; ... 4 more ...; generated: undefined; }, {}, {}>, right: string | SQLWrapper): SQL<...>', gave the following error.
+23:08:05.950     Argument of type 'number' is not assignable to parameter of type 'string | SQLWrapper'.
+23:08:05.955   Overload 2 of 3, '(left: Aliased<number>, right: number | SQLWrapper): SQL<unknown>', gave the following error.
+23:08:05.956     Argument of type 'PgColumn<{ name: "user_id"; tableName: "food_entries"; dataType: "string"; columnType: "PgText"; data: string; driverParam: string; notNull: true; hasDefault: false; isPrimaryKey: false; isAutoincrement: false; ... 4 more ...; generated: undefined; }, {}, {}>' is not assignable to parameter of type 'Aliased<number>'.
+23:08:05.956       Type 'PgColumn<{ name: "user_id"; tableName: "food_entries"; dataType: "string"; columnType: "PgText"; data: string; driverParam: string; notNull: true; hasDefault: false; isPrimaryKey: false; isAutoincrement: false; ... 4 more ...; generated: undefined; }, {}, {}>' is missing the following properties from type 'Aliased<number>': sql, fieldAlias
+23:08:05.956   Overload 3 of 3, '(left: never, right: unknown): SQL<unknown>', gave the following error.
+23:08:05.956     Argument of type 'PgColumn<{ name: "user_id"; tableName: "food_entries"; dataType: "string"; columnType: "PgText"; data: string; driverParam: string; notNull: true; hasDefault: false; isPrimaryKey: false; isAutoincrement: false; ... 4 more ...; generated: undefined; }, {}, {}>' is not assignable to parameter of type 'never'.
+23:08:05.957 server/storage.ts(269,7): error TS2322: Type 'SQL<unknown> | undefined' is not assignable to type 'SQL<unknown>'.
+23:08:05.957   Type 'undefined' is not assignable to type 'SQL<unknown>'.
+23:08:05.957 server/storage.ts(270,9): error TS2769: No overload matches this call.
+23:08:05.957   Overload 1 of 3, '(left: PgColumn<{ name: "user_id"; tableName: "food_entries"; dataType: "string"; columnType: "PgText"; data: string; driverParam: string; notNull: true; hasDefault: false; isPrimaryKey: false; isAutoincrement: false; ... 4 more ...; generated: undefined; }, {}, {}>, right: string | SQLWrapper): SQL<...>', gave the following error.
+23:08:05.957     Argument of type 'number' is not assignable to parameter of type 'string | SQLWrapper'.
+23:08:05.958   Overload 2 of 3, '(left: Aliased<number>, right: number | SQLWrapper): SQL<unknown>', gave the following error.
+23:08:05.958     Argument of type 'PgColumn<{ name: "user_id"; tableName: "food_entries"; dataType: "string"; columnType: "PgText"; data: string; driverParam: string; notNull: true; hasDefault: false; isPrimaryKey: false; isAutoincrement: false; ... 4 more ...; generated: undefined; }, {}, {}>' is not assignable to parameter of type 'Aliased<number>'.
+23:08:05.958       Type 'PgColumn<{ name: "user_id"; tableName: "food_entries"; dataType: "string"; columnType: "PgText"; data: string; driverParam: string; notNull: true; hasDefault: false; isPrimaryKey: false; isAutoincrement: false; ... 4 more ...; generated: undefined; }, {}, {}>' is missing the following properties from type 'Aliased<number>': sql, fieldAlias
+23:08:05.958   Overload 3 of 3, '(left: never, right: unknown): SQL<unknown>', gave the following error.
+23:08:05.958     Argument of type 'PgColumn<{ name: "user_id"; tableName: "food_entries"; dataType: "string"; columnType: "PgText"; data: string; driverParam: string; notNull: true; hasDefault: false; isPrimaryKey: false; isAutoincrement: false; ... 4 more ...; generated: undefined; }, {}, {}>' is not assignable to parameter of type 'never'.
+23:08:05.958 server/storage.ts(303,12): error TS18047: 'result.rowCount' is possibly 'null'.
+23:08:05.959 server/storage.ts(307,9): error TS2416: Property 'getWorkoutTrackerSessions' in type 'DatabaseStorage' is not assignable to the same property in base type 'IStorage'.
+23:08:05.959   Type '(userId: number, date?: Date | undefined) => Promise<{ id: number; date: Date; createdAt: Date | null; exercises: unknown; userId: string; notes: string | null; workoutName: string; totalDuration: number | null; }[]>' is not assignable to type '(userId: string, date?: Date | undefined) => Promise<{ id: number; date: Date; createdAt: Date | null; exercises: unknown; userId: string; notes: string | null; workoutName: string; totalDuration: number | null; }[]>'.
+23:08:05.959     Types of parameters 'userId' and 'userId' are incompatible.
+23:08:05.959       Type 'string' is not assignable to type 'number'.
+23:08:05.959 server/storage.ts(311,26): error TS2769: No overload matches this call.
+23:08:05.959   Overload 1 of 3, '(left: PgColumn<{ name: "user_id"; tableName: "workout_tracker_sessions"; dataType: "string"; columnType: "PgText"; data: string; driverParam: string; notNull: true; hasDefault: false; isPrimaryKey: false; ... 5 more ...; generated: undefined; }, {}, {}>, right: string | SQLWrapper): SQL<...>', gave the following error.
+23:08:05.960     Argument of type 'number' is not assignable to parameter of type 'string | SQLWrapper'.
+23:08:05.960   Overload 2 of 3, '(left: Aliased<number>, right: number | SQLWrapper): SQL<unknown>', gave the following error.
+23:08:05.960     Argument of type 'PgColumn<{ name: "user_id"; tableName: "workout_tracker_sessions"; dataType: "string"; columnType: "PgText"; data: string; driverParam: string; notNull: true; hasDefault: false; isPrimaryKey: false; ... 5 more ...; generated: undefined; }, {}, {}>' is not assignable to parameter of type 'Aliased<number>'.
+23:08:05.960       Type 'PgColumn<{ name: "user_id"; tableName: "workout_tracker_sessions"; dataType: "string"; columnType: "PgText"; data: string; driverParam: string; notNull: true; hasDefault: false; isPrimaryKey: false; ... 5 more ...; generated: undefined; }, {}, {}>' is missing the following properties from type 'Aliased<number>': sql, fieldAlias
+23:08:05.960   Overload 3 of 3, '(left: never, right: unknown): SQL<unknown>', gave the following error.
+23:08:05.960     Argument of type 'PgColumn<{ name: "user_id"; tableName: "workout_tracker_sessions"; dataType: "string"; columnType: "PgText"; data: string; driverParam: string; notNull: true; hasDefault: false; isPrimaryKey: false; ... 5 more ...; generated: undefined; }, {}, {}>' is not assignable to parameter of type 'never'.
+23:08:05.961 server/storage.ts(319,7): error TS2322: Type 'SQL<unknown> | undefined' is not assignable to type 'SQL<unknown>'.
+23:08:05.961   Type 'undefined' is not assignable to type 'SQL<unknown>'.
+23:08:05.961 server/storage.ts(320,9): error TS2769: No overload matches this call.
+23:08:05.961   Overload 1 of 3, '(left: PgColumn<{ name: "user_id"; tableName: "workout_tracker_sessions"; dataType: "string"; columnType: "PgText"; data: string; driverParam: string; notNull: true; hasDefault: false; isPrimaryKey: false; ... 5 more ...; generated: undefined; }, {}, {}>, right: string | SQLWrapper): SQL<...>', gave the following error.
+23:08:05.961     Argument of type 'number' is not assignable to parameter of type 'string | SQLWrapper'.
+23:08:05.967   Overload 2 of 3, '(left: Aliased<number>, right: number | SQLWrapper): SQL<unknown>', gave the following error.
+23:08:05.968     Argument of type 'PgColumn<{ name: "user_id"; tableName: "workout_tracker_sessions"; dataType: "string"; columnType: "PgText"; data: string; driverParam: string; notNull: true; hasDefault: false; isPrimaryKey: false; ... 5 more ...; generated: undefined; }, {}, {}>' is not assignable to parameter of type 'Aliased<number>'.
+23:08:05.968       Type 'PgColumn<{ name: "user_id"; tableName: "workout_tracker_sessions"; dataType: "string"; columnType: "PgText"; data: string; driverParam: string; notNull: true; hasDefault: false; isPrimaryKey: false; ... 5 more ...; generated: undefined; }, {}, {}>' is missing the following properties from type 'Aliased<number>': sql, fieldAlias
+23:08:05.968   Overload 3 of 3, '(left: never, right: unknown): SQL<unknown>', gave the following error.
+23:08:05.968     Argument of type 'PgColumn<{ name: "user_id"; tableName: "workout_tracker_sessions"; dataType: "string"; columnType: "PgText"; data: string; driverParam: string; notNull: true; hasDefault: false; isPrimaryKey: false; ... 5 more ...; generated: undefined; }, {}, {}>' is not assignable to parameter of type 'never'.
+23:08:05.969 server/storage.ts(353,12): error TS18047: 'result.rowCount' is possibly 'null'.
+23:08:05.969 server/storage.ts(356,9): error TS2416: Property 'getWorkoutTrackerStats' in type 'DatabaseStorage' is not assignable to the same property in base type 'IStorage'.
+23:08:05.969   Type '(userId: number) => Promise<{ totalWorkouts: number; totalSets: number; totalReps: number; }>' is not assignable to type '(userId: string) => Promise<{ totalWorkouts: number; totalSets: number; totalReps: number; }>'.
+23:08:05.969     Types of parameters 'userId' and 'userId' are incompatible.
+23:08:05.969       Type 'string' is not assignable to type 'number'.
+23:08:05.969 server/storage.ts(364,75): error TS2769: No overload matches this call.
+23:08:05.970   Overload 1 of 3, '(left: PgColumn<{ name: "user_id"; tableName: "workout_tracker_sessions"; dataType: "string"; columnType: "PgText"; data: string; driverParam: string; notNull: true; hasDefault: false; isPrimaryKey: false; ... 5 more ...; generated: undefined; }, {}, {}>, right: string | SQLWrapper): SQL<...>', gave the following error.
+23:08:05.970     Argument of type 'number' is not assignable to parameter of type 'string | SQLWrapper'.
+23:08:05.970   Overload 2 of 3, '(left: Aliased<number>, right: number | SQLWrapper): SQL<unknown>', gave the following error.
+23:08:05.970     Argument of type 'PgColumn<{ name: "user_id"; tableName: "workout_tracker_sessions"; dataType: "string"; columnType: "PgText"; data: string; driverParam: string; notNull: true; hasDefault: false; isPrimaryKey: false; ... 5 more ...; generated: undefined; }, {}, {}>' is not assignable to parameter of type 'Aliased<number>'.
+23:08:05.970       Type 'PgColumn<{ name: "user_id"; tableName: "workout_tracker_sessions"; dataType: "string"; columnType: "PgText"; data: string; driverParam: string; notNull: true; hasDefault: false; isPrimaryKey: false; ... 5 more ...; generated: undefined; }, {}, {}>' is missing the following properties from type 'Aliased<number>': sql, fieldAlias
+23:08:05.970   Overload 3 of 3, '(left: never, right: unknown): SQL<unknown>', gave the following error.
+23:08:05.971     Argument of type 'PgColumn<{ name: "user_id"; tableName: "workout_tracker_sessions"; dataType: "string"; columnType: "PgText"; data: string; driverParam: string; notNull: true; hasDefault: false; isPrimaryKey: false; ... 5 more ...; generated: undefined; }, {}, {}>' is not assignable to parameter of type 'never'.
+23:08:05.971 server/storage.ts(387,9): error TS2416: Property 'getWeightEntries' in type 'DatabaseStorage' is not assignable to the same property in base type 'IStorage'.
+23:08:05.971   Type '(userId: number) => Promise<{ id: number; date: Date; weight: number; createdAt: Date | null; userId: string; notes: string | null; goalWeight: number | null; }[]>' is not assignable to type '(userId: string) => Promise<{ id: number; date: Date; weight: number; createdAt: Date | null; userId: string; notes: string | null; goalWeight: number | null; }[]>'.
+23:08:05.971     Types of parameters 'userId' and 'userId' are incompatible.
+23:08:05.971       Type 'string' is not assignable to type 'number'.
+23:08:05.971 server/storage.ts(390,56): error TS2769: No overload matches this call.
+23:08:05.972   Overload 1 of 3, '(left: PgColumn<{ name: "user_id"; tableName: "weight_entries"; dataType: "string"; columnType: "PgText"; data: string; driverParam: string; notNull: true; hasDefault: false; isPrimaryKey: false; isAutoincrement: false; ... 4 more ...; generated: undefined; }, {}, {}>, right: string | SQLWrapper): SQL<...>', gave the following error.
+23:08:05.972     Argument of type 'number' is not assignable to parameter of type 'string | SQLWrapper'.
+23:08:05.972   Overload 2 of 3, '(left: Aliased<number>, right: number | SQLWrapper): SQL<unknown>', gave the following error.
+23:08:05.972     Argument of type 'PgColumn<{ name: "user_id"; tableName: "weight_entries"; dataType: "string"; columnType: "PgText"; data: string; driverParam: string; notNull: true; hasDefault: false; isPrimaryKey: false; isAutoincrement: false; ... 4 more ...; generated: undefined; }, {}, {}>' is not assignable to parameter of type 'Aliased<number>'.
+23:08:05.972       Type 'PgColumn<{ name: "user_id"; tableName: "weight_entries"; dataType: "string"; columnType: "PgText"; data: string; driverParam: string; notNull: true; hasDefault: false; isPrimaryKey: false; isAutoincrement: false; ... 4 more ...; generated: undefined; }, {}, {}>' is missing the following properties from type 'Aliased<number>': sql, fieldAlias
+23:08:05.972   Overload 3 of 3, '(left: never, right: unknown): SQL<unknown>', gave the following error.
+23:08:05.973     Argument of type 'PgColumn<{ name: "user_id"; tableName: "weight_entries"; dataType: "string"; columnType: "PgText"; data: string; driverParam: string; notNull: true; hasDefault: false; isPrimaryKey: false; isAutoincrement: false; ... 4 more ...; generated: undefined; }, {}, {}>' is not assignable to parameter of type 'never'.
+23:08:05.974 server/storage.ts(417,12): error TS18047: 'result.rowCount' is possibly 'null'.
+23:08:05.975 server/storage.ts(420,9): error TS2416: Property 'getLatestWeightEntry' in type 'DatabaseStorage' is not assignable to the same property in base type 'IStorage'.
+23:08:05.975   Type '(userId: number) => Promise<{ id: number; date: Date; weight: number; createdAt: Date | null; userId: string; notes: string | null; goalWeight: number | null; } | undefined>' is not assignable to type '(userId: string) => Promise<{ id: number; date: Date; weight: number; createdAt: Date | null; userId: string; notes: string | null; goalWeight: number | null; } | undefined>'.
+23:08:05.975     Types of parameters 'userId' and 'userId' are incompatible.
+23:08:05.975       Type 'string' is not assignable to type 'number'.
+23:08:05.975 server/storage.ts(423,65): error TS2769: No overload matches this call.
+23:08:05.976   Overload 1 of 3, '(left: PgColumn<{ name: "user_id"; tableName: "weight_entries"; dataType: "string"; columnType: "PgText"; data: string; driverParam: string; notNull: true; hasDefault: false; isPrimaryKey: false; isAutoincrement: false; ... 4 more ...; generated: undefined; }, {}, {}>, right: string | SQLWrapper): SQL<...>', gave the following error.
+23:08:05.976     Argument of type 'number' is not assignable to parameter of type 'string | SQLWrapper'.
+23:08:05.976   Overload 2 of 3, '(left: Aliased<number>, right: number | SQLWrapper): SQL<unknown>', gave the following error.
+23:08:05.976     Argument of type 'PgColumn<{ name: "user_id"; tableName: "weight_entries"; dataType: "string"; columnType: "PgText"; data: string; driverParam: string; notNull: true; hasDefault: false; isPrimaryKey: false; isAutoincrement: false; ... 4 more ...; generated: undefined; }, {}, {}>' is not assignable to parameter of type 'Aliased<number>'.
+23:08:05.976       Type 'PgColumn<{ name: "user_id"; tableName: "weight_entries"; dataType: "string"; columnType: "PgText"; data: string; driverParam: string; notNull: true; hasDefault: false; isPrimaryKey: false; isAutoincrement: false; ... 4 more ...; generated: undefined; }, {}, {}>' is missing the following properties from type 'Aliased<number>': sql, fieldAlias
+23:08:05.976   Overload 3 of 3, '(left: never, right: unknown): SQL<unknown>', gave the following error.
+23:08:05.977     Argument of type 'PgColumn<{ name: "user_id"; tableName: "weight_entries"; dataType: "string"; columnType: "PgText"; data: string; driverParam: string; notNull: true; hasDefault: false; isPrimaryKey: false; isAutoincrement: false; ... 4 more ...; generated: undefined; }, {}, {}>' is not assignable to parameter of type 'never'.
+23:08:05.977 server/storage.ts(515,29): error TS2345: Argument of type '{ id: string; username: string; email: string; password: string; firstName: string; lastName: string; age: null; height: null; weight: null; gender: null; activityLevel: null; fitnessGoal: null; dailyCalorieGoal: null; role: string; lastLoginAt: Date; createdAt: Date; }' is not assignable to parameter of type '{ id: string; username: string | null; email: string; password: string; firstName: string | null; lastName: string | null; profileImageUrl: string | null; age: number | null; height: number | null; ... 8 more ...; updatedAt: Date; }'.
+23:08:05.977   Type '{ id: string; username: string; email: string; password: string; firstName: string; lastName: string; age: null; height: null; weight: null; gender: null; activityLevel: null; fitnessGoal: null; dailyCalorieGoal: null; role: string; lastLoginAt: Date; createdAt: Date; }' is missing the following properties from type '{ id: string; username: string | null; email: string; password: string; firstName: string | null; lastName: string | null; profileImageUrl: string | null; age: number | null; height: number | null; ... 8 more ...; updatedAt: Date; }': profileImageUrl, updatedAt
+23:08:05.977 server/storage.ts(537,28): error TS2345: Argument of type '{ id: string; username: string; email: string; password: string; firstName: string; lastName: string; age: number; height: number; weight: number; gender: string; activityLevel: string; fitnessGoal: string; dailyCalorieGoal: number; role: string; lastLoginAt: Date; createdAt: Date; }' is not assignable to parameter of type '{ id: string; username: string | null; email: string; password: string; firstName: string | null; lastName: string | null; profileImageUrl: string | null; age: number | null; height: number | null; ... 8 more ...; updatedAt: Date; }'.
+23:08:05.977   Type '{ id: string; username: string; email: string; password: string; firstName: string; lastName: string; age: number; height: number; weight: number; gender: string; activityLevel: string; fitnessGoal: string; dailyCalorieGoal: number; role: string; lastLoginAt: Date; createdAt: Date; }' is missing the following properties from type '{ id: string; username: string | null; email: string; password: string; firstName: string | null; lastName: string | null; profileImageUrl: string | null; age: number | null; height: number | null; ... 8 more ...; updatedAt: Date; }': profileImageUrl, updatedAt
+23:08:05.978 server/storage.ts(618,11): error TS2739: Type '{ id: string; createdAt: Date; email: string; password: string; username?: string | null | undefined; firstName?: string | null | undefined; lastName?: string | null | undefined; profileImageUrl?: string | ... 1 more ... | undefined; ... 7 more ...; role?: string | undefined; }' is missing the following properties from type '{ id: string; username: string | null; email: string; password: string; firstName: string | null; lastName: string | null; profileImageUrl: string | null; age: number | null; height: number | null; ... 8 more ...; updatedAt: Date; }': lastLoginAt, updatedAt
+23:08:05.978 server/storage.ts(666,11): error TS2322: Type '{ id: number; name: string; exerciseId: string; bodyPart: string; target: string; equipment: string; createdAt?: Date | null | undefined; gifUrl?: string | null | undefined; instructions?: string[] | ... 1 more ... | undefined; }' is not assignable to type '{ name: string; id: number; createdAt: Date | null; exerciseId: string; bodyPart: string; target: string; equipment: string; gifUrl: string | null; instructions: string[] | null; }'.
+23:08:05.978   Types of property 'createdAt' are incompatible.
+23:08:05.978     Type 'Date | null | undefined' is not assignable to type 'Date | null'.
+23:08:05.978       Type 'undefined' is not assignable to type 'Date | null'.
+23:08:05.978 
+23:08:09.214 Build Completed in /vercel/output [27s]
+23:08:09.499 Deploying outputs...
