@@ -81,7 +81,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "User with this email already exists" });
       }
 
-      const existingUsername = await storage.getUserByUsername(userData.username);
+      const existingUsername = await storage.getUserByUsername(userData.username ?? '');
       if (existingUsername) {
         return res.status(400).json({ message: "Username already taken" });
       }
@@ -95,13 +95,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
 
       // Generate JWT token
-      const token = generateToken(user.id, user.username, user.email, user.role || 'user');
+      const token = generateToken(user.id, user.username ?? '', user.email, user.role || 'user');
 
       // Send welcome email (non-blocking — registration succeeds even if email fails)
       sendWelcomeEmail({
         email: user.email,
         firstName: user.firstName || undefined,
-        username: user.username,
+        username: user.username ?? user.email,
       }).catch((err) => console.error('[Email] Unexpected error in welcome email:', err));
 
       // Don't send password in response
@@ -139,10 +139,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ message: "Invalid email or password" });
       }
 
-      // Update last login time
-      await storage.updateUser(user.id, { lastLoginAt: new Date() });
-
-      const token = generateToken(user.id, user.username, user.email, user.role || 'user');
+      const token = generateToken(user.id, user.username ?? '', user.email, user.role || 'user');
 
       const { password: _, ...userWithoutPassword } = user;
       

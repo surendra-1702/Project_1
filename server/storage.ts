@@ -170,7 +170,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Workout Plan operations
-  async getWorkoutPlans(userId: number): Promise<WorkoutPlan[]> {
+  async getWorkoutPlans(userId: string): Promise<WorkoutPlan[]> {
     const { db } = await import('./db');
     const { eq } = await import('drizzle-orm');
     return await db.select().from(workoutPlans).where(eq(workoutPlans.userId, userId));
@@ -207,30 +207,29 @@ export class DatabaseStorage implements IStorage {
     const { db } = await import('./db');
     const { eq } = await import('drizzle-orm');
     const result = await db.delete(workoutPlans).where(eq(workoutPlans.id, id));
-    return result.rowCount > 0;
+    return (result.rowCount ?? 0) > 0;
   }
 
   // Workout Session operations
-  async getWorkoutSessions(userId: number, date?: Date): Promise<WorkoutSession[]> {
+  async getWorkoutSessions(userId: string, date?: Date): Promise<WorkoutSession[]> {
     const { db } = await import('./db');
     const { eq, and, gte, lt } = await import('drizzle-orm');
-    
-    let whereCondition = eq(workoutSessions.userId, userId);
-    
+
     if (date) {
       const startOfDay = new Date(date);
       startOfDay.setHours(0, 0, 0, 0);
       const endOfDay = new Date(date);
       endOfDay.setHours(23, 59, 59, 999);
-      
-      whereCondition = and(
-        eq(workoutSessions.userId, userId),
-        gte(workoutSessions.date, startOfDay),
-        lt(workoutSessions.date, endOfDay)
+      return await db.select().from(workoutSessions).where(
+        and(
+          eq(workoutSessions.userId, userId),
+          gte(workoutSessions.date, startOfDay),
+          lt(workoutSessions.date, endOfDay)
+        )!
       );
     }
-    
-    return await db.select().from(workoutSessions).where(whereCondition);
+
+    return await db.select().from(workoutSessions).where(eq(workoutSessions.userId, userId));
   }
 
   async createWorkoutSession(insertSession: InsertWorkoutSession): Promise<WorkoutSession> {
@@ -254,26 +253,25 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Food Entry operations
-  async getFoodEntries(userId: number, date?: Date): Promise<FoodEntry[]> {
+  async getFoodEntries(userId: string, date?: Date): Promise<FoodEntry[]> {
     const { db } = await import('./db');
     const { eq, and, gte, lt } = await import('drizzle-orm');
-    
-    let whereCondition = eq(foodEntries.userId, userId);
-    
+
     if (date) {
       const startOfDay = new Date(date);
       startOfDay.setHours(0, 0, 0, 0);
       const endOfDay = new Date(date);
       endOfDay.setHours(23, 59, 59, 999);
-      
-      whereCondition = and(
-        eq(foodEntries.userId, userId),
-        gte(foodEntries.date, startOfDay),
-        lt(foodEntries.date, endOfDay)
+      return await db.select().from(foodEntries).where(
+        and(
+          eq(foodEntries.userId, userId),
+          gte(foodEntries.date, startOfDay),
+          lt(foodEntries.date, endOfDay)
+        )!
       );
     }
-    
-    return await db.select().from(foodEntries).where(whereCondition);
+
+    return await db.select().from(foodEntries).where(eq(foodEntries.userId, userId));
   }
 
   async createFoodEntry(insertEntry: InsertFoodEntry): Promise<FoodEntry> {
@@ -300,30 +298,29 @@ export class DatabaseStorage implements IStorage {
     const { db } = await import('./db');
     const { eq } = await import('drizzle-orm');
     const result = await db.delete(foodEntries).where(eq(foodEntries.id, id));
-    return result.rowCount > 0;
+    return (result.rowCount ?? 0) > 0;
   }
 
   // Workout Tracker operations
-  async getWorkoutTrackerSessions(userId: number, date?: Date): Promise<WorkoutTrackerSession[]> {
+  async getWorkoutTrackerSessions(userId: string, date?: Date): Promise<WorkoutTrackerSession[]> {
     const { db } = await import('./db');
     const { eq, and, gte, lt } = await import('drizzle-orm');
-    
-    let whereCondition = eq(workoutTrackerSessions.userId, userId);
-    
+
     if (date) {
       const startOfDay = new Date(date);
       startOfDay.setHours(0, 0, 0, 0);
       const endOfDay = new Date(date);
       endOfDay.setHours(23, 59, 59, 999);
-      
-      whereCondition = and(
-        eq(workoutTrackerSessions.userId, userId),
-        gte(workoutTrackerSessions.date, startOfDay),
-        lt(workoutTrackerSessions.date, endOfDay)
+      return await db.select().from(workoutTrackerSessions).where(
+        and(
+          eq(workoutTrackerSessions.userId, userId),
+          gte(workoutTrackerSessions.date, startOfDay),
+          lt(workoutTrackerSessions.date, endOfDay)
+        )!
       );
     }
-    
-    return await db.select().from(workoutTrackerSessions).where(whereCondition);
+
+    return await db.select().from(workoutTrackerSessions).where(eq(workoutTrackerSessions.userId, userId));
   }
 
   async createWorkoutTrackerSession(insertSession: InsertWorkoutTrackerSession): Promise<WorkoutTrackerSession> {
@@ -350,10 +347,10 @@ export class DatabaseStorage implements IStorage {
     const { db } = await import('./db');
     const { eq } = await import('drizzle-orm');
     const result = await db.delete(workoutTrackerSessions).where(eq(workoutTrackerSessions.id, id));
-    return result.rowCount > 0;
+    return (result.rowCount ?? 0) > 0;
   }
 
-  async getWorkoutTrackerStats(userId: number): Promise<{
+  async getWorkoutTrackerStats(userId: string): Promise<{
     totalWorkouts: number;
     totalSets: number;
     totalReps: number;
@@ -384,7 +381,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Weight Entry operations
-  async getWeightEntries(userId: number): Promise<WeightEntry[]> {
+  async getWeightEntries(userId: string): Promise<WeightEntry[]> {
     const { db } = await import('./db');
     const { eq, desc } = await import('drizzle-orm');
     return await db.select().from(weightEntries).where(eq(weightEntries.userId, userId)).orderBy(desc(weightEntries.date));
@@ -414,10 +411,10 @@ export class DatabaseStorage implements IStorage {
     const { db } = await import('./db');
     const { eq } = await import('drizzle-orm');
     const result = await db.delete(weightEntries).where(eq(weightEntries.id, id));
-    return result.rowCount > 0;
+    return (result.rowCount ?? 0) > 0;
   }
 
-  async getLatestWeightEntry(userId: number): Promise<WeightEntry | undefined> {
+  async getLatestWeightEntry(userId: string): Promise<WeightEntry | undefined> {
     const { db } = await import('./db');
     const { eq, desc } = await import('drizzle-orm');
     const [entry] = await db.select().from(weightEntries).where(eq(weightEntries.userId, userId)).orderBy(desc(weightEntries.date)).limit(1);

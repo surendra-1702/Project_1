@@ -21,7 +21,7 @@ function createStorage() {
       return new MemStorage();
     }
   } catch (error) {
-    console.error('Failed to connect to database, falling back to MemStorage:', error.message);
+    console.error('Failed to connect to database, falling back to MemStorage:', (error as any).message);
     return new MemStorage();
   }
 }
