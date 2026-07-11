@@ -509,7 +509,7 @@ export class MemStorage implements IStorage {
     };
 
     const adminId = `user_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`;
-    this.users.set(adminId, { ...adminUser, id: adminId });
+    this.users.set(adminId, { ...adminUser, id: adminId, profileImageUrl: null, updatedAt: new Date() });
 
     // Add test user
     const testUser = {
@@ -531,7 +531,7 @@ export class MemStorage implements IStorage {
     };
 
     const testId = `user_${Date.now() + 1}_${Math.random().toString(36).substring(2, 15)}`;
-    this.users.set(testId, { ...testUser, id: testId });
+    this.users.set(testId, { ...testUser, id: testId, profileImageUrl: null, updatedAt: new Date() });
 
     // Add some sample exercises for immediate app functionality
     const sampleExercises = [
@@ -612,11 +612,14 @@ export class MemStorage implements IStorage {
 
   async createUser(insertUser: InsertUser): Promise<User> {
     const id = `user_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`;
-    const user: User = { 
+    const user = { 
       ...insertUser, 
       id, 
-      createdAt: new Date() 
-    };
+      profileImageUrl: insertUser.profileImageUrl ?? null,
+      lastLoginAt: null as Date | null,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    } as User;
     this.users.set(id, user);
     return user;
   }
@@ -660,7 +663,13 @@ export class MemStorage implements IStorage {
 
   async createExercise(insertExercise: InsertExercise): Promise<Exercise> {
     const id = this.currentId++;
-    const exercise: Exercise = { ...insertExercise, id };
+    const exercise = { 
+      ...insertExercise, 
+      id, 
+      createdAt: insertExercise.createdAt ?? null,
+      gifUrl: insertExercise.gifUrl ?? null,
+      instructions: insertExercise.instructions ?? null
+    } as Exercise;
     this.exercises.set(id, exercise);
     return exercise;
   }

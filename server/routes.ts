@@ -13,7 +13,7 @@ import { insertUserSchema, insertWorkoutPlanSchema, insertWorkoutSessionSchema, 
 
 // Basic workout generation for fallback
 function generateBasicWorkouts(experienceLevel: string, fitnessGoal: string, daysPerWeek: number) {
-  const workouts = [];
+  const workouts: any[] = [];
   
   if (fitnessGoal.includes('muscle') || fitnessGoal.includes('strength')) {
     // Strength/muscle building workouts

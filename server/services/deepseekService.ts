@@ -111,7 +111,7 @@ export class DeepSeekService {
     const isBeginnerOrIntermediate = request.experienceLevel === 'beginner' || request.experienceLevel === 'intermediate';
     const focusAreas = this.getFocusAreasForGoal(request.fitnessGoal);
     
-    const weeklySchedule = [];
+    const weeklySchedule: any[] = [];
     
     for (let day = 1; day <= request.daysPerWeek; day++) {
       const focus = focusAreas[day % focusAreas.length];

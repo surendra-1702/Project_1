@@ -1,0 +1,64 @@
+My project works perfectly on Replit, but it fails when deployed to Vercel.
+
+Current status:
+
+* Frontend deploys successfully.
+* API requests to `/api/auth/login` and `/api/auth/register` fail.
+* Initially I got **405 Method Not Allowed**.
+* After changes, I now get:
+
+  * `500 FUNCTION_INVOCATION_FAILED`
+  * `This Serverless Function has crashed`
+* The frontend is making requests to:
+
+  * `POST /api/auth/register`
+  * `POST /api/auth/login`
+
+Project structure:
+
+* `api/index.ts`
+* `server/index.ts`
+* `server/routes.ts`
+* `client/`
+* `shared/`
+* `dist/`
+
+The authentication routes are correctly defined as:
+
+```ts
+app.post("/api/auth/register", ...)
+app.post("/api/auth/login", ...)
+```
+
+The project works correctly on Replit, so the business logic is not the issue.
+
+I need you to make this project fully compatible with Vercel serverless functions.
+
+Tasks:
+
+1. Inspect the entire project for anything incompatible with Vercel serverless.
+2. Fix `api/index.ts` so it is the proper serverless entry point.
+3. Ensure `server/index.ts` is only used for local/Replit development and is never executed on Vercel.
+4. Verify `registerRoutes()` does not start an HTTP server or call `listen()` when running on Vercel.
+5. Check every import executed by `api/index.ts` for startup crashes.
+6. Verify database initialization is compatible with serverless.
+7. Check for missing environment variables and make startup fail gracefully with clear errors instead of crashing.
+8. Remove any Replit-only runtime assumptions.
+9. Verify `vercel.json` is correct for this project.
+10. Fix any routing problems causing `/api/auth/*` requests not to reach Express.
+11. Make sure all Express middleware works inside a Vercel serverless function.
+12. Search the codebase for any code that executes during import and crashes the serverless function.
+13. Ensure the API exports only the handler and does not create duplicate Express instances.
+14. Test that:
+
+    * POST `/api/auth/register`
+    * POST `/api/auth/login`
+    * GET `/api/auth/me`
+      all work correctly on Vercel.
+
+After making changes:
+
+* Explain every file that was modified.
+* Explain why the Vercel function was crashing.
+* Confirm the project is production-ready for Vercel.
+* If Vercel is fundamentally the wrong deployment target for this architecture, explain exactly why and recommend the best deployment architecture (for example, frontend on Vercel and backend on Railway/Render, or another suitable approach).
