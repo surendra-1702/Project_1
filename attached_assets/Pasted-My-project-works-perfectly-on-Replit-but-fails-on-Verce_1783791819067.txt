@@ -1,0 +1,121 @@
+My project works perfectly on Replit but fails on Vercel.
+
+Current symptoms:
+
+* Frontend loads successfully.
+* Authentication endpoints fail.
+* Browser console:
+
+  * `POST /api/auth/login → 405 Method Not Allowed`
+  * `POST /api/auth/register → 405 Method Not Allowed`
+* Opening `/api/auth/login` directly in the browser also returns 405 (expected for GET).
+* Sometimes the API also crashes with:
+
+  * `500 FUNCTION_INVOCATION_FAILED`
+
+Important facts:
+
+* Authentication routes already exist:
+
+```ts
+app.post("/api/auth/login", ...)
+app.post("/api/auth/register", ...)
+```
+
+* The project structure is:
+
+```
+api/
+  index.ts
+server/
+  index.ts
+  routes.ts
+client/
+shared/
+vercel.json
+```
+
+* The app works 100% correctly on Replit.
+* Therefore this is a Vercel/serverless compatibility issue, not an authentication logic issue.
+
+Your task is NOT to guess.
+
+Your task is to identify the exact reason why Vercel never reaches the Express POST handlers.
+
+Please perform ALL of the following:
+
+1. Trace the complete request flow from:
+   Browser
+   ↓
+   Vercel
+   ↓
+   api/index.ts
+   ↓
+   Express
+   ↓
+   registerRoutes()
+   ↓
+   POST /api/auth/login
+
+2. Verify that api/index.ts is actually executed on every request.
+
+3. Add logging before every startup step:
+
+* api/index.ts loaded
+* Express app created
+* Middleware registered
+* registerRoutes() started
+* registerRoutes() completed
+* Incoming request method
+* Incoming request URL
+
+4. Print ALL registered Express routes after registerRoutes() completes.
+
+5. Verify that POST /api/auth/login is actually registered.
+
+6. Verify that POST /api/auth/register is actually registered.
+
+7. Check whether Vercel is sending an OPTIONS request before POST.
+
+8. If OPTIONS requests are rejected, correctly configure CORS and OPTIONS handling.
+
+9. Verify that no middleware ends the request before Express reaches the auth routes.
+
+10. Verify that api/index.ts exports ONLY the Vercel handler and never starts an HTTP server.
+
+11. Verify server/index.ts is never imported by Vercel.
+
+12. Verify server/vite.ts is never imported on Vercel.
+
+13. Verify registerRoutes() does not throw during initialization.
+
+14. Search the project for every occurrence of:
+
+* server.listen(
+* app.listen(
+* process.exit(
+* top-level await
+* process.env access during module import
+
+15. Verify every required environment variable exists before startup.
+
+16. If an environment variable is missing, return a JSON error instead of crashing.
+
+17. Inspect vercel.json and confirm that every rewrite correctly maps to api/index.ts.
+
+18. Verify that api/index.ts is the only serverless entry point.
+
+19. Explain exactly why Vercel returns 405 instead of reaching the Express POST handlers.
+
+20. Do NOT make speculative fixes.
+
+Output required:
+
+* The exact root cause.
+* The exact file and line number causing it.
+* Every file changed.
+* Why the previous implementation failed on Vercel.
+* Why the new implementation fixes it.
+* Confirmation that POST /api/auth/login and POST /api/auth/register return successful responses on Vercel.
+
+Do not stop after making code changes. Continue debugging until the authentication endpoints work correctly on Vercel.
